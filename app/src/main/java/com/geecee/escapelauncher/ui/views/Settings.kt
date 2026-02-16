@@ -132,7 +132,7 @@ import com.lumina.core.ui.components.settings.ThemeCard
 import com.lumina.data.settings.appThemeFromStorage
 import com.lumina.domain.settings.toStorageValue
 import com.lumina.feature.apphiding.AppHidingViewModel
-import com.lumina.feature.apphiding.ui.APP_HIDING_ROUTE
+import com.lumina.feature.apphiding.ui.HIDDEN_APPS_MANAGEMENT_ROUTE
 import com.lumina.feature.apphiding.ui.appHidingNavigation
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -267,9 +267,7 @@ fun Settings(
 
 
             }
-            appHidingNavigation(BuildConfig.APPLICATION_ID) {
-                navController.popBackStack()
-            }
+            appHidingNavigation(BuildConfig.APPLICATION_ID, navController)
             composable(
                 "bulkFavouriteApps",
                 enterTransition = { fadeIn(tween(300)) },
@@ -734,7 +732,7 @@ fun MainSettingsPage(
                 label = stringResource(id = R.string.manage_hidden_apps),
                 false,
                 isTopOfGroup = true,
-                onClick = { navController.navigate(APP_HIDING_ROUTE) }
+                onClick = { navController.navigate(HIDDEN_APPS_MANAGEMENT_ROUTE) }
             )
         }
 

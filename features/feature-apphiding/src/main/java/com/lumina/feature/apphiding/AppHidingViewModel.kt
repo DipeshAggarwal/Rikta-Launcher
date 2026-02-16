@@ -8,13 +8,12 @@ import com.lumina.core.common.FlowDefaults.WhileSubscribedTimeoutMillis
 import com.lumina.domain.apps.AppInfo
 import com.lumina.domain.apps.HiddenAppsRepository
 import com.lumina.domain.apps.InstalledAppsRepository
+import com.lumina.domain.settings.SettingsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -22,8 +21,8 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-@OptIn(ExperimentalCoroutinesApi::class)
 class AppHidingViewModel @Inject constructor(
+    private val settingsRepository: SettingsRepository,
     private val hiddenAppsRepository: HiddenAppsRepository,
     private val installedAppsRepository: InstalledAppsRepository
 ): ViewModel() {
@@ -48,6 +47,13 @@ class AppHidingViewModel @Inject constructor(
             viewModelScope,
             SharingStarted.WhileSubscribed(WhileSubscribedTimeoutMillis),
             emptyList()
+        )
+
+    val showHiddenAppsInSearch: StateFlow<Boolean> = settingsRepository.showHiddenAppsInSearch()
+        .stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(WhileSubscribedTimeoutMillis),
+            false
         )
 
     val hiddenPackagesSet: StateFlow<Set<String>> = hiddenAppsRepository.allHiddenApps()
@@ -103,6 +109,12 @@ class AppHidingViewModel @Inject constructor(
             } else {
                 hiddenAppsRepository.addHiddenApp(packageName)
             }
+        }
+    }
+
+    fun setShowHiddenAppsInSearch(enabled: Boolean) {
+        viewModelScope.launch {
+            settingsRepository.setShowHiddenAppsInSearch(enabled)
         }
     }
 }

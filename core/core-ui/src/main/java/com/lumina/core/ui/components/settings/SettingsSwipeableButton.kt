@@ -44,9 +44,10 @@ fun SettingsSwipeableButton(
     label: String,
     onClick: () -> Unit,
     onDeleteClick: () -> Unit,
+    modifier: Modifier = Modifier,
     isTopOfGroup: Boolean = false,
     isBottomOfGroup: Boolean = false,
-    fontFamily: FontFamily? = MaterialTheme.typography.bodyMedium.fontFamily,
+    fontFamily: FontFamily? = MaterialTheme.typography.bodyMedium.fontFamily
 ) {
     val currentShape = settingsGroupShape(
         isTopOfGroup = isTopOfGroup,
@@ -65,7 +66,7 @@ fun SettingsSwipeableButton(
 
     SwipeToDismissBox(
         state = dismissState,
-        modifier = Modifier.padding(vertical = SettingsDefaults.VerticalPadding),
+        modifier = modifier.padding(vertical = SettingsDefaults.VerticalPadding),
         enableDismissFromStartToEnd = false,
         enableDismissFromEndToStart = true,
         backgroundContent = {

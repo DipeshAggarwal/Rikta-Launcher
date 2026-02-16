@@ -18,6 +18,7 @@ dependencies {
     implementation(project(":core:core-ui"))
 
     implementation(project(":domain:domain-apps"))
+    implementation(project(":domain:domain-settings"))
 
     implementation(project(":features:feature-apppicker"))
 }

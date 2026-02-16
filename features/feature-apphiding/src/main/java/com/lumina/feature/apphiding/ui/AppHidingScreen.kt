@@ -30,5 +30,6 @@ fun AppHidingScreen(
             } else {
                 viewModel.addHiddenApp(app.packageName)
             }
-        })
+        }
+    )
 }

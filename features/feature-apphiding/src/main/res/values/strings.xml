@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="hidden_apps">Hidden Apps</string>
+    <string name="swipe_to_show_app">Swipe to unhide app</string>
     <string name="manage_hidden_apps">Manage Hidden Apps</string>
+    <string name="show_hidden_apps_in_search">Show hidden apps in search</string>
 </resources>

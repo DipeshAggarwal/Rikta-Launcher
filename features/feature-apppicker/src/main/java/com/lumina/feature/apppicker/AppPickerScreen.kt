@@ -67,7 +67,6 @@ fun AppPickerScreen (
         apps.filter { it.packageName != launcherPackageName }
     }
 
-
     // Drag state for reorderable items
     var draggedPackageName by remember { mutableStateOf<String?>(null) }
     var dragOffset by remember { mutableFloatStateOf(0f) }
@@ -75,17 +74,19 @@ fun AppPickerScreen (
     val lazyListState = rememberLazyListState()
 
     // Create a combined list with a spacer marker
-    val combinedItems by remember(apps) {
+    val combinedItems by remember(availableApps) {
         derivedStateOf {
-            val selectedApps = apps.filter { it.packageName in selectedState }
-            val unselectedApps = apps.filter { it.packageName !in selectedState }
+            val selectedApps = availableApps.filter { it.packageName in selectedState }
+            val unselectedApps = availableApps.filter { it.packageName !in selectedState }
 
             buildList {
                 addAll(selectedApps.map { ListItem.App(it, isInSelectedSection = true) })
                 if (selectedState.isNotEmpty()) {
                     add(ListItem.Spacer)
                 }
-                addAll(unselectedApps.map { ListItem.App(it, isInSelectedSection = false) })
+                addAll(unselectedApps.map {
+                    ListItem.App(it, isInSelectedSection = false)
+                })
             }
         }
     }
@@ -98,7 +99,13 @@ fun AppPickerScreen (
     ) {
         if (!hideTitle) {
             item {
-                SettingsHeader(goBack = { onBackClicked() }, title = title, hideBack = hideBack, color = titleColor, padding = topPadding)
+                SettingsHeader(
+                    goBack = { onBackClicked() },
+                    title = title,
+                    hideBack = hideBack,
+                    color = titleColor,
+                    padding = topPadding
+                )
             }
         }
 
@@ -118,12 +125,12 @@ fun AppPickerScreen (
                     val isTopOfGroup = if (item.isInSelectedSection) {
                         selectedState.firstOrNull() == item.app.packageName
                     } else {
-                        availableApps.firstOrNull() == item.app
+                        availableApps.firstOrNull()?.packageName == item.app.packageName
                     }
                     val isBottomOfGroup = if (item.isInSelectedSection) {
                         selectedState.lastOrNull() == item.app.packageName
                     } else {
-                        availableApps.lastOrNull() == item.app
+                        availableApps.lastOrNull()?.packageName == item.app.packageName
                     }
 
                     if (item.isInSelectedSection && reorderable) {

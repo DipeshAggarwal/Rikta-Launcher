@@ -21,6 +21,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.geecee.escapelauncher.utils.AppUtils
 import com.geecee.escapelauncher.utils.InstalledApp
@@ -34,15 +35,21 @@ import com.geecee.escapelauncher.utils.managers.setSpacerSize
 import com.geecee.escapelauncher.utils.weatherProxy
 import com.lumina.core.common.AppDefaults.DEFAULT_THEME
 import com.lumina.core.common.AppTheme
+import com.lumina.core.common.FlowDefaults.WhileSubscribedTimeoutMillis
 import com.lumina.core.common.TextUtils.UNACCENT_REGEX
 import com.lumina.domain.apps.HiddenAppsRepository
+import com.lumina.domain.settings.SettingsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.text.Normalizer
@@ -56,10 +63,10 @@ import javax.inject.Inject
  */
 @HiltViewModel
 class HomeScreenModel @Inject constructor(
-    application: Application,
-    private val hiddenAppsRepository: HiddenAppsRepository
-): AndroidViewModel(application) {
-    private val context get() = getApplication<Application>()
+    @ApplicationContext private val context: Context,
+    private val hiddenAppsRepository: HiddenAppsRepository,
+    private val settingsRepository: SettingsRepository
+): ViewModel() {
 
     private val _navigateHomeEvent = MutableSharedFlow<Unit>(
         replay = 0,
@@ -74,10 +81,10 @@ class HomeScreenModel @Inject constructor(
         }
     }
 
-    private val challengesManager = ChallengesManager(getApplication())
+    private val challengesManager = ChallengesManager(context)
     private val challengesTrigger = mutableIntStateOf(0)
 
-    private val favouriteManager = FavoriteAppsManager(getApplication())
+    private val favouriteManager = FavoriteAppsManager(context)
     val isFavouritesLoaded = mutableStateOf(false)
 
     val isReady by derivedStateOf {
@@ -109,14 +116,19 @@ class HomeScreenModel @Inject constructor(
     val installedApps = MutableStateFlow<List<InstalledApp>>(emptyList())
 
     val hiddenApps = hiddenAppsRepository.allHiddenApps()
+        .stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(WhileSubscribedTimeoutMillis),
+            emptySet()
+        )
+    val showHiddenAppsInSearch: StateFlow<Boolean> = settingsRepository.showHiddenAppsInSearch()
+        .stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(WhileSubscribedTimeoutMillis),
+            false
+        )
 
     val searchQuery = MutableStateFlow<String>("")
-
-    val showHiddenAppsInSearch = MutableStateFlow(getBooleanSetting(
-        context,
-        context.getString(R.string.showHiddenAppsInSearch),
-        false
-    ))
 
     val filteredApps = combine(
         installedApps,
@@ -155,7 +167,7 @@ class HomeScreenModel @Inject constructor(
 
     fun addHiddenApp(packageName: String) {
         viewModelScope.launch {
-            hiddenAppsRepository.addHiddenApp((packageName))
+            hiddenAppsRepository.addHiddenApp(packageName)
         }
     }
 
