@@ -17,8 +17,8 @@ pluginManagement {
     }
 
     plugins {
-        id("com.android.application") version "9.0.0"
-        id("com.android.library") version "9.0.0"
+        id("com.android.application") version "9.0.1"
+        id("com.android.library") version "9.0.1"
         id("org.jetbrains.kotlin.android") version "2.3.10"
         id("org.jetbrains.kotlin.jvm") version "2.3.10"
         id("org.jetbrains.kotlin.plugin.compose") version "2.3.10"
@@ -40,7 +40,7 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Escape Launcher"
+rootProject.name = "Rikta Launcher"
 
 // app
 include(":app")

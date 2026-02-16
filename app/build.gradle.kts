@@ -10,7 +10,7 @@ plugins {
 val baseVersionCode = "2.3.1"
 
 android {
-    namespace = "com.geecee.escapelauncher"
+    namespace = "com.lumina.rikta"
     compileSdk = 36
 
     lint {
@@ -18,7 +18,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.geecee.escapelauncher"
+        applicationId = "com.lumina.rikta"
         minSdk = 26
         targetSdk = 36
         versionCode = 2
@@ -161,6 +161,7 @@ dependencies {
     // Hilt
     implementation(libs.hilt.android)
     implementation(libs.androidx.hilt.navigation.compose)
+    implementation(libs.jakarta.inject)
     ksp(libs.hilt.compiler)
 
     // Third-Party Library

@@ -20,7 +20,7 @@
         <meta-data android:name="google_analytics_default_allow_analytics_storage" android:value="false" />
 
         <service
-            android:name="com.geecee.escapelauncher.utils.managers.MessagingService"
+            android:name="com.lumina.rikta.utils.managers.MessagingService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />

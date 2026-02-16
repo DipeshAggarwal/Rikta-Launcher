@@ -1,0 +1,469 @@
+package com.lumina.rikta
+
+import android.app.Application
+import android.content.ComponentName
+import android.content.Context
+import android.util.Log
+import android.view.Window
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.pager.PagerState
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.lumina.rikta.utils.AppUtils
+import com.lumina.rikta.utils.InstalledApp
+import com.lumina.rikta.utils.getBooleanSetting
+import com.lumina.rikta.utils.managers.ChallengesManager
+import com.lumina.rikta.utils.managers.FavoriteAppsManager
+import com.lumina.rikta.utils.managers.getScreenTimeListSorted
+import com.lumina.rikta.utils.managers.getSpacerSize
+import com.lumina.rikta.utils.managers.getUsageForApp
+import com.lumina.rikta.utils.managers.setSpacerSize
+import com.lumina.rikta.utils.weatherProxy
+import com.lumina.core.common.AppDefaults.DEFAULT_THEME
+import com.lumina.core.common.AppTheme
+import com.lumina.core.common.FlowDefaults.WhileSubscribedTimeoutMillis
+import com.lumina.core.common.TextUtils.UNACCENT_REGEX
+import com.lumina.domain.apps.HiddenAppsRepository
+import com.lumina.domain.settings.SettingsRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.text.Normalizer
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+import jakarta.inject.Inject
+
+/**
+ * Home Screen View Model - Used for holding UI state for the home screen pages
+ */
+@HiltViewModel
+class HomeScreenModel @Inject constructor(
+    @ApplicationContext private val context: Context,
+    private val hiddenAppsRepository: HiddenAppsRepository,
+    private val settingsRepository: SettingsRepository
+): ViewModel() {
+
+    private val _navigateHomeEvent = MutableSharedFlow<Unit>(
+        replay = 0,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST,
+        extraBufferCapacity = 1
+    )
+    val navigateHomeEvent = _navigateHomeEvent.asSharedFlow()
+
+    fun requestToGoHome() {
+        viewModelScope.launch {
+            _navigateHomeEvent.emit(Unit)
+        }
+    }
+
+    private val challengesManager = ChallengesManager(context)
+    private val challengesTrigger = mutableIntStateOf(0)
+
+    private val favouriteManager = FavoriteAppsManager(context)
+    val isFavouritesLoaded = mutableStateOf(false)
+
+    val isReady by derivedStateOf {
+        isAppsLoaded.value && isFavouritesLoaded.value
+    }
+
+    var currentSelectedApp = mutableStateOf(InstalledApp("", "", ComponentName("", "")))
+    val isAppsLoaded = mutableStateOf(false)
+
+    val isCurrentAppChallenged by derivedStateOf {
+        challengesTrigger.intValue
+        challengesManager.doesAppHaveChallenge(currentSelectedApp.value.packageName)
+    }
+
+    val isCurrentAppFavorite by derivedStateOf {
+        favoriteApps.contains(currentSelectedApp.value)
+    }
+
+    var showOpenChallenge = mutableStateOf(false)
+    var showBottomSheet = mutableStateOf(false)
+    var showPrivateSpaceSettings = mutableStateOf(false)
+
+    var searchText = mutableStateOf("")
+    var searchExpanded = mutableStateOf(false)
+
+    val coroutineScope = viewModelScope
+    val interactionSource = MutableInteractionSource()
+
+    val installedApps = MutableStateFlow<List<InstalledApp>>(emptyList())
+
+    val hiddenApps = hiddenAppsRepository.allHiddenApps()
+        .stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(WhileSubscribedTimeoutMillis),
+            emptySet()
+        )
+    val showHiddenAppsInSearch: StateFlow<Boolean> = settingsRepository.showHiddenAppsInSearch()
+        .stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(WhileSubscribedTimeoutMillis),
+            false
+        )
+
+    val searchQuery = MutableStateFlow<String>("")
+
+    val filteredApps = combine(
+        installedApps,
+        hiddenApps,
+        searchQuery,
+        showHiddenAppsInSearch
+    ) { apps, hiddenSet, query, showHiddenAppsInSearch ->
+        val trimmedQuery = query.trim()
+        val visibleApps = apps.filter { it.packageName != context.packageName}
+
+        if (trimmedQuery.isBlank()) {
+            visibleApps.filterNot { hiddenSet.contains(it.packageName) }
+        } else {
+            visibleApps.filter { app ->
+                val isHidden = hiddenSet.contains(app.packageName)
+                val matchesQuery = AppUtils.fuzzyMatch(app.displayName, query)
+
+                matchesQuery && (!isHidden || showHiddenAppsInSearch)
+            }.sortedWith(compareBy<InstalledApp> { app ->
+                val normalisedQuery = Normalizer.normalize(query, Normalizer.Form.NFD)
+                    .replace(UNACCENT_REGEX, "")
+                    .lowercase()
+
+                val normalisedName = Normalizer.normalize(app.displayName, Normalizer.Form.NFD)
+                    .replace(UNACCENT_REGEX, "")
+                    .lowercase()
+
+                when {
+                    normalisedName.startsWith(normalisedQuery) -> 0
+                    normalisedName.contains(normalisedQuery) -> 1
+                    else -> 2
+                }
+            }.thenBy {it.displayName.lowercase() })
+        }
+    }
+
+    fun addHiddenApp(packageName: String) {
+        viewModelScope.launch {
+            hiddenAppsRepository.addHiddenApp(packageName)
+        }
+    }
+
+    fun removeHiddenApp(packageName: String) {
+        viewModelScope.launch {
+            hiddenAppsRepository.removeHiddenApp(packageName)
+        }
+    }
+
+    val favoriteApps = mutableStateListOf<InstalledApp>()
+
+    val appsListScrollState = LazyListState()
+
+    val pagerState = PagerState(
+        currentPage = if (getBooleanSetting(
+                context = context,
+                setting = context.resources.getString(R.string.hideScreenTimePage),
+                defaultValue = false
+            )
+        ) {
+            0
+        } else {
+            1
+        },
+        currentPageOffsetFraction = 0f
+    ) {
+        if (getBooleanSetting(
+                context = context,
+                setting = context.resources.getString(R.string.hideScreenTimePage),
+                defaultValue = false
+            )
+        ) {
+            2
+        } else {
+            3
+        }
+    }
+
+    private fun getMainPageIndex(): Int {
+        val hideScreenTime = getBooleanSetting(
+            context = context,
+            setting = context.resources.getString(R.string.hideScreenTimePage),
+            defaultValue = false
+        )
+        return if (hideScreenTime) 0 else 1
+    }
+
+    suspend fun goToMainPage() {
+        pagerState.scrollToPage(getMainPageIndex())
+    }
+
+    suspend fun animatedGoToMainPage() {
+        val targetPage = getMainPageIndex()
+
+        if (pagerState.currentPage == targetPage && pagerState.currentPageOffsetFraction == 0f) {
+            return
+        }
+
+        if (pagerState.isScrollInProgress && pagerState.targetPage == targetPage) {
+            return
+        }
+
+        pagerState.animateScrollToPage(
+            targetPage,
+            animationSpec = tween(durationMillis = 500, easing = FastOutSlowInEasing)
+        )
+    }
+
+    val currentSelectedPrivateApp =
+        mutableStateOf(InstalledApp("", "", ComponentName("", ""))) //Only used for the bottom sheet
+
+    val currentSelectedWorkApp =
+        mutableStateOf(InstalledApp("", "", ComponentName("", ""))) //Only used for the bottom sheet
+
+    var showPrivateBottomSheet = mutableStateOf(false)
+
+    var showWorkBottomSheet = mutableStateOf(false)
+
+    var showWorkApps = mutableStateOf(false)
+
+    init {
+        loadApps()
+        viewModelScope.launch {
+            snapshotFlow { searchText.value }
+                .collect{ searchQuery.value = it }
+        }
+    }
+
+    fun loadApps() {
+        Log.d("Loading", "LoadApps started")
+        coroutineScope.launch {
+            suspendLoadApps()
+            suspendReloadFavouriteApps()
+        }
+    }
+
+    private suspend fun suspendLoadApps() {
+        Log.d("Loading", "SuspendLoadApps started")
+        val apps = withContext(Dispatchers.IO) {
+            AppUtils.getAllInstalledApps(context).sortedBy {
+                it.displayName.lowercase()
+            }
+        }
+        withContext(Dispatchers.Main) {
+            installedApps.value = apps
+            isAppsLoaded.value = true
+        }
+    }
+
+    fun reloadFavouriteApps() {
+        coroutineScope.launch {
+            suspendReloadFavouriteApps()
+        }
+    }
+
+    private suspend fun suspendReloadFavouriteApps() {
+        Log.d("Loading", "SuspendReloadFavouriteApps started")
+
+        val favoritePackageNames = withContext(Dispatchers.IO) {
+            favouriteManager.getFavoriteApps()
+        }
+
+        withContext(Dispatchers.Main) {
+            val newFavoriteApps = favoritePackageNames.mapNotNull { packageName ->
+                installedApps.value.find { it.packageName == packageName }
+            }
+            favoriteApps.clear()
+            favoriteApps.addAll(newFavoriteApps)
+            isFavouritesLoaded.value = true
+        }
+    }
+
+    fun updateSelectedApp(app: InstalledApp) {
+        currentSelectedApp.value = app
+    }
+}
+
+/**
+ * Main App View Model - Used for data that needs to be passed around the app
+ */
+@HiltViewModel
+class MainAppViewModel @Inject constructor(
+    application: Application
+): AndroidViewModel(application) {
+    private val appContext: Context = application.applicationContext // The app context
+
+    var spacerSize by mutableFloatStateOf(getSpacerSize(getApplication()))
+        private set
+
+    fun updateSpacerSize(context: Context, size: Float) {
+        spacerSize = size
+        setSpacerSize(context, size)
+    }
+
+    fun getContext(): Context = appContext // Returns the context
+
+    private var window: Window? = null
+
+    fun setWindow(window: Window) {
+        this.window = window
+    }
+
+    fun getWindow(): Window? = window
+
+    var appTheme: MutableState<AppTheme> = mutableStateOf(AppTheme.valueOf(DEFAULT_THEME)) // App material theme
+
+    // Loading states for splash screen
+    val isAppsLoaded = mutableStateOf(false)
+    val isFavoritesLoaded = mutableStateOf(false)
+    val isThemeLoaded = mutableStateOf(false)
+    val isScreenTimeLoaded = mutableStateOf(false)
+
+    val isReady by derivedStateOf {
+        isThemeLoaded.value && isScreenTimeLoaded.value
+    }
+
+    // Managers
+
+    val favoriteAppsManager: FavoriteAppsManager =
+        FavoriteAppsManager(application) // Favorite apps manager
+
+    // Open Countdown
+
+    val challengesManager: ChallengesManager =
+        ChallengesManager(application) // Manager for challenges
+
+    val challengesTrigger = mutableIntStateOf(0)
+
+    fun notifyChallengesChanged() {
+        challengesTrigger.intValue++
+    }
+
+    // Other stuff
+
+    var isAppOpened: Boolean =
+        false // Set to true when an app is opened and false when it is closed again, used mainly for screen time
+
+    val isPrivateSpaceUnlocked: MutableState<Boolean> =
+        mutableStateOf(false) // If the private space is unlocked, set by a registered receiver when the private space is closed or opened
+
+    val shouldGoHomeOnResume: MutableState<Boolean> =
+        mutableStateOf(false) // This is to check whether to go back to the first page of the home screen the next time onResume is called, It is only ever used once in AllApps when you come back from signing into private space
+
+    // Screen time related things
+
+    private val dateFormat =
+        SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()) // Format for the date
+
+    fun getToday(): String {
+        return dateFormat.format(Date())
+    } // Returns the current date
+
+    val screenTimeCache =
+        mutableStateMapOf<String, Long>() // Cache mapping package name to screen time
+
+    val shouldReloadScreenTime: MutableState<Int> =
+        mutableIntStateOf(0) // This exists because the screen time is retrieved in LaunchedEffects so it'll reload when the value of this is changed
+
+    fun updateAppScreenTime(packageName: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val screenTime = getUsageForApp(packageName, getToday())
+            screenTimeCache[packageName] = screenTime
+        }
+    } // Function to update a single app's cached screen time
+
+    fun reloadScreenTimeCache() {
+        Log.d("Loading", "ReloadScreenTimeCache started")
+
+        viewModelScope.launch(Dispatchers.IO) {
+            val usageList = getScreenTimeListSorted(getToday())
+            val usageMap = usageList.associate { it.packageName to it.totalTime }
+
+            withContext(Dispatchers.Main) {
+                screenTimeCache.clear()
+                screenTimeCache.putAll(usageMap)
+                shouldReloadScreenTime.value++
+                isScreenTimeLoaded.value = true
+            }
+        }
+    } // Reloads the screen times efficiently
+
+    suspend fun getScreenTimeAsync(packageName: String, forceRefresh: Boolean = false): Long {
+        if (forceRefresh || !screenTimeCache.containsKey(packageName)) {
+            val screenTime = getUsageForApp(packageName, getToday())
+            screenTimeCache[packageName] = screenTime
+            return screenTime
+        }
+        return screenTimeCache[packageName] ?: 0L
+    } // Function to get screen time from cache or compute if missing
+
+    fun getCachedScreenTime(packageName: String): Long {
+        return screenTimeCache[packageName] ?: 0L
+    } // Non-suspend function that just returns the cached value without fetching
+
+    // Weather
+    val weatherText = mutableStateOf("")
+
+    private var lastWeatherUpdate = 0L
+
+    fun updateWeather() {
+        val currentTime = System.currentTimeMillis()
+        val useFahrenheit =
+            getBooleanSetting(appContext, appContext.getString(R.string.UseFahrenheit))
+        // Update weather if it's been more than 30 minutes or if it's empty
+        if (currentTime - lastWeatherUpdate > 30 * 60 * 1000 || weatherText.value.isEmpty()) {
+            viewModelScope.launch(Dispatchers.IO) {
+                weatherProxy.getWeather(appContext, useFahrenheit) { result ->
+                    viewModelScope.launch(Dispatchers.Main) {
+                        weatherText.value = result
+                        // Only update the last update time if we got a valid-looking result
+                        if (!result.contains("error", ignoreCase = true) &&
+                            !result.contains("unavailable", ignoreCase = true)
+                        ) {
+                            lastWeatherUpdate = System.currentTimeMillis()
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    fun forceUpdateWeather() {
+        val useFahrenheit =
+            getBooleanSetting(appContext, appContext.getString(R.string.UseFahrenheit))
+        viewModelScope.launch(Dispatchers.IO) {
+            weatherProxy.getWeather(appContext, useFahrenheit) { result ->
+                viewModelScope.launch(Dispatchers.Main) {
+                    weatherText.value = result
+                    // Only update the last update time if we got a valid-looking result
+                    if (!result.contains("error", ignoreCase = true) &&
+                        !result.contains("unavailable", ignoreCase = true)
+                    ) {
+                        lastWeatherUpdate = System.currentTimeMillis()
+                    }
+                }
+            }
+        }
+    }
+}
