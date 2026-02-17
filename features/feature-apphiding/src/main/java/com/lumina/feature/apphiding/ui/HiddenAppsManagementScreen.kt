@@ -12,7 +12,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.lumina.core.ui.HapticUtils
 import com.lumina.core.ui.components.settings.SettingsButton
 import com.lumina.core.ui.components.settings.SettingsHeader
@@ -23,12 +22,17 @@ import com.lumina.core.ui.components.settings.SettingsSwitch
 import com.lumina.feature.apphiding.AppHidingViewModel
 import com.lumina.feature.apphiding.R
 
+/**
+ * Primary management screen for hidden apps.
+ * Shows a list of currently hidden apps with swipe-to-unhide functionality and global visibility settings.
+ */
 @Composable
 fun HiddenAppsManagementScreen(
     goToBulkAppHiding: () -> Unit,
     onBack: () -> Unit,
-    viewModel: AppHidingViewModel = hiltViewModel()
+    viewModel: AppHidingViewModel
 ) {
+    // Observe reactive state flows from the shared ViewModel
     val hiddenApps by viewModel.hiddenApps.collectAsState()
     val showHiddenAppsInSearch by viewModel.showHiddenAppsInSearch.collectAsState()
 
@@ -71,7 +75,7 @@ fun HiddenAppsManagementScreen(
             key = { app -> app.packageName }
         ) { app ->
             SettingsSwipeableButton(
-                modifier = Modifier.animateItem(),
+                modifier = Modifier.animateItem(), // Smoothly handles removal animations.
                 label = app.displayName,
                 onClick = {
                     viewModel.launchApp(context, app.packageName)

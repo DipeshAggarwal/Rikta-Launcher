@@ -13,4 +13,5 @@ dependencies {
     implementation(project(":core:core-ui"))
 
     implementation(project(":domain:domain-apps"))
+    implementation(libs.androidx.compose.foundation.layout)
 }

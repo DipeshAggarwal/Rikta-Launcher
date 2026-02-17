@@ -119,6 +119,7 @@ import com.lumina.rikta.utils.showLauncherSettingsMenu
 import com.lumina.rikta.utils.toggleBooleanSetting
 import com.lumina.core.common.AppDefaults.DEFAULT_THEME
 import com.lumina.core.common.AppTheme
+import com.lumina.core.common.FeatureFlags.USE_NEW_FAVOURITE_APPS
 import com.lumina.core.ui.components.settings.SettingsButton
 import com.lumina.core.ui.components.settings.SettingsHeader
 import com.lumina.core.ui.components.settings.SettingsNavigationItem
@@ -131,6 +132,8 @@ import com.lumina.core.ui.components.settings.SettingsSwitch
 import com.lumina.core.ui.components.settings.ThemeCard
 import com.lumina.data.settings.appThemeFromStorage
 import com.lumina.domain.settings.toStorageValue
+import com.lumina.feature.appfavourite.ui.FAVOURITE_APPS_ROUTE
+import com.lumina.feature.appfavourite.ui.appFavouriteNavigation
 import com.lumina.feature.apphiding.AppHidingViewModel
 import com.lumina.feature.apphiding.ui.HIDDEN_APPS_MANAGEMENT_ROUTE
 import com.lumina.feature.apphiding.ui.appHidingNavigation
@@ -210,8 +213,7 @@ fun Settings(
 
                 AppPickerScreen(
                     apps = installedApps,
-                    launcherPackageName = BuildConfig.APPLICATION_ID,
-                    preSelectedApps = challengeApps.map { it.packageName }.toSet(),
+                    preSelectedApps = challengeApps.map { it.packageName },
                     title = stringResource(R.string.manage_open_challenges),
                     onBackClicked = { navController.popBackStack() },
                     onAppClicked = { app, selected ->
@@ -259,15 +261,8 @@ fun Settings(
                     navController.popBackStack()
                 }
             }
-            composable(
-
-                "bulkHiddenApps",
-                enterTransition = { fadeIn(tween(300)) },
-                exitTransition = { fadeOut(tween(300)) }) {
-
-
-            }
-            appHidingNavigation(BuildConfig.APPLICATION_ID, navController)
+            appHidingNavigation(navController)
+            appFavouriteNavigation(navController)
             composable(
                 "bulkFavouriteApps",
                 enterTransition = { fadeIn(tween(300)) },
@@ -281,8 +276,7 @@ fun Settings(
 
                 AppPickerScreen(
                     apps = installedApps,
-                    launcherPackageName = BuildConfig.APPLICATION_ID,
-                    preSelectedApps = preSelectedFavoriteApps.map { it.packageName }.toSet(),
+                    preSelectedApps = preSelectedFavoriteApps.map { it.packageName },
                     title = stringResource(R.string.manage_favourite_apps),
                     reorderable = true,
                     onAppMoved = { fromIndex, toIndex ->
@@ -515,7 +509,11 @@ fun MainSettingsPage(
                 diagonalArrow = false,
                 isBottomOfGroup = Build.VERSION.SDK_INT < Build.VERSION_CODES.P,
                 onClick = {
-                    navController.navigate("bulkFavouriteApps")
+                    if (USE_NEW_FAVOURITE_APPS) {
+                        navController.navigate(FAVOURITE_APPS_ROUTE)
+                    } else {
+                        navController.navigate("bulkFavouriteApps")
+                    }
                 })
         }
 

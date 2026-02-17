@@ -1,7 +1,7 @@
 package com.lumina.rikta.startup
 
 import com.lumina.data.apps.installed.InstalledAppsMonitor
-import com.lumina.domain.apps.usecase.CleanUpUninstalledHiddenAppsUseCase
+import com.lumina.domain.apps.usecase.RemoveOrphanedAppReferencesUseCase
 import com.lumina.rikta.di.ApplicationScope
 import jakarta.inject.Inject
 import jakarta.inject.Singleton
@@ -18,7 +18,7 @@ import kotlinx.coroutines.launch
 @Singleton
 class InstalledAppsCoordinator @Inject constructor(
     installedAppsMonitor: InstalledAppsMonitor,
-    private val cleanUpUninstalledHiddenAppsUseCase: CleanUpUninstalledHiddenAppsUseCase,
+    private val removeOrphanedAppReferencesUseCase: RemoveOrphanedAppReferencesUseCase,
     @ApplicationScope private val applicationScope: CoroutineScope
 ) {
     init {
@@ -28,7 +28,7 @@ class InstalledAppsCoordinator @Inject constructor(
                 // that happened while the launcher was stopped.
                 .onStart { emit(Unit) }
                 .collect {
-                    cleanUpUninstalledHiddenAppsUseCase()
+                    removeOrphanedAppReferencesUseCase()
                 }
         }
     }

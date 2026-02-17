@@ -490,8 +490,7 @@ fun FavoritesSelectionScreen(
         if (showList) {
             AppPickerScreen(
                 apps = installedApps,
-                launcherPackageName = BuildConfig.APPLICATION_ID,
-                preSelectedApps = homeScreenModel.favoriteApps.map { it.packageName }.toSet(),
+                preSelectedApps = homeScreenModel.favoriteApps.map { it.packageName },
                 title = stringResource(R.string.choose_your_favourite_apps),
                 reorderable = true,
                 onAppMoved = { fromIndex, toIndex ->

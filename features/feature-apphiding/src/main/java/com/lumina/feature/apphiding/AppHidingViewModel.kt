@@ -1,7 +1,6 @@
 package com.lumina.feature.apphiding
 
 import android.content.Context
-import android.content.pm.PackageManager
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lumina.core.common.FlowDefaults.WhileSubscribedTimeoutMillis
@@ -12,38 +11,55 @@ import com.lumina.domain.settings.SettingsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import javax.inject.Inject
+import jakarta.inject.Inject
+import kotlinx.coroutines.flow.combine
 
 @HiltViewModel
 class AppHidingViewModel @Inject constructor(
     private val settingsRepository: SettingsRepository,
     private val hiddenAppsRepository: HiddenAppsRepository,
-    private val installedAppsRepository: InstalledAppsRepository
+    installedAppsRepository: InstalledAppsRepository
 ): ViewModel() {
-    val installedApps: StateFlow<List<AppInfo>> = flow {
-        emit(installedAppsRepository.getInstalledApps())
+    // Master list of all launcher apps on the system.
+    val installedApps: StateFlow<List<AppInfo>> = installedAppsRepository.installedApps()
+        .stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(WhileSubscribedTimeoutMillis),
+            emptyList()
+        )
+
+    // Reactive set of package names currently marked as hidden.
+    val hiddenPackagesSet: StateFlow<Set<String>> = hiddenAppsRepository.allHiddenApps()
+        .stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(WhileSubscribedTimeoutMillis),
+            emptySet()
+        )
+
+    // Combined list of AppInfo specifically for currently hidden apps.
+    private val groupApps: StateFlow<Pair<List<AppInfo>, List<AppInfo>>> = combine(
+        installedApps,
+        hiddenPackagesSet
+    ) { installed, hiddenSet ->
+        installed.partition { it.packageName in hiddenSet }
     }.stateIn(
         viewModelScope,
         SharingStarted.WhileSubscribed(WhileSubscribedTimeoutMillis),
-        emptyList()
+        Pair(emptyList(), emptyList())
     )
-    val hiddenApps: StateFlow<List<AppInfo>> = hiddenAppsRepository.allHiddenApps()
-        .map { packageNames ->
-            packageNames.mapNotNull { pkg ->
-                try {
-                    val name = installedAppsRepository.getDisplayName(pkg)
-                    AppInfo(pkg, name)
-                } catch (e: PackageManager.NameNotFoundException) {
-                    null
-                }
-            }
-        }.stateIn(
+
+    val hiddenApps: StateFlow<List<AppInfo>> = groupApps.map { it.first }
+        .stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(WhileSubscribedTimeoutMillis),
+            emptyList()
+        )
+
+    val nonHiddenApps: StateFlow<List<AppInfo>> = groupApps.map { it.second }
+        .stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(WhileSubscribedTimeoutMillis),
             emptyList()
@@ -55,32 +71,6 @@ class AppHidingViewModel @Inject constructor(
             SharingStarted.WhileSubscribed(WhileSubscribedTimeoutMillis),
             false
         )
-
-    val hiddenPackagesSet: StateFlow<Set<String>> = hiddenAppsRepository.allHiddenApps()
-        .stateIn(
-            viewModelScope,
-            SharingStarted.WhileSubscribed(WhileSubscribedTimeoutMillis),
-            emptySet()
-        )
-    
-    init {
-        viewModelScope.launch {
-            combine(
-                hiddenAppsRepository.allHiddenApps(),
-                installedApps
-            ) { hiddenPackages, installedPackages ->
-                val installedPackagesSet = installedPackages.map { it.packageName }.toSet()
-                val cleanedHiddenPackages = hiddenPackages.filter { it in installedPackagesSet }
-
-                Pair(hiddenPackages, cleanedHiddenPackages)
-            }
-                .distinctUntilChanged()
-                .collect { (hiddenPackages, cleanedHiddenPackages) ->
-                    if (hiddenPackages == cleanedHiddenPackages) return@collect
-                    hiddenAppsRepository.setHiddenApps(cleanedHiddenPackages)
-                }
-        }
-    }
 
     // Temporary
     fun launchApp(context: Context, packageName: String) {

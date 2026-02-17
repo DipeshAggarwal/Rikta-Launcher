@@ -12,12 +12,10 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-
-import javax.inject.Inject
+import jakarta.inject.Inject
 
 
 @HiltViewModel
@@ -25,13 +23,12 @@ class AppFavouriteViewModel @Inject constructor(
     private val favouriteAppsRepository: FavouriteAppsRepository,
     private val installedAppsRepository: InstalledAppsRepository
 ): ViewModel() {
-    val installedApps: StateFlow<List<AppInfo>> = flow {
-        emit(installedAppsRepository.getInstalledApps())
-    }.stateIn(
-        viewModelScope,
-        SharingStarted.WhileSubscribed(WhileSubscribedTimeoutMillis),
-        emptyList()
-    )
+    val installedApps: StateFlow<List<AppInfo>> = installedAppsRepository.installedApps()
+        .stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(WhileSubscribedTimeoutMillis),
+            emptyList()
+        )
 
     val favouriteApps: StateFlow<List<AppInfo>> = favouriteAppsRepository.allFavouriteApps()
         .map { packageNames ->
@@ -49,24 +46,13 @@ class AppFavouriteViewModel @Inject constructor(
             emptyList()
         )
 
-    init {
-        viewModelScope.launch {
-            combine(
-                favouriteAppsRepository.allFavouriteApps(),
-                installedApps
-            ) { favouritePackages, installedPackages ->
-                val installedPackagesSet = installedPackages.map { it.packageName }.toSet()
-                val cleanedFavouritePackages = favouritePackages.filter { it in installedPackagesSet }
-
-                Pair(favouritePackages, cleanedFavouritePackages)
-            }
-            .distinctUntilChanged()
-            .collect { (favouritePackages, cleanedFavouritePackages) ->
-                if (favouritePackages == cleanedFavouritePackages) return@collect
-                favouriteAppsRepository.setFavouriteApps(cleanedFavouritePackages)
-            }
-        }
-    }
+    // Reactive set of package names currently marked as favourite.
+    val favouritePackages: StateFlow<List<String>> = favouriteAppsRepository.allFavouriteApps()
+        .stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(WhileSubscribedTimeoutMillis),
+            emptyList()
+        )
 
     fun addFavouriteApp(packageName: String) {
         viewModelScope.launch {
@@ -77,6 +63,12 @@ class AppFavouriteViewModel @Inject constructor(
     fun removeFavouriteApp(packageName: String) {
         viewModelScope.launch {
             favouriteAppsRepository.removeFavouriteApp(packageName)
+        }
+    }
+
+    fun reorderFavouriteApps(fromIndex: Int, toIndex: Int) {
+        viewModelScope.launch {
+            favouriteAppsRepository.reorderFavouriteApps(fromIndex, toIndex)
         }
     }
 

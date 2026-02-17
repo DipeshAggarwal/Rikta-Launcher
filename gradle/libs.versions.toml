@@ -41,6 +41,7 @@ play-services-location = "21.3.0"
 google-fonts-compose = "1.10.3"
 
 materialKolor = "4.1.1"
+foundationLayout = "1.10.3"
 
 [libraries]
 # Gradle
@@ -110,6 +111,7 @@ google-gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 play-services-location = { module = "com.google.android.gms:play-services-location", version.ref = "play-services-location" }
 okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
 material-kolor = { module = "com.materialkolor:material-kolor", version.ref = "materialKolor"}
+androidx-compose-foundation-layout = { group = "androidx.compose.foundation", name = "foundation-layout", version.ref = "foundationLayout" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
