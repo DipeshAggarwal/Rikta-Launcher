@@ -1,10 +1,10 @@
-package com.geecee.escapelauncher.ui.theme
+package com.lumina.rikta.ui.theme
 
 import android.content.Context
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.googlefonts.Font
 import androidx.compose.ui.text.googlefonts.GoogleFont
-import com.geecee.escapelauncher.R
+import com.lumina.rikta.R
 
 private val provider = GoogleFont.Provider(
     providerAuthority = "com.google.android.gms.fonts",

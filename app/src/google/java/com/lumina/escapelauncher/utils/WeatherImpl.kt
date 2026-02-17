@@ -1,4 +1,4 @@
-package com.geecee.escapelauncher.utils
+package com.lumina.rikta.utils
 
 import android.Manifest
 import android.content.Context

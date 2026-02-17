@@ -8,7 +8,7 @@ class Migration(private val context: Context) {
 
     companion object {
         private const val TAG = "Migration"
-        const val UNIFIED_PREFS_NAME = "com.geecee.escapelauncher"
+        const val UNIFIED_PREFS_NAME = "com.lumina.rikta"
         private const val MIGRATION_COMPLETE_KEY = "MigrationComplete"
 
         private val OLD_PREFS_FILES = listOf(

@@ -1,4 +1,4 @@
-package com.geecee.escapelauncher.utils.managers
+package com.lumina.rikta.utils.managers
 
 import android.Manifest
 import android.app.NotificationChannel
@@ -12,7 +12,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.net.toUri
-import com.geecee.escapelauncher.R
+import com.lumina.rikta.R
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 

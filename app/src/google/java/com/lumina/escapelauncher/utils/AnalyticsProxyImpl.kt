@@ -1,4 +1,4 @@
-package com.geecee.escapelauncher.utils
+package com.lumina.rikta.utils
 
 import android.content.Context
 import com.google.firebase.Firebase
