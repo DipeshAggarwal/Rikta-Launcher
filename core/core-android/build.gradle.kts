@@ -10,4 +10,6 @@ dependencies {
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
+
+    implementation(project(":core:core-common"))
 }

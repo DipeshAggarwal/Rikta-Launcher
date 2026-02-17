@@ -21,6 +21,7 @@ I am building Rikta Launcher to support advanced focus-driven features, includin
 * **Context-Aware Profiles**
 * **Usage Limits**: Hard boundaries to help you manage digital addiction.
 * **Custom Backups**: A dedicated system for saving and restoring your unique configurations.
+* **Visual Discouragement System**
 
 ## Current Features (Inherited from Escape)
 * Minimalist, text-based home screen.

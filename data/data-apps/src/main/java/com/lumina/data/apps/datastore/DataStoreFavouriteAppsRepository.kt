@@ -1,4 +1,4 @@
-package com.lumina.data.apps
+package com.lumina.data.apps.datastore
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
@@ -8,12 +8,16 @@ import com.lumina.core.logging.Logger
 import com.lumina.domain.apps.FavouriteAppsRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import java.util.Collections
-import javax.inject.Inject
+import jakarta.inject.Inject
 
 private const val FAVOURITE_APPS_KEY = "favourite_apps"
 private const val DELIMITER = ","
 
+/**
+ * DataStore implementation of [FavouriteAppsRepository].
+ * Since DataStore 'StringSet' does not preserve order, we store favorites as a single delimited
+ * String to maintain the user's custom sorting.
+ */
 class DataStoreFavouriteAppsRepository @Inject constructor(
     private val dataStore: DataStore<Preferences>,
     private val logger: Logger

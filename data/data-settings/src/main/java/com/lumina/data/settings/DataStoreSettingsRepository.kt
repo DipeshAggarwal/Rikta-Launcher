@@ -7,7 +7,7 @@ import androidx.datastore.preferences.core.edit
 import com.lumina.domain.settings.SettingsRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import javax.inject.Inject
+import jakarta.inject.Inject
 
 private const val SHOW_HIDDEN_APPS_IN_SEARCH_KEY = "show_hidden_apps_in_search"
 private const val DEFAULT_SHOW_HIDDEN_APPS_IN_SEARCH = false

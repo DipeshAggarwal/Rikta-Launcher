@@ -12,11 +12,19 @@ import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
 private const val DATA_STORE_NAME = "settings"
+
+// Extension property to ensure a single DataStore instance per process
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = DATA_STORE_NAME)
 
 @Module
 @InstallIn(SingletonComponent::class)
 class DataStoreModule {
+
+    /**
+     * Provides the global Preferences DataStore.
+     * Marked as @Singleton because creating multiple instances for the same file results in
+     * IllegalStateExceptions.
+     */
     @Provides
     @Singleton
     fun provideDataStore(@ApplicationContext context: Context): DataStore<Preferences> {

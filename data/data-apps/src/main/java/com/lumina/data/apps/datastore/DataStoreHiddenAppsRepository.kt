@@ -1,4 +1,4 @@
-package com.lumina.data.apps
+package com.lumina.data.apps.datastore
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
@@ -6,12 +6,16 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringSetPreferencesKey
 import com.lumina.domain.apps.HiddenAppsRepository
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
-import javax.inject.Inject
+import jakarta.inject.Inject
 
 private const val HIDDEN_APPS_KEY = "hidden_apps"
 
+/**
+ * DataStore implementation of [HiddenAppsRepository].
+ * Uses a 'StringSet' because the order of hidden apps is usually irrelevant, and Sets provide O(1)
+ * lookup performance for visibility checks.
+ */
 class DataStoreHiddenAppsRepository @Inject constructor(
     private val dataStore: DataStore<Preferences>
 ): HiddenAppsRepository {
@@ -37,6 +41,7 @@ class DataStoreHiddenAppsRepository @Inject constructor(
 
     override suspend fun setHiddenApps(packageNames: List<String>) {
         dataStore.edit { prefs ->
+            // Overwrites the entire list (used during database cleanup/sync)
             prefs[hiddenAppsKey] = packageNames.toSet()
         }
     }
