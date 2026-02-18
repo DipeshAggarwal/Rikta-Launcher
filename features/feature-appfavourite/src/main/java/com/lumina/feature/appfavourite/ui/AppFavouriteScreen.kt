@@ -8,6 +8,10 @@ import com.lumina.feature.appfavourite.AppFavouriteViewModel
 import com.lumina.feature.appfavourite.R
 import com.lumina.feature.apppicker.AppPickerScreen
 
+/**
+ * Bulk selection screen for favourites apps.
+ * Uses the generic [AppPickerScreen] component.
+ */
 @Composable
 fun AppFavouriteScreen(
     onBack: () -> Unit,
