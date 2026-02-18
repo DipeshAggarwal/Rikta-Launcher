@@ -264,37 +264,6 @@ fun Settings(
             appHidingNavigation(navController)
             appFavouriteNavigation(navController)
             composable(
-                "bulkFavouriteApps",
-                enterTransition = { fadeIn(tween(300)) },
-                exitTransition = { fadeOut(tween(300)) }) {
-                val preSelectedFavoriteApps = remember(homeScreenModel.favoriteApps.size) {
-                    val favoritePackages = mainAppModel.favoriteAppsManager.getFavoriteApps()
-                    favoritePackages.mapNotNull { pkg ->
-                        homeScreenModel.installedApps.value.find { it.packageName == pkg }
-                    }
-                }
-
-                AppPickerScreen(
-                    apps = installedApps,
-                    preSelectedApps = preSelectedFavoriteApps.map { it.packageName },
-                    title = stringResource(R.string.manage_favourite_apps),
-                    reorderable = true,
-                    onAppMoved = { fromIndex, toIndex ->
-                        mainAppModel.favoriteAppsManager.reorderFavoriteApps(fromIndex, toIndex)
-                        homeScreenModel.reloadFavouriteApps()
-                    },
-                    onBackClicked = { navController.popBackStack() },
-                    onAppClicked = { app, selected ->
-                        if (selected) {
-                            mainAppModel.favoriteAppsManager.removeFavoriteApp(app.packageName)
-                            homeScreenModel.reloadFavouriteApps()
-                        } else {
-                            mainAppModel.favoriteAppsManager.addFavoriteApp(app.packageName)
-                            homeScreenModel.reloadFavouriteApps()
-                        }
-                    })
-            }
-            composable(
                 "fontLicences",
                 enterTransition = { fadeIn(tween(300)) },
                 exitTransition = { fadeOut(tween(300)) }) {
@@ -509,12 +478,9 @@ fun MainSettingsPage(
                 diagonalArrow = false,
                 isBottomOfGroup = Build.VERSION.SDK_INT < Build.VERSION_CODES.P,
                 onClick = {
-                    if (USE_NEW_FAVOURITE_APPS) {
-                        navController.navigate(FAVOURITE_APPS_ROUTE)
-                    } else {
-                        navController.navigate("bulkFavouriteApps")
-                    }
-                })
+                    navController.navigate(FAVOURITE_APPS_ROUTE)
+                }
+            )
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
