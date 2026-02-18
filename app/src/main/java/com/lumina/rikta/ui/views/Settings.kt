@@ -119,7 +119,6 @@ import com.lumina.rikta.utils.showLauncherSettingsMenu
 import com.lumina.rikta.utils.toggleBooleanSetting
 import com.lumina.core.common.AppDefaults.DEFAULT_THEME
 import com.lumina.core.common.AppTheme
-import com.lumina.core.common.FeatureFlags.USE_NEW_FAVOURITE_APPS
 import com.lumina.core.ui.components.settings.SettingsButton
 import com.lumina.core.ui.components.settings.SettingsHeader
 import com.lumina.core.ui.components.settings.SettingsNavigationItem
