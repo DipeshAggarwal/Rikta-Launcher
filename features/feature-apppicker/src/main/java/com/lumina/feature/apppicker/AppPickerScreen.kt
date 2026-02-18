@@ -45,6 +45,8 @@ import com.lumina.core.ui.components.settings.SettingsSpacer
 import com.lumina.domain.apps.AppInfo
 import kotlin.math.roundToInt
 
+private val DragHandlePadding = 8.dp
+
 @Composable
 fun AppPickerScreen (
     apps: List<AppInfo>,
@@ -92,9 +94,7 @@ fun AppPickerScreen (
 
             // All remaining Apps
             apps.forEach { appInfo ->
-                if (appInfo.packageName !in localOrderSelection) {
-                    items.add(ListItem.App(appInfo, false))
-                }
+                items.add(ListItem.App(appInfo, false))
             }
             items
         }
@@ -102,12 +102,8 @@ fun AppPickerScreen (
 
     val firstSelectedPackage by remember { derivedStateOf { localOrderSelection.firstOrNull() } }
     val lastSelectedPackage by remember { derivedStateOf { localOrderSelection.lastOrNull() } }
-    val firstUnselectedPackage by remember(apps) {
-        derivedStateOf { apps.firstOrNull { it.packageName !in localOrderSelection }?.packageName }
-    }
-    val lastUnselectedPackage by remember(apps) {
-        derivedStateOf { apps.lastOrNull { it.packageName !in localOrderSelection }?.packageName }
-    }
+    val firstUnselectedPackage by remember(apps) { derivedStateOf { apps.firstOrNull()?.packageName } }
+    val lastUnselectedPackage by remember(apps) { derivedStateOf { apps.lastOrNull()?.packageName } }
 
     LazyColumn(
         state = lazyListState,
@@ -131,26 +127,26 @@ fun AppPickerScreen (
             items = combinedItems,
             key = { item ->
                 when (item) {
-                    is ListItem.App -> "${if (item.isInSelectedSection) "selected" else "available"}_${item.app.packageName}"
+                    is ListItem.App -> "${if (item.selected) "selected" else "available"}_${item.app.packageName}"
                     ListItem.Spacer -> "spacer"
                 }
             }
         ) { item ->
             when (item) {
                 is ListItem.App -> {
-                    val isTopOfGroup = if (item.isInSelectedSection) {
+                    val isTopOfGroup = if (item.selected) {
                         firstSelectedPackage == item.app.packageName
                     } else {
                         firstUnselectedPackage == item.app.packageName
                     }
 
-                    val isBottomOfGroup = if (item.isInSelectedSection) {
+                    val isBottomOfGroup = if (item.selected) {
                         lastSelectedPackage == item.app.packageName
                     } else {
                         lastUnselectedPackage == item.app.packageName
                     }
 
-                    if (item.isInSelectedSection && reorderable) {
+                    if (item.selected && reorderable) {
                         val isDragging = draggedPackageName == item.app.packageName
                         val currentIndex = localOrderSelection.indexOf(item.app.packageName)
                         val maxDragUp = -currentIndex * measuredItemHeight.toFloat()
@@ -179,7 +175,7 @@ fun AppPickerScreen (
                             SettingsButton(
                                 label = item.app.displayName,
                                 onClick = {
-                                    onAppClicked(item.app, item.isInSelectedSection)
+                                    onAppClicked(item.app, item.selected)
                                 },
                                 isTopOfGroup = isTopOfGroup,
                                 isBottomOfGroup = isBottomOfGroup,
@@ -187,7 +183,7 @@ fun AppPickerScreen (
                             )
                             Box(
                                 modifier = Modifier
-                                    .padding(horizontal = 8.dp)
+                                    .padding(horizontal = DragHandlePadding)
                                     .pointerInput(item.app.packageName) {
                                         detectVerticalDragGestures(
                                             onDragStart = {
@@ -243,10 +239,11 @@ fun AppPickerScreen (
                         SettingsButton(
                             label = item.app.displayName,
                             onClick = {
-                                onAppClicked(item.app, item.isInSelectedSection)
+                                onAppClicked(item.app, item.selected)
                             },
                             isTopOfGroup = isTopOfGroup,
                             isBottomOfGroup = isBottomOfGroup,
+                            isDisabled = !item.selected && localOrderSelection.contains(item.app.packageName),
                             modifier = Modifier.animateItem()
                         )
                     }
@@ -269,6 +266,6 @@ fun AppPickerScreen (
 }
 
 private sealed class ListItem {
-    data class App(val app: AppInfo, val isInSelectedSection: Boolean) : ListItem()
+    data class App(val app: AppInfo, val selected: Boolean) : ListItem()
     object Spacer : ListItem()
 }
