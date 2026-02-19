@@ -4,10 +4,6 @@ import android.app.Activity
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
-import com.lumina.rikta.utils.managers.getSpacerSize
-
-val Activity.spacerSize: Float
-    get() = getSpacerSize(this)
 
 fun Activity.setStatusBarImmersive(isSticky: Boolean) {
     val controller = WindowCompat.getInsetsController(window, window.decorView)

@@ -9,5 +9,5 @@ package com.lumina.core.common
  */
 
 object FeatureFlags {
-    const val USE_NEW_SPACER_CONFIG = true
+    const val USE_NEW_COUNTDOWN_SCREEN = false
 }

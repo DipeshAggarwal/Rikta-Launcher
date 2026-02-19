@@ -100,7 +100,6 @@ import com.lumina.rikta.utils.isDefaultLauncher
 import com.lumina.rikta.utils.isWidgetConfigurable
 import com.lumina.rikta.utils.launchWidgetConfiguration
 import com.lumina.rikta.utils.managers.CountdownMode
-import com.lumina.rikta.utils.managers.SpacerMode
 import com.lumina.rikta.utils.managers.getCountdownTime
 import com.lumina.rikta.utils.managers.resetAndGetCountdownTime
 import com.lumina.rikta.utils.managers.setCountdownTime
@@ -118,7 +117,6 @@ import com.lumina.rikta.utils.showLauncherSettingsMenu
 import com.lumina.rikta.utils.toggleBooleanSetting
 import com.lumina.core.common.AppDefaults.DEFAULT_THEME
 import com.lumina.core.common.AppTheme
-import com.lumina.core.common.FeatureFlags.USE_NEW_SPACER_CONFIG
 import com.lumina.core.ui.components.settings.SettingsButton
 import com.lumina.core.ui.components.settings.SettingsHeader
 import com.lumina.core.ui.components.settings.SettingsNavigationItem
@@ -140,7 +138,6 @@ import com.lumina.feature.settings.ui.SPACER_CONFIG_ROUTE
 import com.lumina.feature.settings.ui.settingsNavigation
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlin.math.roundToInt
 import kotlin.system.exitProcess
 import com.lumina.rikta.MainAppViewModel as MainAppModel
 
@@ -279,14 +276,6 @@ fun Settings(
                 }
             }
             settingsNavigation(navController)
-            composable(
-                "spacerSettingsScreen",
-                enterTransition = { fadeIn(tween(300)) },
-                exitTransition = { fadeOut(tween(300)) }) {
-                SpacerSizeAdjustment(mainAppModel.getContext(), mainAppModel) {
-                    navController.popBackStack()
-                }
-            }
         }
     }
 
@@ -719,13 +708,7 @@ fun MainSettingsPage(
             SettingsNavigationItem(
                 label = stringResource(R.string.set_spacer_size),
                 diagonalArrow = false,
-                onClick = {
-                    if (USE_NEW_SPACER_CONFIG) {
-                        navController.navigate(SPACER_CONFIG_ROUTE)
-                    } else {
-                        navController.navigate("spacerSettingsScreen")
-                    }
-                }
+                onClick = { navController.navigate(SPACER_CONFIG_ROUTE) }
             )
         }
 
@@ -1668,51 +1651,6 @@ fun AppCountdownTime(context: Context, goBack: () -> Unit) {
                 steps = 3,
                 onReset = {
                     countdownTime = resetAndGetCountdownTime(context)
-                },
-                isTopOfGroup = true,
-                isBottomOfGroup = true
-            )
-        }
-
-        item { SettingsSpacer() }
-    }
-}
-
-@Composable
-fun SpacerSizeAdjustment(context: Context, mainAppModel: MainAppModel, goBack: () -> Unit) {
-    val spacerHeight by mainAppModel.spacerHeight.collectAsState()
-    LazyColumn(
-        verticalArrangement = Arrangement.Top,
-        horizontalAlignment = Alignment.Start,
-        modifier = Modifier.fillMaxSize()
-    ) {
-        item { SettingsHeader(goBack, stringResource(R.string.set_spacer_size)) }
-
-        itemsIndexed(SpacerMode.entries) {index, mode ->
-            SettingsButton(
-                label = stringResource(mode.labelRes),
-                isSelected = spacerHeight == mode.value.toInt(),
-                isTopOfGroup = index == 0,
-                isBottomOfGroup = index == SpacerMode.entries.size - 1,
-                onClick = {
-                    mainAppModel.setSpacerHeight(mode.value.toInt())
-                }
-            )
-        }
-
-        item { SettingsSpacer() }
-
-        item {
-            SettingsSlider(
-                label = stringResource(R.string.set_spacer_size_slider),
-                value = spacerHeight.toFloat(),
-                onValueChange = {
-                    mainAppModel.setSpacerHeight(it.roundToInt())
-                },
-                valueRange = 5f..50f,
-                steps = 8,
-                onReset = {
-                    mainAppModel.resetSpacerHeight()
                 },
                 isTopOfGroup = true,
                 isBottomOfGroup = true
