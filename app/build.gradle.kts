@@ -131,6 +131,7 @@ dependencies {
     implementation(project(":features:feature-apphiding"))
     implementation(project(":features:feature-apppicker"))
     implementation(project(":features:feature-appfavourite"))
+    implementation(project(":features:feature-settings"))
 
     // Core Android Libraries
     implementation(libs.androidx.core.ktx)

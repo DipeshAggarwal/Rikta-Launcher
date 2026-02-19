@@ -23,11 +23,14 @@ class AppHidingViewModel @Inject constructor(
     private val hiddenAppsRepository: HiddenAppsRepository,
     installedAppsRepository: InstalledAppsRepository
 ): ViewModel() {
+    // .Eagerly is used so that startup happens at creation time.
+    // This improves animation and loading experience.
+
     // Master list of all launcher apps on the system.
     val installedApps: StateFlow<List<AppInfo>> = installedAppsRepository.installedApps()
         .stateIn(
             viewModelScope,
-            SharingStarted.WhileSubscribed(WhileSubscribedTimeoutMillis),
+            SharingStarted.Eagerly,
             emptyList()
         )
 
@@ -35,7 +38,7 @@ class AppHidingViewModel @Inject constructor(
     val hiddenPackagesSet: StateFlow<Set<String>> = hiddenAppsRepository.allHiddenApps()
         .stateIn(
             viewModelScope,
-            SharingStarted.WhileSubscribed(WhileSubscribedTimeoutMillis),
+            SharingStarted.Eagerly,
             emptySet()
         )
 

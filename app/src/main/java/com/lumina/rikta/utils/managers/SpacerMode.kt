@@ -24,10 +24,6 @@ fun currentSharedPreferences(context: Context): SharedPreferences {
     )
 }
 
-fun resetSpacerSize(context: Context, mainAppModel: MainAppViewModel) {
-    mainAppModel.updateSpacerSize(context, DEFAULT_SPACER_SIZE)
-}
-
 fun getSpacerSize(context: Context): Float {
     return currentSharedPreferences(context).getFloat("SpacerSize", DEFAULT_SPACER_SIZE)
 }

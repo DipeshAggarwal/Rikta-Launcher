@@ -9,7 +9,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.lumina.core.ui.layout.LocalLayoutSpacing
 import com.lumina.core.ui.theme.ContentColor
 
 private object SettingsSpacerDefaults {
@@ -24,8 +26,8 @@ private object SettingsSubheadingDefaults {
  * Spacer 30.dp height
  */
 @Composable
-fun SettingsSpacer(height: Float = SettingsSpacerDefaults.DEFAULT_SPACER_HEIGHT) {
-    Spacer(modifier = Modifier.height(height.dp))
+fun SettingsSpacer(height: Dp = LocalLayoutSpacing.current.spacerHeight) {
+    Spacer(modifier = Modifier.height(height))
 }
 
 /**

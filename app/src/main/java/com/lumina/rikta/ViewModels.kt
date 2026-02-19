@@ -13,25 +13,22 @@ import androidx.compose.foundation.pager.PagerState
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.lumina.core.common.AppDefaults.DEFAULT_SPACER_HEIGHT
 import com.lumina.rikta.utils.AppUtils
 import com.lumina.rikta.utils.InstalledApp
 import com.lumina.rikta.utils.getBooleanSetting
 import com.lumina.rikta.utils.managers.ChallengesManager
 import com.lumina.rikta.utils.managers.FavoriteAppsManager
 import com.lumina.rikta.utils.managers.getScreenTimeListSorted
-import com.lumina.rikta.utils.managers.getSpacerSize
 import com.lumina.rikta.utils.managers.getUsageForApp
-import com.lumina.rikta.utils.managers.setSpacerSize
 import com.lumina.rikta.utils.weatherProxy
 import com.lumina.core.common.AppDefaults.DEFAULT_THEME
 import com.lumina.core.common.AppTheme
@@ -310,21 +307,33 @@ class HomeScreenModel @Inject constructor(
  */
 @HiltViewModel
 class MainAppViewModel @Inject constructor(
-    application: Application
+    application: Application,
+    private val settingsRepository: SettingsRepository
 ): AndroidViewModel(application) {
     private val appContext: Context = application.applicationContext // The app context
-
-    var spacerSize by mutableFloatStateOf(getSpacerSize(getApplication()))
-        private set
-
-    fun updateSpacerSize(context: Context, size: Float) {
-        spacerSize = size
-        setSpacerSize(context, size)
-    }
 
     fun getContext(): Context = appContext // Returns the context
 
     private var window: Window? = null
+
+    val spacerHeight: StateFlow<Int> = settingsRepository.spacerHeight()
+        .stateIn(
+            viewModelScope,
+            SharingStarted.Eagerly,
+            DEFAULT_SPACER_HEIGHT
+        )
+
+    fun setSpacerHeight(height: Int) {
+        viewModelScope.launch {
+            settingsRepository.setSpacerHeight(height)
+        }
+    }
+
+    fun resetSpacerHeight() {
+        viewModelScope.launch {
+            settingsRepository.resetSpacerHeight()
+        }
+    }
 
     fun setWindow(window: Window) {
         this.window = window

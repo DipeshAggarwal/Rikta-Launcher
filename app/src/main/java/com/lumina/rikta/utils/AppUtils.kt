@@ -17,12 +17,15 @@ import android.util.Log
 import android.view.Window
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.hapticfeedback.HapticFeedback
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
+import androidx.compose.ui.unit.dp
 import androidx.core.graphics.createBitmap
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
@@ -532,9 +535,12 @@ object AppUtils {
             }
         }
 
+        val spacerHeight by viewModel.spacerHeight.collectAsState()
+
         RiktaTheme(
             theme = viewModel.appTheme.value,
-            fontFamily = fontFamily
+            fontFamily = fontFamily,
+            spacerHeight.dp
         ) {
             content()
         }
