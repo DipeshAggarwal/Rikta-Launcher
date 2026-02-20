@@ -126,11 +126,13 @@ dependencies {
     implementation(project(":data:data-settings"))
 
     implementation(project(":domain:domain-apps"))
+    implementation(project(":domain:domain-search"))
     implementation(project(":domain:domain-settings"))
 
     implementation(project(":features:feature-apphiding"))
     implementation(project(":features:feature-apppicker"))
     implementation(project(":features:feature-appfavourite"))
+    implementation(project(":features:feature-home"))
     implementation(project(":features:feature-settings"))
 
     // Core Android Libraries

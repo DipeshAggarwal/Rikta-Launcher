@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.first
  * It ensures that if an app is uninstalled from the device, it is also removed from the all internal
  * apps list, preventing "ghost" entries in the database.
  *
- * In future, this would most probably need one more abstraction to stop it becoming a master usercase.
+ * In future, this would most probably need one more abstraction to stop it becoming a master usecase.
  */
 class RemoveOrphanedAppReferencesUseCase @Inject constructor(
     private val hiddenAppsRepository: HiddenAppsRepository,

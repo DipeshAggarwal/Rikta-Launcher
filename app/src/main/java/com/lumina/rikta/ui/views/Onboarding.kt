@@ -375,7 +375,7 @@ fun WelcomeScreen(onNext: () -> Unit, @Suppress("unused", "RedundantSuppression"
         ) {
             Icon(
                 painterResource(R.drawable.outlineicon),
-                "Escape Launcher Icon",
+                "Rikta Launcher Icon",
                 Modifier
                     .padding(3.dp)
                     .align(Alignment.CenterHorizontally),
@@ -383,7 +383,7 @@ fun WelcomeScreen(onNext: () -> Unit, @Suppress("unused", "RedundantSuppression"
             )
             Spacer(Modifier.height(15.dp))
             AutoResizingText(
-                text = stringResource(R.string.escape_launcher),
+                text = stringResource(R.string.rikta_launcher),
                 modifier = Modifier,
                 color = primaryContentColor,
                 style = MaterialTheme.typography.titleSmall,

@@ -1,0 +1,7 @@
+package com.lumina.feature.home
+
+sealed interface HomePage {
+    data object ScreenTime: HomePage
+    data object Main: HomePage
+    data object Apps: HomePage
+}

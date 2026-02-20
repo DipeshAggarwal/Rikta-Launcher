@@ -32,4 +32,22 @@
 
     <string name="light_mode">Light Mode</string>
     <string name="dark_mode">Dark Mode</string>
+
+    <!-- Time format -->
+    <plurals name="duration_hours_short">
+        <item quantity="one">%d h</item>
+        <item quantity="other">%d h</item>
+    </plurals>
+
+    <plurals name="duration_minutes_short">
+        <item quantity="one">%d m</item>
+        <item quantity="other">%d m</item>
+    </plurals>
+
+    <plurals name="duration_seconds_short">
+        <item quantity="one">%d s</item>
+        <item quantity="other">%d s</item>
+    </plurals>
+
+    <string name="duration_zero">0 s</string>
 </resources>

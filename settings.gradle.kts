@@ -57,6 +57,7 @@ include(":core:core-ui")
 include(":domain:domain-apps")
 include(":domain:domain-challenges")
 include(":domain:domain-screentime")
+include(":domain:domain-search")
 include(":domain:domain-settings")
 
 // data module

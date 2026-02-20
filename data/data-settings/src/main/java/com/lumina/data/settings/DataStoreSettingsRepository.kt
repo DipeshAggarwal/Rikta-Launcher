@@ -12,13 +12,16 @@ import kotlinx.coroutines.flow.map
 import jakarta.inject.Inject
 
 private const val SHOW_HIDDEN_APPS_IN_SEARCH_KEY = "show_hidden_apps_in_search"
+private const val SHOW_SCREEN_TIME_IN_HOME_KEY = "show_screen_time_in_home"
 private const val SPACER_HEIGHT_KEY = "spacer_height"
 private const val DEFAULT_SHOW_HIDDEN_APPS_IN_SEARCH = false
+private const val DEFAULT_SHOW_SCREEN_TIME_IN_HOME = false
 
 class DataStoreSettingsRepository @Inject constructor(
     private val dataStore: DataStore<Preferences>
 ): SettingsRepository {
     private val showHiddenAppsInSearchKey = booleanPreferencesKey(SHOW_HIDDEN_APPS_IN_SEARCH_KEY)
+    private val showScreenTimeInHomeKey = booleanPreferencesKey(SHOW_SCREEN_TIME_IN_HOME_KEY)
     private val spacerHeightKey = intPreferencesKey(SPACER_HEIGHT_KEY)
 
     override suspend fun setShowHiddenAppsInSearch(enabled: Boolean) {
@@ -30,6 +33,18 @@ class DataStoreSettingsRepository @Inject constructor(
     override fun showHiddenAppsInSearch(): Flow<Boolean> {
         return dataStore.data.map { prefs ->
             prefs[showHiddenAppsInSearchKey] ?: DEFAULT_SHOW_HIDDEN_APPS_IN_SEARCH
+        }
+    }
+
+    override suspend fun setScreenTimePageInHome(enabled: Boolean) {
+        dataStore.edit { prefs ->
+            prefs[showScreenTimeInHomeKey] = enabled
+        }
+    }
+
+    override fun screenTimePageInHome(): Flow<Boolean> {
+        return dataStore.data.map { prefs ->
+            prefs[showScreenTimeInHomeKey] ?: DEFAULT_SHOW_SCREEN_TIME_IN_HOME
         }
     }
 

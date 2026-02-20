@@ -1,9 +1,9 @@
 <resources >
-    <style name="Theme.EscapeLauncher" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+    <style name="Theme.RiktaLauncher" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
         <item name="android:statusBarColor">#CBF4F1</item>
     </style>
 
-    <style name="Theme.EscapeLauncher.Splash" parent="Theme.SplashScreen">
+    <style name="Theme.RiktaLauncher.Splash" parent="Theme.SplashScreen">
         <!-- Set the background color -->
         <item name="windowSplashScreenBackground">@color/splash_background</item>
         <!-- Set the logo -->

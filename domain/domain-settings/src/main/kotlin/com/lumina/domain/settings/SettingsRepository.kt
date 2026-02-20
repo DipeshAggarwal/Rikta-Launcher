@@ -18,6 +18,17 @@ interface SettingsRepository {
      */
     fun showHiddenAppsInSearch(): Flow<Boolean>
 
+    // Hide Screen Time Page
+    /**
+     * Updates the preference for screen time page in Home.
+     */
+    suspend fun setScreenTimePageInHome(enabled: Boolean)
+
+    /**
+     * Returns a reactive stream indicating if screen time page should be visible in Home.
+     */
+    fun screenTimePageInHome(): Flow<Boolean>
+
     // Spacer Functions
     /**
      * Updates the preference for the spacer height across the App UI.
