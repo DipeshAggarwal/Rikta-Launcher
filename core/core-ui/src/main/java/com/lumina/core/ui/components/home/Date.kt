@@ -27,7 +27,7 @@ import java.time.Duration
 private const val DATE_PATTERN = "EEE d MMM"
 
 @Composable
-fun rememberCurrentTimeParts(): String {
+fun rememberCurrentDate(): String {
     val locale = LocalConfiguration.current.locales[0]
 
     // Properly update on Locale change.
@@ -66,7 +66,7 @@ fun Date(
     homeAlignment: Alignment.Horizontal,
     small: Boolean
 ) {
-    val date = rememberCurrentTimeParts()
+    val date = rememberCurrentDate()
 
     Text(
         text = date,

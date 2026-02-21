@@ -14,6 +14,9 @@ import com.lumina.domain.apps.HiddenAppsRepository
 import com.lumina.domain.apps.InstalledAppsRepository
 import com.lumina.domain.search.AppSearchEngine
 import com.lumina.domain.settings.SettingsRepository
+import com.lumina.feature.home.model.BottomSheetState
+import com.lumina.feature.home.model.HomeUiState
+import com.lumina.feature.home.model.SelectedApp
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.channels.BufferOverflow
@@ -108,7 +111,28 @@ class HomeViewModel @Inject constructor(
             emptyList()
         )
 
-    val screenTimePageVisible: StateFlow<Boolean> = settingsRepository.screenTimePageInHome()
+    val screenTimePageVisible: StateFlow<Boolean> = settingsRepository.showScreenTimePageInHome()
+        .stateIn(
+            viewModelScope,
+            SharingStarted.Eagerly,
+            false
+        )
+
+    val favouriteBoostInSearch: StateFlow<Boolean> = settingsRepository.showFavouriteBoostInSearch()
+        .stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(WhileSubscribedTimeoutMillis),
+            false
+        )
+
+    val bigClockInHome: StateFlow<Boolean> = settingsRepository.showBigClockInHome()
+        .stateIn(
+            viewModelScope,
+            SharingStarted.Eagerly,
+            false
+        )
+
+    val screenTimeVisibleWithApp: StateFlow<Boolean> = settingsRepository.showScreenTimeVisibleWithApp()
         .stateIn(
             viewModelScope,
             SharingStarted.Eagerly,
@@ -132,9 +156,10 @@ class HomeViewModel @Inject constructor(
         } else {
             apps.filterNot { it.packageName in hiddenApps }
         }
+        val favForBoosting = if (showHiddenAppsWhileSearching) favouriteSet else emptySet()
 
         val finalAppsList = if (isSearching) {
-            appSearchEngine.search(visibleApps, query, favouriteSet)
+            appSearchEngine.search(visibleApps, query, favForBoosting)
         } else {
             visibleApps.sortedBy { it.displayName.lowercase() }
         }
@@ -184,10 +209,10 @@ class HomeViewModel @Inject constructor(
             if (intent.resolveActivity(context.packageManager) != null) {
                 context.startActivity(intent)
             } else {
-                logger.w("$TAG.Alarm", "No alarm app available")
+                logger.w("$TAG:Alarm", "No alarm app available.")
             }
         } catch (e: Exception) {
-            logger.e("$TAG + :Alarm", "Failed to open alarm app.", e)
+            logger.e("$TAG:Alarm", "Failed to open alarm app.", e)
         }
     }
 
@@ -201,10 +226,10 @@ class HomeViewModel @Inject constructor(
             if (intent.resolveActivity(context.packageManager) != null) {
                 context.startActivity(intent)
             } else {
-                logger.w("$TAG.Alarm", "No calendar app available")
+                logger.w("$TAG:Calendar", "No calendar app available.")
             }
         } catch (e: Exception) {
-            logger.e("$TAG + :Calendar", "Failed to open calendar app.", e)
+            logger.e("$TAG:Calendar", "Failed to open calendar app.", e)
         }
     }
 }

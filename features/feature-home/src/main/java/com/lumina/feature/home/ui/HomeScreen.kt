@@ -7,7 +7,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.lumina.feature.home.HomePage
+import com.lumina.feature.home.model.HomePage
 import com.lumina.feature.home.HomeViewModel
 
 @Composable

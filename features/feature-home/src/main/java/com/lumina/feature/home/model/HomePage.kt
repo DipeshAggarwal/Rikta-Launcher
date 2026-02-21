@@ -1,4 +1,4 @@
-package com.lumina.feature.home
+package com.lumina.feature.home.model
 
 sealed interface HomePage {
     data object ScreenTime: HomePage

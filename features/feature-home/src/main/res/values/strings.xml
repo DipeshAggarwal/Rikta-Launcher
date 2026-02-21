@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="swipe_for_all_apps">Swipe for all apps</string>
+    <string name="hold_for_settings">Hold for settings</string>
+</resources>

@@ -11,6 +11,7 @@ android {
 dependencies {
     implementation(libs.androidx.lifecycle.runtime)
     implementation(libs.androidx.hilt.navigation.compose)
+    implementation(libs.androidx.compose.material.icons.extended)
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
 

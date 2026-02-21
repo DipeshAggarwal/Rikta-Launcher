@@ -50,4 +50,20 @@
     </plurals>
 
     <string name="duration_zero">0 s</string>
+
+    <!-- Bottom Sheet Drawer strings -->
+    <string name="all_apps">All Apps</string>
+    <string name="uninstall">Uninstall</string>
+    <string name="hide">Hide</string>
+    <string name="add_to_fav">Add To Favourites</string>
+    <string name="rem_from_fav">Remove From Favourites</string>
+    <string name="add_open_challenge">Add Open Countdown</string>
+    <string name="app_info">App Info</string>
+    <string name="search">Search</string>
+    <string name="unlock_private_space">Unlock Private Space</string>
+    <string name="lock_private_space">Lock Private Space</string>
+    <string name="private_space">Private Space</string>
+    <string name="private_space_settings">Private Space Settings</string>
+    <string name="private_space_search_term">pri</string>
+
 </resources>
