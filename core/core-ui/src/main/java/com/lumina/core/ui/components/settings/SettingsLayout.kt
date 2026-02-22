@@ -14,10 +14,6 @@ import androidx.compose.ui.unit.dp
 import com.lumina.core.ui.layout.LocalLayoutSpacing
 import com.lumina.core.ui.theme.ContentColor
 
-private object SettingsSpacerDefaults {
-    val DEFAULT_SPACER_HEIGHT = 30f
-}
-
 private object SettingsSubheadingDefaults {
     val BottomPadding = 24.dp
 }

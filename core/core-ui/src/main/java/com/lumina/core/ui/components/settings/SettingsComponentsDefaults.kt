@@ -8,7 +8,7 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
-object SettingsDefaults {
+object SettingsComponentsDefaults {
     // Content layout
     const val TEXT_WEIGHT = 1f
     const val MAX_LINES = 1
@@ -39,12 +39,12 @@ fun settingsGroupRadii(
     isBottomOfGroup: Boolean
 ): SettingsGroupRadii {
     val topRadius =
-        if (isTopOfGroup) SettingsDefaults.GroupEdgeCornerRadius
-        else SettingsDefaults.DefaultCornerRadius
+        if (isTopOfGroup) SettingsComponentsDefaults.GroupEdgeCornerRadius
+        else SettingsComponentsDefaults.DefaultCornerRadius
 
     val bottomRadius =
-        if (isBottomOfGroup) SettingsDefaults.GroupEdgeCornerRadius
-        else SettingsDefaults.DefaultCornerRadius
+        if (isBottomOfGroup) SettingsComponentsDefaults.GroupEdgeCornerRadius
+        else SettingsComponentsDefaults.DefaultCornerRadius
 
     return SettingsGroupRadii(
         topStart = topRadius,

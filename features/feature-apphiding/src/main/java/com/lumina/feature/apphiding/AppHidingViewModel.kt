@@ -7,6 +7,7 @@ import com.lumina.core.common.FlowDefaults.WhileSubscribedTimeoutMillis
 import com.lumina.domain.apps.AppInfo
 import com.lumina.domain.apps.HiddenAppsRepository
 import com.lumina.domain.apps.InstalledAppsRepository
+import com.lumina.domain.settings.SearchSettings
 import com.lumina.domain.settings.SettingsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
@@ -68,11 +69,11 @@ class AppHidingViewModel @Inject constructor(
             emptyList()
         )
 
-    val showHiddenAppsInSearch: StateFlow<Boolean> = settingsRepository.showHiddenAppsInSearch()
+    val searchSettings: StateFlow<SearchSettings> = settingsRepository.searchSettings
         .stateIn(
             viewModelScope,
-            SharingStarted.WhileSubscribed(WhileSubscribedTimeoutMillis),
-            false
+            SharingStarted.Eagerly,
+            SearchSettings()
         )
 
     // Temporary
@@ -107,7 +108,9 @@ class AppHidingViewModel @Inject constructor(
 
     fun setShowHiddenAppsInSearch(enabled: Boolean) {
         viewModelScope.launch {
-            settingsRepository.setShowHiddenAppsInSearch(enabled)
+            settingsRepository.updateSearchSettings {
+                copy(showHiddenAppsInSearch = enabled)
+            }
         }
     }
 }

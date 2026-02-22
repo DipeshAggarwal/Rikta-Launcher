@@ -35,6 +35,7 @@ import com.lumina.core.common.AppTheme
 import com.lumina.core.common.FlowDefaults.WhileSubscribedTimeoutMillis
 import com.lumina.core.common.TextUtils.UNACCENT_REGEX
 import com.lumina.domain.apps.HiddenAppsRepository
+import com.lumina.domain.settings.LayoutSettings
 import com.lumina.domain.settings.SettingsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -54,6 +55,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import jakarta.inject.Inject
+import kotlinx.coroutines.flow.map
 
 /**
  * Home Screen View Model - Used for holding UI state for the home screen pages
@@ -118,7 +120,8 @@ class HomeScreenModel @Inject constructor(
             SharingStarted.WhileSubscribed(WhileSubscribedTimeoutMillis),
             emptySet()
         )
-    val showHiddenAppsInSearch: StateFlow<Boolean> = settingsRepository.showHiddenAppsInSearch()
+    val showHiddenAppsInSearch: StateFlow<Boolean> = settingsRepository.searchSettings
+        .map { it.showHiddenAppsInSearch }
         .stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(WhileSubscribedTimeoutMillis),
@@ -316,7 +319,8 @@ class MainAppViewModel @Inject constructor(
 
     private var window: Window? = null
 
-    val spacerHeight: StateFlow<Int> = settingsRepository.spacerHeight()
+    val spacerHeight: StateFlow<Int> = settingsRepository.layoutSettings
+        .map { it.spacerHeight }
         .stateIn(
             viewModelScope,
             SharingStarted.Eagerly,
@@ -325,13 +329,17 @@ class MainAppViewModel @Inject constructor(
 
     fun setSpacerHeight(height: Int) {
         viewModelScope.launch {
-            settingsRepository.setSpacerHeight(height)
+            settingsRepository.updateLayoutSettings {
+                copy(spacerHeight = height)
+            }
         }
     }
 
     fun resetSpacerHeight() {
         viewModelScope.launch {
-            settingsRepository.resetSpacerHeight()
+            settingsRepository.updateLayoutSettings {
+                copy(spacerHeight = LayoutSettings().spacerHeight)
+            }
         }
     }
 

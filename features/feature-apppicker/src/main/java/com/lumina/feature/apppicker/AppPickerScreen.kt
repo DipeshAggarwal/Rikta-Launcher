@@ -40,7 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.lumina.core.ui.theme.ContentColor
 import com.lumina.core.ui.components.settings.SettingsButton
-import com.lumina.core.ui.components.settings.SettingsDefaults.TEXT_WEIGHT
+import com.lumina.core.ui.components.settings.SettingsComponentsDefaults.TEXT_WEIGHT
 import com.lumina.core.ui.components.settings.SettingsHeader
 import com.lumina.core.ui.components.settings.SettingsSpacer
 import com.lumina.domain.apps.AppInfo

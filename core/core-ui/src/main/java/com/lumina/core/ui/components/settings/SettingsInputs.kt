@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SegmentedButton
@@ -33,7 +32,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.lumina.core.ui.R
 import com.lumina.core.ui.components.text.AutoResizingText
-import com.lumina.core.ui.theme.CardContainerColor
 import com.lumina.core.ui.theme.ContentColor
 import com.lumina.core.ui.theme.LuminaCardDefaults
 
@@ -73,7 +71,7 @@ fun SettingsSwitch(
 
     Card(
         modifier = Modifier
-            .padding(vertical = SettingsDefaults.VerticalPadding )
+            .padding(vertical = SettingsComponentsDefaults.VerticalPadding )
             .clip(currentShape)
             .clickable {
                 isChecked = !isChecked
@@ -85,16 +83,16 @@ fun SettingsSwitch(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(
-                    horizontal = SettingsDefaults.HorizontalPadding,
-                    vertical = SettingsDefaults.VerticalContentPadding
+                    horizontal = SettingsComponentsDefaults.HorizontalPadding,
+                    vertical = SettingsComponentsDefaults.VerticalContentPadding
                 )
-                .height(SettingsDefaults.ContentHeight), verticalAlignment = Alignment.CenterVertically
+                .height(SettingsComponentsDefaults.ContentHeight), verticalAlignment = Alignment.CenterVertically
         ) {
             AutoResizingText(
                 text = label,
                 modifier = Modifier
-                    .weight(SettingsDefaults.TEXT_WEIGHT)
-                    .padding(end = SettingsDefaults.TextIconSpacing), // Add space between text and switch
+                    .weight(SettingsComponentsDefaults.TEXT_WEIGHT)
+                    .padding(end = SettingsComponentsDefaults.TextIconSpacing), // Add space between text and switch
                 style = MaterialTheme.typography.bodyMedium
             )
             Switch(
@@ -140,7 +138,7 @@ fun SettingsSlider(
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .padding(vertical = SettingsDefaults.VerticalPadding),
+            .padding(vertical = SettingsComponentsDefaults.VerticalPadding),
         shape = currentShape,
         colors = LuminaCardDefaults.colors()
     ) {
@@ -148,8 +146,8 @@ fun SettingsSlider(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(
-                    horizontal = SettingsDefaults.HorizontalPadding,
-                    vertical = SettingsDefaults.VerticalContentPadding
+                    horizontal = SettingsComponentsDefaults.HorizontalPadding,
+                    vertical = SettingsComponentsDefaults.VerticalContentPadding
                 ),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
@@ -157,7 +155,7 @@ fun SettingsSlider(
             AutoResizingText(
                 text = label,
                 style = MaterialTheme.typography.bodyLarge,
-                modifier = Modifier.weight(SettingsDefaults.TEXT_WEIGHT)
+                modifier = Modifier.weight(SettingsComponentsDefaults.TEXT_WEIGHT)
             )
 
             Slider(
@@ -175,7 +173,7 @@ fun SettingsSlider(
                 contentDescription = stringResource(R.string.reset_to_default),
                 modifier = Modifier
                     .size(SettingsSliderDefaults.ResetIconSize)
-                    .padding(start = SettingsDefaults.TextIconSpacing)
+                    .padding(start = SettingsComponentsDefaults.TextIconSpacing)
                     .clickable(onClick = onReset),
                 tint = ContentColor,
             )
@@ -212,7 +210,7 @@ fun SettingsSingleChoiceSegmentedButtons(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = SettingsDefaults.VerticalPadding),
+            .padding(vertical = SettingsComponentsDefaults.VerticalPadding),
         shape = currentShape,
         colors = LuminaCardDefaults.colors()
     ) {
@@ -220,15 +218,15 @@ fun SettingsSingleChoiceSegmentedButtons(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(
-                    horizontal = SettingsDefaults.HorizontalPadding,
-                    vertical = SettingsDefaults.VerticalContentPadding
+                    horizontal = SettingsComponentsDefaults.HorizontalPadding,
+                    vertical = SettingsComponentsDefaults.VerticalContentPadding
                 ),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             AutoResizingText(
                 text = label,
-                modifier = Modifier.weight(SettingsDefaults.TEXT_WEIGHT)
+                modifier = Modifier.weight(SettingsComponentsDefaults.TEXT_WEIGHT)
             )
 
             SingleChoiceSegmentedButtonRow(
@@ -248,7 +246,7 @@ fun SettingsSingleChoiceSegmentedButtons(
                         Text(
                             text = optionLabel,
                             overflow = TextOverflow.Ellipsis,
-                            maxLines = SettingsDefaults.MAX_LINES
+                            maxLines = SettingsComponentsDefaults.MAX_LINES
                         )
                     }
                 }

@@ -66,7 +66,7 @@ fun SettingsSwipeableButton(
 
     SwipeToDismissBox(
         state = dismissState,
-        modifier = modifier.padding(vertical = SettingsDefaults.VerticalPadding),
+        modifier = modifier.padding(vertical = SettingsComponentsDefaults.VerticalPadding),
         enableDismissFromStartToEnd = false,
         enableDismissFromEndToStart = true,
         backgroundContent = {
@@ -79,7 +79,7 @@ fun SettingsSwipeableButton(
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(horizontal = SettingsDefaults.HorizontalPadding),
+                        .padding(horizontal = SettingsComponentsDefaults.HorizontalPadding),
                     contentAlignment = Alignment.CenterEnd
                 ) {
                     Icon(
@@ -102,17 +102,17 @@ fun SettingsSwipeableButton(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(
-                        horizontal = SettingsDefaults.HorizontalPadding,
-                        vertical = SettingsDefaults.VerticalContentPadding
+                        horizontal = SettingsComponentsDefaults.HorizontalPadding,
+                        vertical = SettingsComponentsDefaults.VerticalContentPadding
                     )
-                    .height(SettingsDefaults.ContentHeight),
+                    .height(SettingsComponentsDefaults.ContentHeight),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 AutoResizingText(
                     text = label,
                     modifier = Modifier
-                        .weight(SettingsDefaults.TEXT_WEIGHT)
-                        .padding(end = SettingsDefaults.TextIconSpacing),
+                        .weight(SettingsComponentsDefaults.TEXT_WEIGHT)
+                        .padding(end = SettingsComponentsDefaults.TextIconSpacing),
                     style = MaterialTheme.typography.bodyMedium.copy(fontFamily = fontFamily)
                 )
             }

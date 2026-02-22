@@ -75,7 +75,7 @@ fun ThemeCard(
         isTopOfGroup = isTopOfGroup,
         isBottomOfGroup = isBottomOfGroup
     )
-    Box(Modifier.padding(vertical = SettingsDefaults.VerticalPadding)) {
+    Box(Modifier.padding(vertical = SettingsComponentsDefaults.VerticalPadding)) {
         Box(
             modifier
                 .clip(

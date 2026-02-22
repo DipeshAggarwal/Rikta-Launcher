@@ -2,7 +2,7 @@ package com.lumina.feature.settings
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.lumina.core.common.AppDefaults.DEFAULT_SPACER_HEIGHT
+import com.lumina.domain.settings.LayoutSettings
 import com.lumina.domain.settings.SettingsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
@@ -15,22 +15,26 @@ import kotlinx.coroutines.launch
 class SettingsViewModel @Inject constructor(
     private val settingsRepository: SettingsRepository
 ): ViewModel () {
-    val spacerHeight: StateFlow<Int> = settingsRepository.spacerHeight()
+    val layoutSettings: StateFlow<LayoutSettings> = settingsRepository.layoutSettings
         .stateIn(
             viewModelScope,
             SharingStarted.Eagerly,
-            DEFAULT_SPACER_HEIGHT
+            LayoutSettings()
         )
 
     fun setSpacerHeight(height: Int) {
         viewModelScope.launch {
-            settingsRepository.setSpacerHeight(height)
+            settingsRepository.updateLayoutSettings {
+                copy(spacerHeight = height)
+            }
         }
     }
 
     fun resetSpacerHeight() {
         viewModelScope.launch {
-            settingsRepository.resetSpacerHeight()
+            settingsRepository.updateLayoutSettings {
+                copy(spacerHeight = LayoutSettings().spacerHeight)
+            }
         }
     }
 }

@@ -24,7 +24,8 @@ fun SpacerConfigScreen(
     onBack: () -> Unit,
     viewModel: SettingsViewModel
 ) {
-    val spacerHeight by viewModel.spacerHeight.collectAsState()
+    val layoutSettings by viewModel.layoutSettings.collectAsState()
+    val spacerHeight = layoutSettings.spacerHeight
 
     LazyColumn(
         verticalArrangement = Arrangement.Top,

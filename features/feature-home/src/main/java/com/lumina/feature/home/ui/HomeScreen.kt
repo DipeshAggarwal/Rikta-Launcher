@@ -14,7 +14,9 @@ import com.lumina.feature.home.HomeViewModel
 fun HomeScreen(
     viewModel: HomeViewModel
 ) {
-    val screenTimePageVisible by viewModel.screenTimePageVisible.collectAsStateWithLifecycle()
+    val homeSettings by viewModel.homeSettings.collectAsStateWithLifecycle()
+
+    val screenTimePageVisible = homeSettings.showScreenTimePage
     val appsListScrollState = rememberLazyListState()
 
     val pages = remember(screenTimePageVisible) {

@@ -11,6 +11,6 @@
         <!-- Customize the icon animation duration -->
         <item name="windowSplashScreenAnimationDuration">500</item>
         <!-- Set the status bar color -->
-        <item name="postSplashScreenTheme">@style/Theme.EscapeLauncher</item>
+        <item name="postSplashScreenTheme">@style/Theme.RiktaLauncher</item>
     </style>
 </resources>

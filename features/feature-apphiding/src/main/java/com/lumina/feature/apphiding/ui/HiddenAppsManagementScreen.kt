@@ -34,8 +34,9 @@ fun HiddenAppsManagementScreen(
 ) {
     // Observe reactive state flows from the shared ViewModel
     val hiddenApps by viewModel.hiddenApps.collectAsState()
-    val showHiddenAppsInSearch by viewModel.showHiddenAppsInSearch.collectAsState()
+    val searchSettings by viewModel.searchSettings.collectAsState()
 
+    val showHiddenAppsInSearch = searchSettings.showHiddenAppsInSearch
     val context = LocalContext.current
     val haptics = LocalHapticFeedback.current
 

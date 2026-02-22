@@ -13,6 +13,9 @@ import com.lumina.domain.apps.FavouriteAppsRepository
 import com.lumina.domain.apps.HiddenAppsRepository
 import com.lumina.domain.apps.InstalledAppsRepository
 import com.lumina.domain.search.AppSearchEngine
+import com.lumina.domain.settings.AppListSettings
+import com.lumina.domain.settings.HomeSettings
+import com.lumina.domain.settings.SearchSettings
 import com.lumina.domain.settings.SettingsRepository
 import com.lumina.feature.home.model.BottomSheetState
 import com.lumina.feature.home.model.HomeUiState
@@ -84,11 +87,25 @@ class HomeViewModel @Inject constructor(
             emptyList()
         )
 
-    private val showHiddenAppsInSearch: StateFlow<Boolean> = settingsRepository.showHiddenAppsInSearch()
+    val homeSettings: StateFlow<HomeSettings> = settingsRepository.homeSettings
         .stateIn(
             viewModelScope,
             SharingStarted.Eagerly,
-            false
+            HomeSettings()
+        )
+
+    val appListSettings: StateFlow<AppListSettings> = settingsRepository.appListSettings
+        .stateIn(
+            viewModelScope,
+            SharingStarted.Eagerly,
+            AppListSettings()
+        )
+
+    private val searchSettings: StateFlow<SearchSettings> = settingsRepository.searchSettings
+        .stateIn(
+            viewModelScope,
+            SharingStarted.Eagerly,
+            SearchSettings()
         )
 
     // Create a map for faster lookup.
@@ -111,34 +128,6 @@ class HomeViewModel @Inject constructor(
             emptyList()
         )
 
-    val screenTimePageVisible: StateFlow<Boolean> = settingsRepository.showScreenTimePageInHome()
-        .stateIn(
-            viewModelScope,
-            SharingStarted.Eagerly,
-            false
-        )
-
-    val favouriteBoostInSearch: StateFlow<Boolean> = settingsRepository.showFavouriteBoostInSearch()
-        .stateIn(
-            viewModelScope,
-            SharingStarted.WhileSubscribed(WhileSubscribedTimeoutMillis),
-            false
-        )
-
-    val bigClockInHome: StateFlow<Boolean> = settingsRepository.showBigClockInHome()
-        .stateIn(
-            viewModelScope,
-            SharingStarted.Eagerly,
-            false
-        )
-
-    val screenTimeVisibleWithApp: StateFlow<Boolean> = settingsRepository.showScreenTimeVisibleWithApp()
-        .stateIn(
-            viewModelScope,
-            SharingStarted.Eagerly,
-            false
-        )
-
     // For future ref: Combine can only take a maximum of five Flows.
     // This is recomputed anytime any of the source changes.
     val homeUiState: StateFlow<HomeUiState> = combine(
@@ -146,17 +135,17 @@ class HomeViewModel @Inject constructor(
         hiddenPackagesSet,
         favouriteApps,
         searchQuery,
-        showHiddenAppsInSearch
-    ) { apps, hiddenApps, favApps, query, showInSearch ->
+        searchSettings
+    ) { apps, hiddenApps, favApps, query, searchPrefs ->
         val favouriteSet = favApps.map { it.packageName }.toSet()
         val isSearching = query.isNotBlank()
-        val showHiddenAppsWhileSearching = showInSearch && isSearching
+        val showHiddenAppsWhileSearching = searchPrefs.showHiddenAppsInSearch && isSearching
         val visibleApps = if (showHiddenAppsWhileSearching) {
             apps
         } else {
             apps.filterNot { it.packageName in hiddenApps }
         }
-        val favForBoosting = if (showHiddenAppsWhileSearching) favouriteSet else emptySet()
+        val favForBoosting = if (searchPrefs.favouriteBoostInSearch) favouriteSet else emptySet()
 
         val finalAppsList = if (isSearching) {
             appSearchEngine.search(visibleApps, query, favForBoosting)
