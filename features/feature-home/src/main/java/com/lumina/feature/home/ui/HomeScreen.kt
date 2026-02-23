@@ -6,6 +6,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lumina.feature.home.model.HomePage
 import com.lumina.feature.home.HomeViewModel
@@ -14,6 +16,9 @@ import com.lumina.feature.home.HomeViewModel
 fun HomeScreen(
     viewModel: HomeViewModel
 ) {
+    val context = LocalContext.current
+    val haptics = LocalHapticFeedback.current
+
     val homeSettings by viewModel.homeSettings.collectAsStateWithLifecycle()
 
     val screenTimePageVisible = homeSettings.showScreenTimePage

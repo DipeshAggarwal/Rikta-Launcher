@@ -5,17 +5,21 @@ import com.lumina.core.common.AppDefaults.DEFAULT_SPACER_HEIGHT
 data class HomeSettings(
     val showScreenTimePage: Boolean = false,
     val showBigClock: Boolean = false,
-    val showScreenTimeWithAppName: Boolean = false
+    val showScreenTimeWithAppName: Boolean = false,
+    val homeAlignment: AppsAlignment = AppsAlignment.Start,
+    val showFirstTimeHelp: Boolean = false
 )
 data class AppListSettings(
     val showSearchBox: Boolean = false,
     val showSearchBoxAtBottom: Boolean = false,
-    val appsListAlignment:  AppsAlignment = AppsAlignment.Start
+    val appsListAlignment: AppsAlignment = AppsAlignment.Start,
+    val autoFocusSearch: Boolean = false
 )
 
 data class SearchSettings(
     val showHiddenAppsInSearch: Boolean = false,
-    val favouriteBoostInSearch: Boolean = false
+    val favouriteBoostInSearch: Boolean = false,
+    val autoOpenOnSearch: Boolean = false
 )
 
 data class LayoutSettings(

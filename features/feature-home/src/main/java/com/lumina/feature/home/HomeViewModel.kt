@@ -62,6 +62,13 @@ class HomeViewModel @Inject constructor(
     private val _bottomSheetState = MutableStateFlow<BottomSheetState>(BottomSheetState.None)
     val bottomSheetState = _bottomSheetState.asStateFlow()
 
+    private val _appToOpen = MutableSharedFlow<AppInfo>(
+        replay = 0,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST,
+        extraBufferCapacity = 1
+    )
+    val appToOpen = _appToOpen.asSharedFlow()
+
     private val searchQuery = MutableStateFlow("")
 
     // .Eagerly is used so that startup happens at creation time.
@@ -87,27 +94,6 @@ class HomeViewModel @Inject constructor(
             emptyList()
         )
 
-    val homeSettings: StateFlow<HomeSettings> = settingsRepository.homeSettings
-        .stateIn(
-            viewModelScope,
-            SharingStarted.Eagerly,
-            HomeSettings()
-        )
-
-    val appListSettings: StateFlow<AppListSettings> = settingsRepository.appListSettings
-        .stateIn(
-            viewModelScope,
-            SharingStarted.Eagerly,
-            AppListSettings()
-        )
-
-    private val searchSettings: StateFlow<SearchSettings> = settingsRepository.searchSettings
-        .stateIn(
-            viewModelScope,
-            SharingStarted.Eagerly,
-            SearchSettings()
-        )
-
     // Create a map for faster lookup.
     private val installedAppsMap: StateFlow<Map<String, AppInfo>> = installedApps
         .map { list -> list.associateBy { it.packageName } }
@@ -126,6 +112,27 @@ class HomeViewModel @Inject constructor(
             viewModelScope,
             SharingStarted.WhileSubscribed(WhileSubscribedTimeoutMillis),
             emptyList()
+        )
+
+    val homeSettings: StateFlow<HomeSettings> = settingsRepository.homeSettings
+        .stateIn(
+            viewModelScope,
+            SharingStarted.Eagerly,
+            HomeSettings()
+        )
+
+    val appListSettings: StateFlow<AppListSettings> = settingsRepository.appListSettings
+        .stateIn(
+            viewModelScope,
+            SharingStarted.Eagerly,
+            AppListSettings()
+        )
+
+    val searchSettings: StateFlow<SearchSettings> = settingsRepository.searchSettings
+        .stateIn(
+            viewModelScope,
+            SharingStarted.Eagerly,
+            SearchSettings()
         )
 
     // For future ref: Combine can only take a maximum of five Flows.
@@ -178,6 +185,18 @@ class HomeViewModel @Inject constructor(
 
     fun onSearchQueryChanged(query: String) {
         searchQuery.value = query
+    }
+
+    fun onSearchDone() {
+        val state = homeUiState.value as? HomeUiState.Ready ?: return
+        val firstApp = state.apps.firstOrNull() ?: return
+        onAppOpened(firstApp)
+    }
+
+    fun onAppOpened(app: AppInfo) {
+        viewModelScope.launch {
+            _appToOpen.emit(app)
+        }
     }
 
     fun onAppLongPressed(app: AppInfo, profile: AppProfile = AppProfile.Standard) {

@@ -12,7 +12,7 @@ import com.lumina.core.ui.R
 import com.lumina.core.ui.theme.primaryContentColor
 
 @Composable
-fun BottomSheetAppHeader() {
+fun AppsListHeader() {
     Spacer(modifier = Modifier.height(140.dp))
     Text(
         text = stringResource(id = R.string.all_apps),
