@@ -1,8 +1,10 @@
 package com.lumina.data.apps.installed
 
 import android.content.Context
-import android.content.Intent
+import android.content.pm.LauncherApps
 import android.content.pm.PackageManager
+import android.os.UserHandle
+import android.os.UserManager
 import com.lumina.core.common.IoDispatcher
 import com.lumina.core.logging.Logger
 import com.lumina.domain.apps.AppInfo
@@ -26,23 +28,21 @@ class PackageManagerInstalledAppsRepository @Inject constructor(
     private val installedAppsMonitor: InstalledAppsMonitor,
     private val logger: Logger
 ): InstalledAppsRepository {
-    private val pm = context.packageManager
     private val TAG = this::class.java.simpleName
 
-    // Cache to store app labels (Strings). Querying the system for labels is an Inter-Process
-    // Communication (IPC) call and is quite expensive.
-    private val labelCache = ConcurrentHashMap<String, String>()
+    private val launcherApps = context.getSystemService(LauncherApps::class.java)
+    private val userManager = context.getSystemService(UserManager::class.java)
 
-    override suspend fun getDisplayName(packageName: String): String = withContext(ioDispatcher) {
-        // Return from memory if available
-        labelCache[packageName]?.let { return@withContext it }
+    // Per-Profile Cache.
+    // Querying the system for labels is an Inter-Process Communication (IPC) call and is quite expensive.
+    private val appCache = ConcurrentHashMap<UserHandle, List<AppInfo>>()
 
+    override suspend fun getDisplayName(packageName: String): String? = withContext(ioDispatcher) {
         try {
-            val appInfo = pm.getApplicationInfo(packageName, PackageManager.MATCH_ALL)
-            val label = pm.getApplicationLabel(appInfo).toString()
-
-            labelCache[packageName] = label
-            label
+            appCache.values
+                .flatten()
+                .firstOrNull { it.packageName == packageName }
+                ?.displayName
         } catch (e: PackageManager.NameNotFoundException) {
             logger.w(TAG, "App not found: $packageName", e)
             throw e
@@ -55,40 +55,88 @@ class PackageManagerInstalledAppsRepository @Inject constructor(
      */
     override fun installedApps(): Flow<List<AppInfo>> =
         installedAppsMonitor.appChanges()
-            .onStart { emit(Unit) }
-            .map { loadInstalledApps() }
+            .onStart { emit(AppChangeEvent.Initial) }
+            .map { event ->
+                invalidateCache(event)
+                loadInstalledApps()
+            }
 
     private suspend fun loadInstalledApps(): List<AppInfo> = withContext(ioDispatcher) {
-        // Only show apps that can appear in the Launcher.
-        val intent = Intent(Intent.ACTION_MAIN).apply {
-            addCategory(Intent.CATEGORY_LAUNCHER)
-        }
-        val resolveInfo = pm.queryIntentActivities(intent, PackageManager.MATCH_ALL)
+        val profiles = userManager.userProfiles
+        val allCache = profiles.all { appCache.containsKey(it) }
 
-        // Use Sequence for lazy evaluation: saves memory by not creating multiple intermediate
-        // lists for map/filter/distinct steps.
-        resolveInfo
-            .asSequence()
-            .map { it.activityInfo.packageName }
-            .filterNot { it == context.packageName }
-            .distinct()
-            .mapNotNull { packageName ->
-                try {
-                    // Reuse cached labels to make refreshes near-instant
-                    val label = labelCache.getOrPut(packageName) {
-                        val appInfo = pm.getApplicationInfo(
-                            packageName,
-                            PackageManager.GET_META_DATA
+        if (allCache) {
+            return@withContext appCache.values
+                .flatten()
+                .distinctBy { Triple(it.packageName, it.componentClassName, it.userHandleNumber) }
+                .sortedBy { it.displayName.lowercase() }
+        }
+
+        for (profile in profiles) {
+            if (appCache.containsKey(profile)) continue
+
+            try {
+                val activities = launcherApps.getActivityList(null, profile)
+                val apps = activities
+                    .filter { it.applicationInfo.packageName != context.packageName }
+                    .map { info ->
+                        AppInfo(
+                            packageName = info.applicationInfo.packageName,
+                            displayName = info.label.toString(),
+                            componentClassName = info.componentName.className,
+                            userHandleNumber = userManager.getSerialNumberForUser(profile)
                         )
-                        pm.getApplicationLabel(appInfo).toString()
                     }
-                    AppInfo(packageName, label)
-                } catch (e: PackageManager.NameNotFoundException) {
-                    logger.w(TAG, "App not found: $packageName", e)
-                    null
-                }
+                appCache[profile] = apps
+            } catch (e: Exception) {
+                logger.e(TAG, "Failed to load apps for profile $profile", e)
+                appCache[profile] = emptyList()
             }
+        }
+
+        appCache.values
+            .flatten()
+            .distinctBy { Triple(it.packageName, it.componentClassName, it.userHandleNumber) }
             .sortedBy { it.displayName.lowercase() }
-            .toList()
+    }
+
+    private fun invalidateCache(event: AppChangeEvent) {
+        when (event) {
+            is AppChangeEvent.Initial -> appCache.clear()
+            is AppChangeEvent.PackageAdded -> updateSinglePackage(event.packageName, event.userHandle)
+            is AppChangeEvent.PackageChanged -> updateSinglePackage(event.packageName, event.userHandle)
+            is AppChangeEvent.PackageRemoved -> {
+                appCache[event.userHandle] = appCache[event.userHandle]
+                    ?.filterNot { it.packageName == event.packageName }
+                    ?: emptyList()
+            }
+            is AppChangeEvent.PackagesAvailable,
+            is AppChangeEvent.PackagesUnavailable -> {
+                appCache.remove(event.userHandle)
+            }
+        }
+    }
+
+    private fun updateSinglePackage(packageName: String, userHandle: UserHandle) {
+        if (packageName == context.packageName) return
+
+        try {
+            val activities = launcherApps.getActivityList(packageName, userHandle)
+            val updatedAppsInfo = activities.map { info ->
+                AppInfo(
+                    packageName = info.applicationInfo.packageName,
+                    displayName = info.label.toString(),
+                    componentClassName = info.componentName.className,
+                    userHandleNumber = userManager.getSerialNumberForUser(userHandle)
+                )
+            }
+
+            val currentList = appCache[userHandle] ?: emptyList()
+            val oldList = currentList.filterNot { it.packageName == packageName }
+
+            appCache[userHandle] = oldList + updatedAppsInfo
+        } catch (e: Exception) {
+            logger.e("$TAG:UpdateSingle", "Failed to update cache for $packageName", e)
+        }
     }
 }

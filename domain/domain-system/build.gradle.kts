@@ -3,4 +3,6 @@ plugins {
 }
 dependencies {
     implementation(project(":core:core-common"))
+
+    implementation(project(":domain:domain-apps"))
 }

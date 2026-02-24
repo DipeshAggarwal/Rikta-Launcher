@@ -128,6 +128,7 @@ dependencies {
     implementation(project(":domain:domain-apps"))
     implementation(project(":domain:domain-search"))
     implementation(project(":domain:domain-settings"))
+    implementation(project(":domain:domain-system"))
 
     implementation(project(":features:feature-apphiding"))
     implementation(project(":features:feature-apppicker"))

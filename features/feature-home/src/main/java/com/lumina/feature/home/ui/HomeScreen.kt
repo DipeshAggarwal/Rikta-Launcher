@@ -1,27 +1,29 @@
 package com.lumina.feature.home.ui
 
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lumina.feature.home.model.HomePage
 import com.lumina.feature.home.HomeViewModel
+import com.lumina.feature.home.model.HomeUiState
 
 @Composable
 fun HomeScreen(
-    viewModel: HomeViewModel
+    viewModel: HomeViewModel,
+    onNavigateToSettings: () -> Unit
 ) {
-    val context = LocalContext.current
-    val haptics = LocalHapticFeedback.current
-
+    val uiState by viewModel.homeUiState.collectAsStateWithLifecycle()
     val homeSettings by viewModel.homeSettings.collectAsStateWithLifecycle()
 
     val screenTimePageVisible = homeSettings.showScreenTimePage
+    val homeMainScrollState = rememberLazyListState()
     val appsListScrollState = rememberLazyListState()
 
     val pages = remember(screenTimePageVisible) {
@@ -49,6 +51,31 @@ fun HomeScreen(
 
         if (pagerState.currentPage >= pages.size) {
             pagerState.scrollToPage(mainPageIndex)
+        }
+    }
+
+    when (val state = uiState) {
+        is HomeUiState.Loading -> {}
+        is HomeUiState.Error -> {}
+        is HomeUiState.Ready -> {
+            HorizontalPager(
+                state = pagerState,
+                modifier = Modifier.fillMaxSize(),
+                beyondViewportPageCount = 1
+            ) { pageIndex ->
+                when (pages[pageIndex]) {
+                    HomePage.ScreenTime -> {}
+                    HomePage.Main -> {
+                        HomeMain(
+                            viewModel = viewModel,
+                            uiState = state,
+                            homeSettings = homeSettings,
+                            scrollState = homeMainScrollState
+                        )
+                    }
+                    HomePage.Apps -> { AppsList(viewModel, appsListScrollState)}
+                }
+            }
         }
     }
 }

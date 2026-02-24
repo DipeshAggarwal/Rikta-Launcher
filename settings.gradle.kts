@@ -59,12 +59,14 @@ include(":domain:domain-challenges")
 include(":domain:domain-screentime")
 include(":domain:domain-search")
 include(":domain:domain-settings")
+include(":domain:domain-system")
 
 // data module
 include(":data:data-apps")
 include(":data:data-challenges")
 include(":data:data-screentime")
 include(":data:data-settings")
+include(":data:data-system")
 
 // features module
 include(":features:feature-apphiding")

@@ -10,7 +10,7 @@ interface InstalledAppsRepository {
      * Resolves the human-readable label for a specific package.
      * @throws NameNotFoundException if the package is not found.
      */
-    suspend fun getDisplayName(packageName: String): String
+    suspend fun getDisplayName(packageName: String): String?
 
     /**
      * Returns a reactive stream containing all apps that can be launched by the user.

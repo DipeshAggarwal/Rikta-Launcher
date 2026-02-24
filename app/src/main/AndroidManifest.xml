@@ -54,7 +54,7 @@
         <activity android:name=".utils.ConfigureAppWidgetActivity" />
 
         <service
-            android:name=".utils.EscapeAccessibilityService"
+            android:name="com.lumina.core.android.LuminaAccessibilityService"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
             android:exported="false"
             tools:ignore="AccessibilityPolicy">

@@ -536,10 +536,12 @@ object AppUtils {
         }
 
         val spacerHeight by viewModel.spacerHeight.collectAsState()
+        val isImmersiveMode by viewModel.isImmersiveMode.collectAsState()
 
         RiktaTheme(
             theme = viewModel.appTheme.value,
             fontFamily = fontFamily,
+            isImmersiveMode,
             spacerHeight.dp
         ) {
             content()

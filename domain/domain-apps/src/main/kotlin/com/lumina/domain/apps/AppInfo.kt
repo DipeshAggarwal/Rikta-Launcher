@@ -6,5 +6,7 @@ package com.lumina.domain.apps
  */
 data class AppInfo (
     val packageName: String,
-    val displayName: String
+    val displayName: String,
+    val componentClassName: String,
+    val userHandleNumber: Long
 )

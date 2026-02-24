@@ -23,18 +23,11 @@ import com.lumina.core.ui.components.home.AnimatedPillSearchBar
 import com.lumina.core.ui.components.home.AppListItem
 import com.lumina.core.ui.components.home.AppsListHeader
 import com.lumina.core.ui.components.settings.SettingsSpacer
-import com.lumina.domain.settings.AppsAlignment
 import com.lumina.feature.home.HomeViewModel
 import com.lumina.feature.home.model.HomeUiState
 
-private fun AppsAlignment.toAlignment(): Alignment.Horizontal = when(this) {
-    AppsAlignment.Start -> Alignment.Start
-    AppsAlignment.Center -> Alignment.CenterHorizontally
-    AppsAlignment.End -> Alignment.End
-}
-
 @Composable
-fun AppList(
+fun AppsList(
     viewModel: HomeViewModel,
     scrollState: LazyListState
 ) {

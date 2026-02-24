@@ -35,7 +35,10 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.lumina.core.common.FeatureFlags
 import com.lumina.core.ui.theme.BackgroundColor
+import com.lumina.feature.home.ui.HOME_ROUTE
+import com.lumina.feature.home.ui.homeNavigation
 import com.lumina.rikta.ui.views.HomeScreenPageManager
 import com.lumina.rikta.ui.views.Onboarding
 import com.lumina.rikta.ui.views.Settings
@@ -276,7 +279,13 @@ class MainHomeScreenActivity : ComponentActivity() {
                 true
             ) -> "onboarding"
 
-            else -> "home"
+            else -> {
+                if (FeatureFlags.USE_NEW_HOME_SCREEN) {
+                    HOME_ROUTE
+                } else {
+                    "home"
+                }
+            }
         }
     }
 
@@ -318,6 +327,7 @@ class MainHomeScreenActivity : ComponentActivity() {
                 .animateContentSize()
         ) {
             NavHost(navController, startDestination = startDestination) {
+                homeNavigation { navController.navigate("settings") }
                 composable(
                     "home",
                     enterTransition = { fadeIn(tween(300)) },

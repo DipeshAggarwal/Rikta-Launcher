@@ -1,5 +1,6 @@
 package com.lumina.rikta.startup
 
+import com.lumina.data.apps.installed.AppChangeEvent
 import com.lumina.data.apps.installed.InstalledAppsMonitor
 import com.lumina.domain.apps.usecase.RemoveOrphanedAppReferencesUseCase
 import com.lumina.rikta.di.ApplicationScope
@@ -26,7 +27,7 @@ class InstalledAppsCoordinator @Inject constructor(
             installedAppsMonitor.appChanges()
                 // .onStart ensures we scrub the DB immediately on app launch, catching uninstalls
                 // that happened while the launcher was stopped.
-                .onStart { emit(Unit) }
+                .onStart { emit(AppChangeEvent.Initial) }
                 .collect {
                     removeOrphanedAppReferencesUseCase()
                 }

@@ -21,10 +21,12 @@ dependencies {
     implementation(project(":core:core-ui"))
 
     implementation(project(":data:data-apps"))
+    implementation(project(":data:data-system"))
 
     implementation(project(":domain:domain-apps"))
     implementation(project(":domain:domain-search"))
     implementation(project(":domain:domain-settings"))
+    implementation(project(":domain:domain-system"))
 
     implementation(project(":features:feature-apppicker"))
 }

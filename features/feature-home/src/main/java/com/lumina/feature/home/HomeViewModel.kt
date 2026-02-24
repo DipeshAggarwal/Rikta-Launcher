@@ -1,8 +1,5 @@
 package com.lumina.feature.home
 
-import android.content.Context
-import android.content.Intent
-import android.provider.AlarmClock
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lumina.core.common.FlowDefaults.WhileSubscribedTimeoutMillis
@@ -17,6 +14,9 @@ import com.lumina.domain.settings.AppListSettings
 import com.lumina.domain.settings.HomeSettings
 import com.lumina.domain.settings.SearchSettings
 import com.lumina.domain.settings.SettingsRepository
+import com.lumina.domain.system.IntentLauncher
+import com.lumina.domain.system.LaunchResult
+import com.lumina.domain.system.StatusBarController
 import com.lumina.feature.home.model.BottomSheetState
 import com.lumina.feature.home.model.HomeUiState
 import com.lumina.feature.home.model.SelectedApp
@@ -41,6 +41,8 @@ class HomeViewModel @Inject constructor(
     settingsRepository: SettingsRepository,
     installedAppsRepository: InstalledAppsRepository,
     appSearchEngine: AppSearchEngine,
+    private val intentLauncher: IntentLauncher,
+    private val statusBarController: StatusBarController,
     private val logger: Logger
 ): ViewModel() {
     private val TAG = this::class.java.simpleName
@@ -173,6 +175,18 @@ class HomeViewModel @Inject constructor(
             HomeUiState.Loading
         )
 
+    private fun handleLaunchResult(result: LaunchResult) {
+        when (result) {
+            is LaunchResult.Success -> {
+                setSearchExpanded(false)
+                onSearchQueryChanged("")
+                requestToGoHome()
+            }
+            is LaunchResult.NoLaunchIntent -> {}
+            is LaunchResult.Error -> {}
+        }
+    }
+
     fun requestToGoHome() {
         viewModelScope.launch {
             _navigateHomeEvent.emit(Unit)
@@ -195,7 +209,8 @@ class HomeViewModel @Inject constructor(
 
     fun onAppOpened(app: AppInfo) {
         viewModelScope.launch {
-            _appToOpen.emit(app)
+            val result = intentLauncher.openApp(app)
+            handleLaunchResult(result)
         }
     }
 
@@ -207,37 +222,21 @@ class HomeViewModel @Inject constructor(
         _bottomSheetState.value = BottomSheetState.None
     }
 
-    fun openAlarm(context: Context) {
-        val intent = Intent(AlarmClock.ACTION_SHOW_ALARMS).apply {
-            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        }
+    fun onExpandNotificationShade() {
+        statusBarController.expandNotificationShade()
+    }
 
-        try {
-            // Checking for a null component name is more reliable in some API versions.
-            if (intent.resolveActivity(context.packageManager) != null) {
-                context.startActivity(intent)
-            } else {
-                logger.w("$TAG:Alarm", "No alarm app available.")
-            }
-        } catch (e: Exception) {
-            logger.e("$TAG:Alarm", "Failed to open alarm app.", e)
+    fun openAlarm() {
+        viewModelScope.launch {
+            val result = intentLauncher.openAlarm()
+            handleLaunchResult(result)
         }
     }
 
-    fun openCalendar(context: Context) {
-        val intent = Intent(Intent.ACTION_MAIN).apply {
-            addCategory(Intent.CATEGORY_APP_CALENDAR)
-            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        }
-
-        try {
-            if (intent.resolveActivity(context.packageManager) != null) {
-                context.startActivity(intent)
-            } else {
-                logger.w("$TAG:Calendar", "No calendar app available.")
-            }
-        } catch (e: Exception) {
-            logger.e("$TAG:Calendar", "Failed to open calendar app.", e)
+    fun openCalendar() {
+        viewModelScope.launch {
+            val result = intentLauncher.openCalendar()
+            handleLaunchResult(result)
         }
     }
 }

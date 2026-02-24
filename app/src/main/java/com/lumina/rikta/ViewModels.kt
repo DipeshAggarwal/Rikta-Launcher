@@ -318,6 +318,13 @@ class MainAppViewModel @Inject constructor(
     fun getContext(): Context = appContext // Returns the context
 
     private var window: Window? = null
+    val isImmersiveMode: StateFlow<Boolean> = settingsRepository.layoutSettings
+        .map { it.isImmersiveMode }
+        .stateIn(
+            viewModelScope,
+            SharingStarted.Eagerly,
+            LayoutSettings().isImmersiveMode
+        )
 
     val spacerHeight: StateFlow<Int> = settingsRepository.layoutSettings
         .map { it.spacerHeight }

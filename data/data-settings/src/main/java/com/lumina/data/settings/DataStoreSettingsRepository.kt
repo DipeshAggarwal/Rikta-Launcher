@@ -7,8 +7,10 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.lumina.domain.settings.AppListSettings
-import com.lumina.domain.settings.AppsAlignment
+import com.lumina.domain.settings.AppAlignment
+import com.lumina.domain.settings.HomeAlignment
 import com.lumina.domain.settings.HomeSettings
+import com.lumina.domain.settings.HomeVerticalAlignment
 import com.lumina.domain.settings.LayoutSettings
 import com.lumina.domain.settings.SearchSettings
 import com.lumina.domain.settings.SettingsRepository
@@ -22,9 +24,14 @@ class DataStoreSettingsRepository @Inject constructor(
     private object Keys {
         // Home
         val SHOW_SCREEN_TIME_PAGE = booleanPreferencesKey("show_screen_time_in_home")
+        val SHOW_CLOCK = booleanPreferencesKey("show_clock_in_home")
         val SHOW_BIG_CLOCK = booleanPreferencesKey("show_big_clock_in_home")
         val SHOW_SCREEN_TIME_WITH_APP_NAME = booleanPreferencesKey("show_screen_time_with_app_name")
+        val USE_TWELVE_HOUR_DISPLAY = booleanPreferencesKey("use_twelve_hour_display")
+        val SHOW_DATE = booleanPreferencesKey("show_date")
+        val SHOW_BIG_DATE = booleanPreferencesKey("show_big_date")
         val HOME_ALIGNMENT = stringPreferencesKey("home_apps_alignment")
+        val HOME_VERTICAL_ALIGNMENT = stringPreferencesKey("home_vertical_alignment")
         val SHOW_FIRST_TIME_HELP = booleanPreferencesKey("show_first_time_help")
 
 
@@ -46,11 +53,18 @@ class DataStoreSettingsRepository @Inject constructor(
     override val homeSettings: Flow<HomeSettings> = dataStore.data.map { prefs ->
         HomeSettings(
             showScreenTimePage = prefs[Keys.SHOW_SCREEN_TIME_PAGE] ?: HomeSettings().showScreenTimePage,
+            showClock = prefs[Keys.SHOW_CLOCK] ?: HomeSettings().showClock,
             showBigClock = prefs[Keys.SHOW_BIG_CLOCK] ?: HomeSettings().showBigClock,
+            useTwelveHourDisplay = prefs[Keys.USE_TWELVE_HOUR_DISPLAY] ?: HomeSettings().useTwelveHourDisplay,
+            showDate = prefs[Keys.SHOW_DATE] ?: HomeSettings().showDate,
+            showBigDate = prefs[Keys.SHOW_BIG_DATE] ?: HomeSettings().showBigDate,
             showScreenTimeWithAppName = prefs[Keys.SHOW_SCREEN_TIME_WITH_APP_NAME] ?: HomeSettings().showScreenTimeWithAppName,
             homeAlignment = prefs[Keys.HOME_ALIGNMENT]?.let {
-                AppsAlignment.valueOf(it)
+                HomeAlignment.valueOf(it)
             } ?: HomeSettings().homeAlignment,
+            homeVerticalAlignment = prefs[Keys.HOME_VERTICAL_ALIGNMENT]?.let {
+                HomeVerticalAlignment.valueOf(it)
+            } ?: HomeSettings().homeVerticalAlignment,
             showFirstTimeHelp = prefs[Keys.SHOW_FIRST_TIME_HELP] ?: HomeSettings().showFirstTimeHelp
         )
     }
@@ -59,7 +73,7 @@ class DataStoreSettingsRepository @Inject constructor(
             showSearchBox = prefs[Keys.SHOW_SEARCH_BOX] ?: AppListSettings().showSearchBox,
             showSearchBoxAtBottom = prefs[Keys.SHOW_SEARCH_BOX_AT_BOTTOM] ?: AppListSettings().showSearchBoxAtBottom,
             appsListAlignment = prefs[Keys.APPS_ALIGNMENT]?.let {
-                AppsAlignment.valueOf(it)
+                AppAlignment.valueOf(it)
             } ?: AppListSettings().appsListAlignment,
             autoFocusSearch = prefs[Keys.AUTO_FOCUS_SEARCH] ?: AppListSettings().autoFocusSearch
         )
@@ -81,19 +95,31 @@ class DataStoreSettingsRepository @Inject constructor(
         dataStore.edit { prefs ->
             val current = HomeSettings(
                 showScreenTimePage = prefs[Keys.SHOW_SCREEN_TIME_PAGE] ?: HomeSettings().showScreenTimePage,
+                showClock = prefs[Keys.SHOW_CLOCK] ?: HomeSettings().showClock,
                 showBigClock = prefs[Keys.SHOW_BIG_CLOCK] ?: HomeSettings().showBigClock,
+                useTwelveHourDisplay = prefs[Keys.USE_TWELVE_HOUR_DISPLAY] ?: HomeSettings().useTwelveHourDisplay,
+                showDate = prefs[Keys.SHOW_DATE] ?: HomeSettings().showDate,
+                showBigDate = prefs[Keys.SHOW_BIG_DATE] ?: HomeSettings().showBigDate,
                 showScreenTimeWithAppName = prefs[Keys.SHOW_SCREEN_TIME_WITH_APP_NAME] ?: HomeSettings().showScreenTimeWithAppName,
                 homeAlignment = prefs[Keys.HOME_ALIGNMENT]?.let {
-                    AppsAlignment.valueOf(it)
+                    HomeAlignment.valueOf(it)
                 } ?: HomeSettings().homeAlignment,
+                homeVerticalAlignment = prefs[Keys.HOME_VERTICAL_ALIGNMENT]?.let {
+                    HomeVerticalAlignment.valueOf(it)
+                } ?: HomeSettings().homeVerticalAlignment,
                 showFirstTimeHelp = prefs[Keys.SHOW_FIRST_TIME_HELP] ?: HomeSettings().showFirstTimeHelp
             )
 
             val updated = current.update()
             prefs[Keys.SHOW_SCREEN_TIME_PAGE] = updated.showScreenTimePage
+            prefs[Keys.SHOW_CLOCK] = updated.showClock
             prefs[Keys.SHOW_BIG_CLOCK] = updated.showBigClock
+            prefs[Keys.USE_TWELVE_HOUR_DISPLAY] = updated.useTwelveHourDisplay
+            prefs[Keys.SHOW_DATE] = updated.showDate
+            prefs[Keys.SHOW_BIG_DATE] = updated.showBigDate
             prefs[Keys.SHOW_SCREEN_TIME_WITH_APP_NAME] = updated.showScreenTimeWithAppName
             prefs[Keys.HOME_ALIGNMENT] = updated.homeAlignment.name
+            prefs[Keys.HOME_VERTICAL_ALIGNMENT] = updated.homeVerticalAlignment.name
             prefs[Keys.SHOW_FIRST_TIME_HELP] = updated.showFirstTimeHelp
         }
     }
@@ -104,7 +130,7 @@ class DataStoreSettingsRepository @Inject constructor(
                 showSearchBox = prefs[Keys.SHOW_SEARCH_BOX] ?: AppListSettings().showSearchBox,
                 showSearchBoxAtBottom = prefs[Keys.SHOW_SEARCH_BOX_AT_BOTTOM] ?: AppListSettings().showSearchBoxAtBottom,
                 appsListAlignment = prefs[Keys.APPS_ALIGNMENT]?.let {
-                    AppsAlignment.valueOf(it)
+                    AppAlignment.valueOf(it)
                 } ?: AppListSettings().appsListAlignment,
                 autoFocusSearch = prefs[Keys.AUTO_FOCUS_SEARCH] ?: AppListSettings().autoFocusSearch
             )
