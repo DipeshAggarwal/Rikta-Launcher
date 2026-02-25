@@ -11,9 +11,13 @@ import androidx.compose.ui.unit.dp
 import com.lumina.core.ui.R
 import com.lumina.core.ui.theme.primaryContentColor
 
+private object AppsListHeaderDefaults {
+    val TopSpacerHeight = 140.dp
+}
+
 @Composable
 fun AppsListHeader() {
-    Spacer(modifier = Modifier.height(140.dp))
+    Spacer(modifier = Modifier.height(AppsListHeaderDefaults.TopSpacerHeight))
     Text(
         text = stringResource(id = R.string.all_apps),
         color = primaryContentColor,

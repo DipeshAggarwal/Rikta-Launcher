@@ -24,6 +24,7 @@ class LuminaAccessibilityService: AccessibilityService() {
 
     private val expandReceiver = object: BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
+            println("DEBUG_DEBUG, $intent")
             when (intent?.action) {
                 SystemActions.EXPAND_NOTIFICATION_SHADE -> {
                     performGlobalAction(GLOBAL_ACTION_NOTIFICATIONS)
@@ -34,6 +35,7 @@ class LuminaAccessibilityService: AccessibilityService() {
 
     override fun onServiceConnected() {
         super.onServiceConnected()
+        println("DEBUG_DEBUG: Service connected.")
 
         val filter = IntentFilter(SystemActions.EXPAND_NOTIFICATION_SHADE)
         ContextCompat.registerReceiver(

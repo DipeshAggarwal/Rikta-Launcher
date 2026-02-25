@@ -23,6 +23,11 @@ import java.time.LocalTime
 private const val BIG_TIME_FORMAT = "%02d\n%02d"
 private const val SMALL_TIME_FORMAT = "%02d:%02d"
 
+private object ClockDefaults {
+    val SmallClockOffsetX = (-2).dp
+    val SmallClockOffsetY = 5.dp
+}
+
 @Composable
 fun rememberCurrentTimeParts(twelveHourDisplay: Boolean): Triple<Int, Int, Boolean> {
     var timeParts by remember { mutableStateOf(getCurrentTimeParts(twelveHourDisplay)) }
@@ -72,7 +77,7 @@ fun Clock(
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.SemiBold,
             modifier = Modifier
-                .offset((-2).dp, 5.dp)
+                .offset(x = ClockDefaults.SmallClockOffsetX,  y = ClockDefaults.SmallClockOffsetY)
                 .clickable { onClockClick() },
             textAlign = when (homeAlignment) {
                 Alignment.Start -> TextAlign.Start

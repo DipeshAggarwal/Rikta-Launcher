@@ -15,6 +15,13 @@ import androidx.compose.ui.unit.dp
 import com.lumina.core.ui.components.DurationText
 import com.lumina.core.ui.theme.primaryContentColor
 
+private object AppListItemDefaults {
+    const val SCREEN_TIME_ALPHA = 0.5f
+
+    val VerticalPadding = 15.dp
+    val ScreenTimeHorizontalPadding = 5.dp
+}
+
 @Composable
 fun AppListItem (
     appName: String,
@@ -42,7 +49,7 @@ fun AppListItem (
     ) {
         Text(
             appName,
-            modifier = Modifier.padding(vertical = 15.dp),
+            modifier = Modifier.padding(vertical = AppListItemDefaults.VerticalPadding),
             color = primaryContentColor,
             style = MaterialTheme.typography.bodyMedium
         )
@@ -52,8 +59,11 @@ fun AppListItem (
                 screenTime,
                 color = primaryContentColor,
                 modifier = Modifier
-                    .padding(vertical = 15.dp, horizontal = 5.dp)
-                    .alpha(0.5f),
+                    .padding(
+                        vertical = AppListItemDefaults.VerticalPadding,
+                        horizontal = AppListItemDefaults.ScreenTimeHorizontalPadding
+                    )
+                    .alpha(AppListItemDefaults.SCREEN_TIME_ALPHA),
                 style = MaterialTheme.typography.bodyMedium
             )
         }

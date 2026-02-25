@@ -40,7 +40,7 @@ class HomeViewModel @Inject constructor(
     favouriteAppsRepository: FavouriteAppsRepository,
     settingsRepository: SettingsRepository,
     installedAppsRepository: InstalledAppsRepository,
-    appSearchEngine: AppSearchEngine,
+    private val appSearchEngine: AppSearchEngine,
     private val intentLauncher: IntentLauncher,
     private val statusBarController: StatusBarController,
     private val logger: Logger
@@ -63,13 +63,6 @@ class HomeViewModel @Inject constructor(
     // These variables control the bottom drawer.
     private val _bottomSheetState = MutableStateFlow<BottomSheetState>(BottomSheetState.None)
     val bottomSheetState = _bottomSheetState.asStateFlow()
-
-    private val _appToOpen = MutableSharedFlow<AppInfo>(
-        replay = 0,
-        onBufferOverflow = BufferOverflow.DROP_OLDEST,
-        extraBufferCapacity = 1
-    )
-    val appToOpen = _appToOpen.asSharedFlow()
 
     private val searchQuery = MutableStateFlow("")
 
@@ -180,11 +173,18 @@ class HomeViewModel @Inject constructor(
             is LaunchResult.Success -> {
                 setSearchExpanded(false)
                 onSearchQueryChanged("")
-                requestToGoHome()
             }
             is LaunchResult.NoLaunchIntent -> {}
             is LaunchResult.Error -> {}
         }
+    }
+
+    private fun getVisibleAppsForSearch(searchPrefs: SearchSettings): List<AppInfo> {
+        val apps = installedApps.value
+        val hidden = hiddenPackagesSet.value
+
+        return if (searchPrefs.showHiddenAppsInSearch) apps
+        else apps.filterNot { it.packageName in hidden }
     }
 
     fun requestToGoHome() {
@@ -199,11 +199,35 @@ class HomeViewModel @Inject constructor(
 
     fun onSearchQueryChanged(query: String) {
         searchQuery.value = query
+        if (query.isBlank()) return
+
+        val searchPrefs = searchSettings.value
+        if (!searchPrefs.autoOpenOnSearch) return
+
+        val visibleApps = getVisibleAppsForSearch(searchPrefs)
+        val favForBoosting = if (searchPrefs.favouriteBoostInSearch) {
+            favouriteApps.value.map { it.packageName }.toSet()
+        } else emptySet()
+
+        val results = appSearchEngine.search(visibleApps, query, favForBoosting)
+        if (results.size == 1) {
+            onAppOpened(results.first())
+        }
     }
 
     fun onSearchDone() {
-        val state = homeUiState.value as? HomeUiState.Ready ?: return
-        val firstApp = state.apps.firstOrNull() ?: return
+        val query = searchQuery.value
+        if (query.isBlank()) return
+
+        val searchPrefs = searchSettings.value
+        val visibleApps = getVisibleAppsForSearch(searchPrefs)
+        val favForBoosting = if (searchPrefs.favouriteBoostInSearch) {
+            favouriteApps.value.map { it.packageName }.toSet()
+        } else emptySet()
+
+        val results = appSearchEngine.search(visibleApps, query, favForBoosting)
+        val firstApp = results.firstOrNull() ?: return
+
         onAppOpened(firstApp)
     }
 
@@ -212,6 +236,7 @@ class HomeViewModel @Inject constructor(
             val result = intentLauncher.openApp(app)
             handleLaunchResult(result)
         }
+        requestToGoHome()
     }
 
     fun onAppLongPressed(app: AppInfo, profile: AppProfile = AppProfile.Standard) {

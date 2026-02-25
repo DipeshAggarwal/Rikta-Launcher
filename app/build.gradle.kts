@@ -124,6 +124,7 @@ dependencies {
 
     implementation(project(":data:data-apps"))
     implementation(project(":data:data-settings"))
+    implementation(project(":data:data-system"))
 
     implementation(project(":domain:domain-apps"))
     implementation(project(":domain:domain-search"))

@@ -56,7 +56,7 @@
         <service
             android:name="com.lumina.core.android.LuminaAccessibilityService"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
-            android:exported="false"
+            android:exported="true"
             tools:ignore="AccessibilityPolicy">
             <intent-filter>
                 <action android:name="android.accessibilityservice.AccessibilityService" />

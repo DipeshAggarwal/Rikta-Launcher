@@ -50,64 +50,69 @@ class DataStoreSettingsRepository @Inject constructor(
         val SPACER_HEIGHT = intPreferencesKey("spacer_height")
     }
 
+    private val defaultHomeSettings = HomeSettings()
+    private val defaultAppListSettings = AppListSettings()
+    private val defaultSearchSettings = SearchSettings()
+    private val defaultLayoutSettings = LayoutSettings()
+
     override val homeSettings: Flow<HomeSettings> = dataStore.data.map { prefs ->
         HomeSettings(
-            showScreenTimePage = prefs[Keys.SHOW_SCREEN_TIME_PAGE] ?: HomeSettings().showScreenTimePage,
-            showClock = prefs[Keys.SHOW_CLOCK] ?: HomeSettings().showClock,
-            showBigClock = prefs[Keys.SHOW_BIG_CLOCK] ?: HomeSettings().showBigClock,
-            useTwelveHourDisplay = prefs[Keys.USE_TWELVE_HOUR_DISPLAY] ?: HomeSettings().useTwelveHourDisplay,
-            showDate = prefs[Keys.SHOW_DATE] ?: HomeSettings().showDate,
-            showBigDate = prefs[Keys.SHOW_BIG_DATE] ?: HomeSettings().showBigDate,
-            showScreenTimeWithAppName = prefs[Keys.SHOW_SCREEN_TIME_WITH_APP_NAME] ?: HomeSettings().showScreenTimeWithAppName,
+            showScreenTimePage = prefs[Keys.SHOW_SCREEN_TIME_PAGE] ?: defaultHomeSettings.showScreenTimePage,
+            showClock = prefs[Keys.SHOW_CLOCK] ?: defaultHomeSettings.showClock,
+            showBigClock = prefs[Keys.SHOW_BIG_CLOCK] ?: defaultHomeSettings.showBigClock,
+            useTwelveHourDisplay = prefs[Keys.USE_TWELVE_HOUR_DISPLAY] ?: defaultHomeSettings.useTwelveHourDisplay,
+            showDate = prefs[Keys.SHOW_DATE] ?: defaultHomeSettings.showDate,
+            showBigDate = prefs[Keys.SHOW_BIG_DATE] ?: defaultHomeSettings.showBigDate,
+            showScreenTimeWithAppName = prefs[Keys.SHOW_SCREEN_TIME_WITH_APP_NAME] ?: defaultHomeSettings.showScreenTimeWithAppName,
             homeAlignment = prefs[Keys.HOME_ALIGNMENT]?.let {
                 HomeAlignment.valueOf(it)
-            } ?: HomeSettings().homeAlignment,
+            } ?: defaultHomeSettings.homeAlignment,
             homeVerticalAlignment = prefs[Keys.HOME_VERTICAL_ALIGNMENT]?.let {
                 HomeVerticalAlignment.valueOf(it)
-            } ?: HomeSettings().homeVerticalAlignment,
-            showFirstTimeHelp = prefs[Keys.SHOW_FIRST_TIME_HELP] ?: HomeSettings().showFirstTimeHelp
+            } ?: defaultHomeSettings.homeVerticalAlignment,
+            showFirstTimeHelp = prefs[Keys.SHOW_FIRST_TIME_HELP] ?: defaultHomeSettings.showFirstTimeHelp
         )
     }
     override val appListSettings: Flow<AppListSettings> = dataStore.data.map { prefs ->
         AppListSettings(
-            showSearchBox = prefs[Keys.SHOW_SEARCH_BOX] ?: AppListSettings().showSearchBox,
-            showSearchBoxAtBottom = prefs[Keys.SHOW_SEARCH_BOX_AT_BOTTOM] ?: AppListSettings().showSearchBoxAtBottom,
+            showSearchBox = prefs[Keys.SHOW_SEARCH_BOX] ?: defaultAppListSettings.showSearchBox,
+            showSearchBoxAtBottom = prefs[Keys.SHOW_SEARCH_BOX_AT_BOTTOM] ?: defaultAppListSettings.showSearchBoxAtBottom,
             appsListAlignment = prefs[Keys.APPS_ALIGNMENT]?.let {
                 AppAlignment.valueOf(it)
-            } ?: AppListSettings().appsListAlignment,
-            autoFocusSearch = prefs[Keys.AUTO_FOCUS_SEARCH] ?: AppListSettings().autoFocusSearch
+            } ?: defaultAppListSettings.appsListAlignment,
+            autoFocusSearch = prefs[Keys.AUTO_FOCUS_SEARCH] ?: defaultAppListSettings.autoFocusSearch
         )
     }
     override val searchSettings: Flow<SearchSettings> = dataStore.data.map { prefs ->
         SearchSettings(
-            showHiddenAppsInSearch = prefs[Keys.SHOW_HIDDEN_APPS_IN_SEARCH] ?: SearchSettings().showHiddenAppsInSearch,
-            favouriteBoostInSearch = prefs[Keys.FAVOURITE_BOOST_IN_SEARCH] ?: SearchSettings().favouriteBoostInSearch,
-            autoOpenOnSearch = prefs[Keys.AUTO_OPEN_ON_SEARCH] ?: SearchSettings().autoOpenOnSearch,
+            showHiddenAppsInSearch = prefs[Keys.SHOW_HIDDEN_APPS_IN_SEARCH] ?: defaultSearchSettings.showHiddenAppsInSearch,
+            favouriteBoostInSearch = prefs[Keys.FAVOURITE_BOOST_IN_SEARCH] ?: defaultSearchSettings.favouriteBoostInSearch,
+            autoOpenOnSearch = prefs[Keys.AUTO_OPEN_ON_SEARCH] ?: defaultSearchSettings.autoOpenOnSearch,
         )
     }
     override val layoutSettings: Flow<LayoutSettings> = dataStore.data.map { prefs ->
         LayoutSettings(
-            spacerHeight = prefs[Keys.SPACER_HEIGHT] ?: LayoutSettings().spacerHeight
+            spacerHeight = prefs[Keys.SPACER_HEIGHT] ?: defaultLayoutSettings.spacerHeight
         )
     }
 
     override suspend fun updateHomeSettings(update: HomeSettings.() -> HomeSettings) {
         dataStore.edit { prefs ->
             val current = HomeSettings(
-                showScreenTimePage = prefs[Keys.SHOW_SCREEN_TIME_PAGE] ?: HomeSettings().showScreenTimePage,
-                showClock = prefs[Keys.SHOW_CLOCK] ?: HomeSettings().showClock,
-                showBigClock = prefs[Keys.SHOW_BIG_CLOCK] ?: HomeSettings().showBigClock,
-                useTwelveHourDisplay = prefs[Keys.USE_TWELVE_HOUR_DISPLAY] ?: HomeSettings().useTwelveHourDisplay,
-                showDate = prefs[Keys.SHOW_DATE] ?: HomeSettings().showDate,
-                showBigDate = prefs[Keys.SHOW_BIG_DATE] ?: HomeSettings().showBigDate,
-                showScreenTimeWithAppName = prefs[Keys.SHOW_SCREEN_TIME_WITH_APP_NAME] ?: HomeSettings().showScreenTimeWithAppName,
+                showScreenTimePage = prefs[Keys.SHOW_SCREEN_TIME_PAGE] ?: defaultHomeSettings.showScreenTimePage,
+                showClock = prefs[Keys.SHOW_CLOCK] ?: defaultHomeSettings.showClock,
+                showBigClock = prefs[Keys.SHOW_BIG_CLOCK] ?: defaultHomeSettings.showBigClock,
+                useTwelveHourDisplay = prefs[Keys.USE_TWELVE_HOUR_DISPLAY] ?: defaultHomeSettings.useTwelveHourDisplay,
+                showDate = prefs[Keys.SHOW_DATE] ?: defaultHomeSettings.showDate,
+                showBigDate = prefs[Keys.SHOW_BIG_DATE] ?: defaultHomeSettings.showBigDate,
+                showScreenTimeWithAppName = prefs[Keys.SHOW_SCREEN_TIME_WITH_APP_NAME] ?: defaultHomeSettings.showScreenTimeWithAppName,
                 homeAlignment = prefs[Keys.HOME_ALIGNMENT]?.let {
                     HomeAlignment.valueOf(it)
-                } ?: HomeSettings().homeAlignment,
+                } ?: defaultHomeSettings.homeAlignment,
                 homeVerticalAlignment = prefs[Keys.HOME_VERTICAL_ALIGNMENT]?.let {
                     HomeVerticalAlignment.valueOf(it)
-                } ?: HomeSettings().homeVerticalAlignment,
-                showFirstTimeHelp = prefs[Keys.SHOW_FIRST_TIME_HELP] ?: HomeSettings().showFirstTimeHelp
+                } ?: defaultHomeSettings.homeVerticalAlignment,
+                showFirstTimeHelp = prefs[Keys.SHOW_FIRST_TIME_HELP] ?: defaultHomeSettings.showFirstTimeHelp
             )
 
             val updated = current.update()
@@ -127,12 +132,12 @@ class DataStoreSettingsRepository @Inject constructor(
     override suspend fun updateAppListSettings(update: AppListSettings.() -> AppListSettings) {
         dataStore.edit { prefs ->
             val current = AppListSettings(
-                showSearchBox = prefs[Keys.SHOW_SEARCH_BOX] ?: AppListSettings().showSearchBox,
-                showSearchBoxAtBottom = prefs[Keys.SHOW_SEARCH_BOX_AT_BOTTOM] ?: AppListSettings().showSearchBoxAtBottom,
+                showSearchBox = prefs[Keys.SHOW_SEARCH_BOX] ?: defaultAppListSettings.showSearchBox,
+                showSearchBoxAtBottom = prefs[Keys.SHOW_SEARCH_BOX_AT_BOTTOM] ?: defaultAppListSettings.showSearchBoxAtBottom,
                 appsListAlignment = prefs[Keys.APPS_ALIGNMENT]?.let {
                     AppAlignment.valueOf(it)
-                } ?: AppListSettings().appsListAlignment,
-                autoFocusSearch = prefs[Keys.AUTO_FOCUS_SEARCH] ?: AppListSettings().autoFocusSearch
+                } ?: defaultAppListSettings.appsListAlignment,
+                autoFocusSearch = prefs[Keys.AUTO_FOCUS_SEARCH] ?: defaultAppListSettings.autoFocusSearch
             )
 
             val updated = current.update()
@@ -146,9 +151,9 @@ class DataStoreSettingsRepository @Inject constructor(
     override suspend fun updateSearchSettings(update: SearchSettings.() -> SearchSettings) {
         dataStore.edit { prefs ->
             val current = SearchSettings(
-                showHiddenAppsInSearch = prefs[Keys.SHOW_HIDDEN_APPS_IN_SEARCH] ?: SearchSettings().showHiddenAppsInSearch,
-                favouriteBoostInSearch = prefs[Keys.FAVOURITE_BOOST_IN_SEARCH] ?: SearchSettings().favouriteBoostInSearch,
-                autoOpenOnSearch = prefs[Keys.AUTO_OPEN_ON_SEARCH] ?: SearchSettings().autoOpenOnSearch
+                showHiddenAppsInSearch = prefs[Keys.SHOW_HIDDEN_APPS_IN_SEARCH] ?: defaultSearchSettings.showHiddenAppsInSearch,
+                favouriteBoostInSearch = prefs[Keys.FAVOURITE_BOOST_IN_SEARCH] ?: defaultSearchSettings.favouriteBoostInSearch,
+                autoOpenOnSearch = prefs[Keys.AUTO_OPEN_ON_SEARCH] ?: defaultSearchSettings.autoOpenOnSearch
             )
 
             val updated = current.update()
@@ -161,7 +166,7 @@ class DataStoreSettingsRepository @Inject constructor(
     override suspend fun updateLayoutSettings(update: LayoutSettings.() -> LayoutSettings) {
         dataStore.edit { prefs ->
             val current = LayoutSettings(
-                spacerHeight = prefs[Keys.SPACER_HEIGHT] ?: LayoutSettings().spacerHeight
+                spacerHeight = prefs[Keys.SPACER_HEIGHT] ?: defaultLayoutSettings.spacerHeight
             )
 
             val updated = current.update()

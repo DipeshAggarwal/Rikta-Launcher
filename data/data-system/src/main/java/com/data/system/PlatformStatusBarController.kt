@@ -1,4 +1,4 @@
-package com.data.system
+package com.lumina.data.system
 
 import android.content.Context
 import android.content.Intent
@@ -21,6 +21,7 @@ class PlatformStatusBarController @Inject constructor(
             val intent = Intent(EXPAND_NOTIFICATION_SHADE).apply {
                 setPackage(context.packageName)
             }
+            println("DEBUG_DEBUG: Context")
             context.sendBroadcast(intent)
         } catch (e: Exception) {
             logger.e(TAG, "Failed to open notification shade.", e)

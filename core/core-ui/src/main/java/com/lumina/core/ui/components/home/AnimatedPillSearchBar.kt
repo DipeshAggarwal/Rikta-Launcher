@@ -39,6 +39,15 @@ import com.lumina.core.ui.R
 import com.lumina.core.ui.theme.BackgroundColor
 import com.lumina.core.ui.theme.primaryContentColor
 
+private object SearchBarDefaults {
+    val ExpandedWidth = 280.dp
+    val CollapsedWidth = 150.dp
+    val Height = 56.dp
+    val CornerRadius = 28.dp
+    val HorizontalPadding = 12.dp
+    val IconSize = 24.dp
+    val ContentStartPadding = 4.dp
+}
 @Composable
 fun AnimatedPillSearchBar(
     isExpanded: Boolean,
@@ -53,7 +62,7 @@ fun AnimatedPillSearchBar(
 
     // Animation Specs
     val width by animateDpAsState(
-        targetValue = if (isExpanded) 280.dp else 150.dp,
+        targetValue = if (isExpanded) SearchBarDefaults.ExpandedWidth else SearchBarDefaults.CollapsedWidth,
         label = "widthAnimation"
     )
     val alpha by animateFloatAsState(
@@ -77,20 +86,20 @@ fun AnimatedPillSearchBar(
     Surface(
         modifier = modifier
             .width(width)
-            .height(56.dp)
+            .height(SearchBarDefaults.Height)
             .clickable { onExpandedChange(!isExpanded) },
-        shape = RoundedCornerShape(28.dp),
+        shape = RoundedCornerShape(SearchBarDefaults.CornerRadius),
         color = primaryContentColor
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(horizontal = 12.dp)
+            modifier = Modifier.padding(horizontal = SearchBarDefaults.HorizontalPadding)
         ) {
             Icon(
                 imageVector = Icons.Default.Search,
                 contentDescription = stringResource(R.string.search),
                 tint = BackgroundColor,
-                modifier = Modifier.size(24.dp)
+                modifier = Modifier.size(SearchBarDefaults.IconSize)
             )
 
             if (!isExpanded) {
@@ -98,7 +107,7 @@ fun AnimatedPillSearchBar(
                     text = stringResource(id = R.string.search),
                     color = BackgroundColor,
                     style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.padding(start = 4.dp)
+                    modifier = Modifier.padding(start = SearchBarDefaults.ContentStartPadding)
                 )
             } else {
                 BasicTextField(
@@ -109,7 +118,7 @@ fun AnimatedPillSearchBar(
                     },
                     modifier = Modifier
                         .weight(1f)
-                        .padding(start = 4.dp)
+                        .padding(start = SearchBarDefaults.ContentStartPadding)
                         .alpha(alpha)
                         .focusRequester(focusRequester),
                     singleLine = true,

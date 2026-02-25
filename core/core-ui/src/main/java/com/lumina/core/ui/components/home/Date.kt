@@ -26,6 +26,10 @@ import java.time.Duration
 
 private const val DATE_PATTERN = "EEE d MMM"
 
+private object DateDefaults {
+    val EndPadding = 10.dp
+}
+
 @Composable
 fun rememberCurrentDate(): String {
     val locale = LocalConfiguration.current.locales[0]
@@ -78,7 +82,7 @@ fun Date(
         },
         fontWeight = FontWeight.W600,
         modifier = Modifier
-            .padding(end = 10.dp)
+            .padding(end = DateDefaults.EndPadding)
             .clickable { onDateClick() },
         textAlign = when (homeAlignment) {
             Alignment.Start -> TextAlign.Start

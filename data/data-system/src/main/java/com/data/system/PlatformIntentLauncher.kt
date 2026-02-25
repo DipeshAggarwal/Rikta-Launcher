@@ -1,4 +1,4 @@
-package com.data.system
+package com.lumina.data.system
 
 import android.app.ActivityOptions
 import android.content.ComponentName

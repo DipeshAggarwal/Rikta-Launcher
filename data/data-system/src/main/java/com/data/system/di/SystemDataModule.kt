@@ -1,7 +1,7 @@
-package com.data.system.di
+package com.lumina.data.system.di
 
-import com.data.system.PlatformIntentLauncher
-import com.data.system.PlatformStatusBarController
+import com.lumina.data.system.PlatformIntentLauncher
+import com.lumina.data.system.PlatformStatusBarController
 import com.lumina.domain.system.IntentLauncher
 import com.lumina.domain.system.StatusBarController
 import dagger.Binds

@@ -26,6 +26,12 @@ import com.lumina.core.ui.components.settings.SettingsSpacer
 import com.lumina.feature.home.HomeViewModel
 import com.lumina.feature.home.model.HomeUiState
 
+private object AppsListDefaults {
+    val HorizontalPadding = 30.dp
+    val SearchBoxSpacing = 15.dp
+    val BottomSearchVerticalPadding = 25.dp
+}
+
 @Composable
 fun AppsList(
     viewModel: HomeViewModel,
@@ -47,7 +53,7 @@ fun AppsList(
             state = scrollState,
             modifier = Modifier
                 .fillMaxSize()
-                .padding(30.dp, 0.dp),
+                .padding(horizontal = AppsListDefaults.HorizontalPadding),
             horizontalAlignment = appsListSettings.appsListAlignment.toAlignment()
         ) {
             item {
@@ -56,7 +62,7 @@ fun AppsList(
 
             item {
                 if (appsListSettings.showSearchBox && !appsListSettings.showSearchBoxAtBottom) {
-                    Spacer(modifier = Modifier.height(15.dp))
+                    Spacer(modifier = Modifier.height(AppsListDefaults.SearchBoxSpacing))
                     SearchBox(
                         uiState = readyState,
                         isExpanded = isSearchExpanded,
@@ -90,12 +96,14 @@ fun AppsList(
         Column(
             modifier = Modifier
                 .align(alignment = Alignment.BottomCenter)
-                .padding(30.dp, 25.dp)
+                .padding(
+                    horizontal = AppsListDefaults.HorizontalPadding,
+                    vertical = AppsListDefaults.BottomSearchVerticalPadding)
                 .fillMaxWidth(),
             horizontalAlignment = appsListSettings.appsListAlignment.toAlignment()
         ) {
             if (appsListSettings.showSearchBox && appsListSettings.showSearchBoxAtBottom) {
-                Spacer(modifier = Modifier.height(15.dp))
+                Spacer(modifier = Modifier.height(AppsListDefaults.SearchBoxSpacing))
                 SearchBox(
                     uiState = readyState,
                     isExpanded = isSearchExpanded,

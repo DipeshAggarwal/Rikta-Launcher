@@ -27,7 +27,14 @@ import com.lumina.domain.settings.HomeSettings
 import com.lumina.feature.home.HomeViewModel
 import com.lumina.feature.home.model.HomeUiState
 
-private const val PULL_DOWN_REGISTER_THRESHOLD = 100f
+private const val PULL_DOWN_REGISTER_THRESHOLD = 50f
+
+private object HomeMainDefaults {
+    val EdgeSpacing = 90.dp
+    val HorizontalPadding = 30.dp
+    val SectionSpacing = 10.dp
+    val FirstTimeHelpSpacing = 15.dp
+}
 
 @Composable
 fun HomeMain(
@@ -43,8 +50,7 @@ fun HomeMain(
         object: NestedScrollConnection {
             var totalDrag = 0f
 
-            override fun onPostScroll(
-                consumed: Offset,
+            override fun onPreScroll(
                 available: Offset,
                 source: NestedScrollSource
             ): Offset {
@@ -54,10 +60,9 @@ fun HomeMain(
                     if (totalDrag > PULL_DOWN_REGISTER_THRESHOLD) {
                         viewModel.onExpandNotificationShade()
                         totalDrag = 0f
-                        return available
-                    } else {
-                        totalDrag = 0f
                     }
+                } else {
+                    totalDrag = 0f
                 }
                 return Offset.Zero
             }
@@ -72,10 +77,10 @@ fun HomeMain(
             .fillMaxSize()
             .statusBarsPadding()
             .navigationBarsPadding()
-            .padding(horizontal = 30.dp)
+            .padding(horizontal = HomeMainDefaults.HorizontalPadding)
             .nestedScroll(nestedScrollConnection)
     ) {
-        item { Spacer(Modifier.height(90.dp)) }
+        item { Spacer(Modifier.height(HomeMainDefaults.HorizontalPadding)) }
 
         item {
             if (homeSettings.showClock) {
@@ -94,7 +99,7 @@ fun HomeMain(
                     Date(
                         onDateClick = { viewModel.openCalendar() },
                         homeAlignment = homeSettings.homeAlignment.toAlignment(),
-                        small = homeSettings.showDate
+                        small = homeSettings.showBigDate
                     )
                 }
 
@@ -103,11 +108,14 @@ fun HomeMain(
             }
         }
 
-        item { Spacer(Modifier.height(10.dp)) }
+        item { Spacer(Modifier.height(HomeMainDefaults.SectionSpacing)) }
 
         // TODO: Widgets
         if (readyState != null) {
-            items(readyState.favourites, key = { it.packageName }) { app ->
+            items(
+                readyState.favourites,
+                key = { "${it.packageName}_${it.componentClassName}_${it.userHandleNumber}" }
+            ) { app ->
                 AppListItem(
                     appName = app.displayName,
                     screenTime = null,
@@ -123,10 +131,10 @@ fun HomeMain(
         }
 
         if (homeSettings.showFirstTimeHelp) {
-            item { Spacer(Modifier.height(15.dp)) }
+            item { Spacer(Modifier.height(HomeMainDefaults.FirstTimeHelpSpacing)) }
             item { FirstTimeHelp() }
         }
 
-        item { Spacer(Modifier.height(90.dp)) }
+        item { Spacer(Modifier.height(HomeMainDefaults.EdgeSpacing)) }
     }
 }

@@ -1,5 +1,3 @@
-@file:JvmName("BottomSheetAppActionKt")
-
 package com.lumina.core.ui.components.home
 
 import androidx.compose.foundation.combinedClickable
@@ -27,6 +25,19 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lumina.core.ui.theme.ContentColor
 
+private object BottomSheetDefaults {
+    const val MAX_HEIGHT_FRACTION = 0.8f
+
+    val ContentPadding = 25.dp
+    val IconSize = 45.dp
+    val IconEndPadding = 10.dp
+    val TitleFontSize = 32.sp
+    val ActionsPaddingStart = 47.dp
+    val ActionsBottomPadding = 50.dp
+    val DividerVerticalPadding = 15.dp
+    val ActionVerticalPadding = 10.dp
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BottomSheet(
@@ -46,9 +57,14 @@ fun BottomSheet(
     ) {
         Column(
             modifier
-                .heightIn(max = screenHeight * 0.8f)
+                .heightIn(max = screenHeight * BottomSheetDefaults.MAX_HEIGHT_FRACTION)
                 .fillMaxWidth()
-                .padding(25.dp, 25.dp, 25.dp, 0.dp)
+                .padding(
+                    start = BottomSheetDefaults.ContentPadding,
+                    top = BottomSheetDefaults.ContentPadding,
+                    end = BottomSheetDefaults.ContentPadding,
+                    bottom = 0.dp
+                )
                 .verticalScroll(scrollPos)
         ) {
             // Header
@@ -58,40 +74,43 @@ fun BottomSheet(
                     contentDescription = "App Options",
                     tint = ContentColor,
                     modifier = Modifier
-                        .size(45.dp)
-                        .padding(end = 10.dp)
+                        .size(BottomSheetDefaults.IconSize)
+                        .padding(end = BottomSheetDefaults.IconEndPadding)
                 )
                 Text(
                     title,
                     color = ContentColor,
-                    fontSize = 32.sp,
+                    fontSize = BottomSheetDefaults.TitleFontSize,
                     style = MaterialTheme.typography.titleMedium
                 )
             }
-            HorizontalDivider(Modifier.padding(vertical = 15.dp))
+            HorizontalDivider(Modifier.padding(vertical = BottomSheetDefaults.DividerVerticalPadding))
 
             // Actions
-            Column(Modifier.padding(start = 47.dp, bottom = 50.dp)) {
+            Column(Modifier.padding(
+                start = BottomSheetDefaults.ActionsPaddingStart,
+                bottom = BottomSheetDefaults.ActionsBottomPadding
+            )) {
                 if (!shortcutActions.isEmpty()) {
                     shortcutActions.forEach { action ->
                         Text(
                             text = action.label,
                             modifier = Modifier
-                                .padding(vertical = 10.dp)
+                                .padding(vertical = BottomSheetDefaults.ActionVerticalPadding)
                                 .combinedClickable(onClick = action.onClick),
                             color = ContentColor,
                             style = MaterialTheme.typography.bodyMedium
                         )
                     }
 
-                    HorizontalDivider(Modifier.padding(vertical = 15.dp))
+                    HorizontalDivider(Modifier.padding(vertical = BottomSheetDefaults.DividerVerticalPadding))
                 }
 
                 actions.forEach { action ->
                     Text(
                         text = action.label,
                         modifier = Modifier
-                            .padding(vertical = 10.dp)
+                            .padding(vertical = BottomSheetDefaults.ActionVerticalPadding)
                             .combinedClickable(onClick = action.onClick),
                         color = ContentColor,
                         style = MaterialTheme.typography.bodyMedium
