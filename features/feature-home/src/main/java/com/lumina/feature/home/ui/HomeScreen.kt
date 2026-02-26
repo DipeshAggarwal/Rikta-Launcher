@@ -1,19 +1,27 @@
 package com.lumina.feature.home.ui
 
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.lumina.core.ui.HapticUtils.performHapticFeedback
 import com.lumina.feature.home.model.HomePage
 import com.lumina.feature.home.HomeViewModel
 import com.lumina.feature.home.model.HomeUiState
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel,
@@ -21,10 +29,14 @@ fun HomeScreen(
 ) {
     val uiState by viewModel.homeUiState.collectAsStateWithLifecycle()
     val homeSettings by viewModel.homeSettings.collectAsStateWithLifecycle()
+    val bottomSheetState by viewModel.bottomSheetState.collectAsStateWithLifecycle()
 
     val screenTimePageVisible = homeSettings.showScreenTimePage
     val homeMainScrollState = rememberLazyListState()
     val appsListScrollState = rememberLazyListState()
+    val sheetState = rememberModalBottomSheetState()
+
+    val haptics  = LocalHapticFeedback.current
 
     val pages = remember(screenTimePageVisible) {
         buildList {
@@ -54,13 +66,28 @@ fun HomeScreen(
         }
     }
 
+    HomeBottomSheet(
+        state = bottomSheetState,
+        sheetState = sheetState,
+        viewModel = viewModel
+    )
+
     when (val state = uiState) {
         is HomeUiState.Loading -> {}
         is HomeUiState.Error -> {}
         is HomeUiState.Ready -> {
             HorizontalPager(
                 state = pagerState,
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .pointerInput(Unit) {
+                        detectTapGestures(
+                            onLongPress = {
+                                performHapticFeedback(haptics)
+                                onNavigateToSettings()
+                            }
+                        )
+                    },
                 beyondViewportPageCount = 1
             ) { pageIndex ->
                 when (pages[pageIndex]) {

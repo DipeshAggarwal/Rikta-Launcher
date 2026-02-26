@@ -71,7 +71,7 @@ fun AppsList(
                         onSearchDone = { viewModel.onSearchDone() },
                         autoFocus = appsListSettings.autoFocusSearch
                     )
-                    Spacer(modifier = Modifier.height(15.dp))
+                    Spacer(modifier = Modifier.height(AppsListDefaults.SearchBoxSpacing))
                 }
             }
 

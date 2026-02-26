@@ -10,6 +10,8 @@ sealed interface LaunchResult {
 
 interface IntentLauncher {
     suspend fun openApp(app: AppInfo): LaunchResult
+    suspend fun openAppInfo(app: AppInfo): LaunchResult
+    suspend fun uninstallApp(app: AppInfo): LaunchResult
     suspend fun openAlarm(): LaunchResult
     suspend fun openCalendar(): LaunchResult
 }

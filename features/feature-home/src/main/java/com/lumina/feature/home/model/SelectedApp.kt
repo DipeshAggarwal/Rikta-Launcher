@@ -5,5 +5,6 @@ import com.lumina.domain.apps.AppProfile
 
 data class SelectedApp(
     val app: AppInfo,
+    val isFavourite: Boolean,
     val profile: AppProfile
 )

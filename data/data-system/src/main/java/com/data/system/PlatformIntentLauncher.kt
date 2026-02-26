@@ -8,6 +8,7 @@ import android.content.pm.LauncherApps
 import android.graphics.Rect
 import android.os.UserManager
 import android.provider.AlarmClock
+import androidx.core.net.toUri
 import com.lumina.core.logging.Logger
 import com.lumina.domain.apps.AppInfo
 import com.lumina.domain.system.IntentLauncher
@@ -54,6 +55,39 @@ class PlatformIntentLauncher @Inject constructor(
             }
         } catch (e: Exception) {
             logger.e("$TAG:App", "Failed to launch package: ${app.packageName}", e)
+            LaunchResult.Error(e)
+        }
+    }
+
+    override suspend fun openAppInfo(app: AppInfo): LaunchResult {
+        return try {
+            val componentName = ComponentName(app.packageName, app.componentClassName)
+            val userHandle = userManager.getUserForSerialNumber(app.userHandleNumber)
+                ?: return LaunchResult.NoLaunchIntent
+
+            launcherApps.startAppDetailsActivity(
+                componentName,
+                userHandle,
+                null,
+                null
+            )
+            LaunchResult.Success
+        } catch (e: Exception) {
+            logger.e("$TAG:App", "Failed to open app info for ${app.packageName}", e)
+            LaunchResult.Error(e)
+        }
+    }
+
+    override suspend fun uninstallApp(app: AppInfo): LaunchResult {
+        return try {
+            val intent = Intent(Intent.ACTION_DELETE).apply {
+                data = "package:${app.packageName}".toUri()
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            }
+            context.startActivity(intent)
+            LaunchResult.Success
+        } catch (e: Exception) {
+            logger.e("$TAG:App", "Failed to launch uninstall for ${app.packageName}", e)
             LaunchResult.Error(e)
         }
     }

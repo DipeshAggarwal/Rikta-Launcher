@@ -53,6 +53,7 @@
 
     <!-- Bottom Sheet Drawer strings -->
     <string name="all_apps">All Apps</string>
+    <string name="app_options">App Options</string>
     <string name="uninstall">Uninstall</string>
     <string name="hide">Hide</string>
     <string name="add_to_fav">Add To Favourites</string>

@@ -36,8 +36,8 @@ import kotlinx.coroutines.launch
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    hiddenAppsRepository: HiddenAppsRepository,
-    favouriteAppsRepository: FavouriteAppsRepository,
+    private val hiddenAppsRepository: HiddenAppsRepository,
+    private val favouriteAppsRepository: FavouriteAppsRepository,
     settingsRepository: SettingsRepository,
     installedAppsRepository: InstalledAppsRepository,
     private val appSearchEngine: AppSearchEngine,
@@ -239,8 +239,25 @@ class HomeViewModel @Inject constructor(
         requestToGoHome()
     }
 
+    fun onOpenAppInfo(app: AppInfo) {
+        viewModelScope.launch {
+            val result = intentLauncher.openAppInfo(app)
+            handleLaunchResult(result)
+        }
+        onBottomSheetDismissed()
+    }
+
+    fun onUninstallApp(app: AppInfo) {
+        viewModelScope.launch {
+            val result = intentLauncher.uninstallApp(app)
+            handleLaunchResult(result)
+        }
+        onBottomSheetDismissed()
+    }
+
     fun onAppLongPressed(app: AppInfo, profile: AppProfile = AppProfile.Standard) {
-        _bottomSheetState.value = BottomSheetState.AppOptions(SelectedApp(app, profile))
+        val isFavourite = favouriteApps.value.any { it.packageName == app.packageName }
+        _bottomSheetState.value = BottomSheetState.AppOptions(SelectedApp(app, isFavourite, profile))
     }
 
     fun onBottomSheetDismissed() {
@@ -263,5 +280,23 @@ class HomeViewModel @Inject constructor(
             val result = intentLauncher.openCalendar()
             handleLaunchResult(result)
         }
+    }
+
+    fun onToggleFavourite(packageName: String) {
+        viewModelScope.launch {
+            if (favouritePackages.value.contains(packageName)) {
+                favouriteAppsRepository.removeFavouriteApp(packageName)
+            } else {
+                favouriteAppsRepository.addFavouriteApp(packageName)
+            }
+        }
+        onBottomSheetDismissed()
+    }
+
+    fun onHideApp(packageName: String) {
+        viewModelScope.launch {
+            hiddenAppsRepository.addHiddenApp(packageName)
+        }
+        onBottomSheetDismissed()
     }
 }

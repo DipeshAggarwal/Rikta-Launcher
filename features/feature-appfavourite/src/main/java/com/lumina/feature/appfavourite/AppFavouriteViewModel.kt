@@ -51,14 +51,4 @@ class AppFavouriteViewModel @Inject constructor(
             favouriteAppsRepository.reorderFavouriteApps(fromIndex, toIndex)
         }
     }
-
-    fun toggleFavouriteApp(packageName: String) {
-        viewModelScope.launch {
-            if (favouritePackages.value.contains(packageName)) {
-                favouriteAppsRepository.removeFavouriteApp(packageName)
-            } else {
-                favouriteAppsRepository.addFavouriteApp(packageName)
-            }
-        }
-    }
 }

@@ -21,8 +21,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalWindowInfo
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.lumina.core.ui.R
 import com.lumina.core.ui.theme.ContentColor
 
 private object BottomSheetDefaults {
@@ -71,7 +73,7 @@ fun BottomSheet(
             Row {
                 Icon(
                     Icons.Default.Settings,
-                    contentDescription = "App Options",
+                    contentDescription = stringResource(R.string.app_options),
                     tint = ContentColor,
                     modifier = Modifier
                         .size(BottomSheetDefaults.IconSize)
@@ -91,7 +93,7 @@ fun BottomSheet(
                 start = BottomSheetDefaults.ActionsPaddingStart,
                 bottom = BottomSheetDefaults.ActionsBottomPadding
             )) {
-                if (!shortcutActions.isEmpty()) {
+                if (shortcutActions.isNotEmpty()) {
                     shortcutActions.forEach { action ->
                         Text(
                             text = action.label,
