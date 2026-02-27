@@ -21,7 +21,7 @@ private const val DELIMITER = ","
 class DataStoreFavouriteAppsRepository @Inject constructor(
     private val dataStore: DataStore<Preferences>,
     private val logger: Logger
-): FavouriteAppsRepository {
+) : FavouriteAppsRepository {
     private val favouriteAppsKey = stringPreferencesKey(FAVOURITE_APPS_KEY)
     private val TAG = this::class.java.simpleName
 

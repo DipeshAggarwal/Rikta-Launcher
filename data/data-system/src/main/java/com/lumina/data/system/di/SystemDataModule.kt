@@ -1,7 +1,9 @@
 package com.lumina.data.system.di
 
+import com.lumina.data.system.PlatformAppShortcutRepository
 import com.lumina.data.system.PlatformIntentLauncher
 import com.lumina.data.system.PlatformStatusBarController
+import com.lumina.domain.apps.AppShortcutRepository
 import com.lumina.domain.system.IntentLauncher
 import com.lumina.domain.system.StatusBarController
 import dagger.Binds
@@ -23,4 +25,10 @@ abstract class SystemDataModule {
     abstract fun bindsStatusBarController(
         platformStatusBarController: PlatformStatusBarController
     ): StatusBarController
+
+    @Binds
+    @Singleton
+    abstract fun bindsAppShortcutManager(
+        platformAppShortcutRepository: PlatformAppShortcutRepository
+    ): AppShortcutRepository
 }

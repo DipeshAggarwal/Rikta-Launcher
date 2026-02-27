@@ -13,7 +13,7 @@ import jakarta.inject.Singleton
 class PlatformStatusBarController @Inject constructor(
     @param:ApplicationContext private val context: Context,
     private val logger: Logger
-): StatusBarController {
+) : StatusBarController {
     private val TAG = this::class.java.simpleName
 
     override fun expandNotificationShade() {

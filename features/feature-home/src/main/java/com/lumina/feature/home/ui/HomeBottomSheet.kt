@@ -27,6 +27,12 @@ fun HomeBottomSheet(
                 title = app.displayName,
                 sheetState = sheetState,
                 onDismissRequest = { viewModel.onBottomSheetDismissed() },
+                shortcutActions = state.shortcuts.map { shortcut ->
+                    BottomSheetAppAction(
+                        label = shortcut.shortLabel,
+                        onClick = { viewModel.onLaunchShortcut(shortcut) }
+                    )
+                },
                 actions = listOf(
                     BottomSheetAppAction(
                         label = if (state.selectedApp.isFavourite) {

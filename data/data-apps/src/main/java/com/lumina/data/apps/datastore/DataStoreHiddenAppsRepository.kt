@@ -18,7 +18,7 @@ private const val HIDDEN_APPS_KEY = "hidden_apps"
  */
 class DataStoreHiddenAppsRepository @Inject constructor(
     private val dataStore: DataStore<Preferences>
-): HiddenAppsRepository {
+) : HiddenAppsRepository {
     private val hiddenAppsKey = stringSetPreferencesKey(HIDDEN_APPS_KEY)
 
     override suspend fun addHiddenApp(packageName: String) {

@@ -75,7 +75,10 @@ fun AppsList(
                 }
             }
 
-            items(readyState.apps, key = { app -> app.packageName }) { app ->
+            items(
+                readyState.apps,
+                key = { "${it.packageName}_${it.componentClassName}_${it.userHandleNumber}" }
+            ) { app ->
                 AppListItem(
                     appName = app.displayName,
                     screenTime = null,

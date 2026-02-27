@@ -18,5 +18,5 @@ object ContextModule {
     @Provides
     fun provideApplicationContext(
         @ApplicationContext context: Context
-    ): Context = context
+    ) : Context = context
 }

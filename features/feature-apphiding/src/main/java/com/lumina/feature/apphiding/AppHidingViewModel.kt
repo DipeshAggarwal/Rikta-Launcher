@@ -23,7 +23,7 @@ class AppHidingViewModel @Inject constructor(
     private val settingsRepository: SettingsRepository,
     private val hiddenAppsRepository: HiddenAppsRepository,
     installedAppsRepository: InstalledAppsRepository
-): ViewModel() {
+) : ViewModel() {
     // .Eagerly is used so that startup happens at creation time.
     // This improves animation and loading experience.
 

@@ -66,16 +66,16 @@ fun HomeScreen(
         }
     }
 
-    HomeBottomSheet(
-        state = bottomSheetState,
-        sheetState = sheetState,
-        viewModel = viewModel
-    )
-
     when (val state = uiState) {
         is HomeUiState.Loading -> {}
         is HomeUiState.Error -> {}
         is HomeUiState.Ready -> {
+            HomeBottomSheet(
+                state = bottomSheetState,
+                sheetState = sheetState,
+                viewModel = viewModel
+            )
+
             HorizontalPager(
                 state = pagerState,
                 modifier = Modifier

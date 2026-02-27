@@ -10,5 +10,5 @@ sealed interface HomeUiState {
         val apps: List<AppInfo>,
         val searchQuery: String,
         val isSearching: Boolean
-    ): HomeUiState
+    ) : HomeUiState
 }

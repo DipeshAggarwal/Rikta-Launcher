@@ -27,7 +27,7 @@ class PackageManagerInstalledAppsRepository @Inject constructor(
     @param:IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val installedAppsMonitor: InstalledAppsMonitor,
     private val logger: Logger
-): InstalledAppsRepository {
+) : InstalledAppsRepository {
     private val TAG = this::class.java.simpleName
 
     private val launcherApps = context.getSystemService(LauncherApps::class.java)

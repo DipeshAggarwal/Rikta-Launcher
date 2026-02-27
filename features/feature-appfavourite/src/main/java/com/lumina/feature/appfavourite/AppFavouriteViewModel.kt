@@ -16,7 +16,7 @@ import jakarta.inject.Inject
 class AppFavouriteViewModel @Inject constructor(
     private val favouriteAppsRepository: FavouriteAppsRepository,
     installedAppsRepository: InstalledAppsRepository
-): ViewModel() {
+) : ViewModel() {
     // .Eagerly is used so that startup happens at creation time.
     // This improves animation and loading experience.
     val installedApps: StateFlow<List<AppInfo>> = installedAppsRepository.installedApps()

@@ -20,7 +20,7 @@ import jakarta.inject.Inject
 
 class DataStoreSettingsRepository @Inject constructor(
     private val dataStore: DataStore<Preferences>
-): SettingsRepository {
+) : SettingsRepository {
     private object Keys {
         // Home
         val SHOW_SCREEN_TIME_PAGE = booleanPreferencesKey("show_screen_time_in_home")

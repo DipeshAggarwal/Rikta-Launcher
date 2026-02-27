@@ -6,6 +6,8 @@ import com.lumina.core.common.FlowDefaults.WhileSubscribedTimeoutMillis
 import com.lumina.core.logging.Logger
 import com.lumina.domain.apps.AppInfo
 import com.lumina.domain.apps.AppProfile
+import com.lumina.domain.apps.AppShortcut
+import com.lumina.domain.apps.AppShortcutRepository
 import com.lumina.domain.apps.FavouriteAppsRepository
 import com.lumina.domain.apps.HiddenAppsRepository
 import com.lumina.domain.apps.InstalledAppsRepository
@@ -42,9 +44,10 @@ class HomeViewModel @Inject constructor(
     installedAppsRepository: InstalledAppsRepository,
     private val appSearchEngine: AppSearchEngine,
     private val intentLauncher: IntentLauncher,
+    private val shortcutRepository: AppShortcutRepository,
     private val statusBarController: StatusBarController,
     private val logger: Logger
-): ViewModel() {
+) : ViewModel() {
     private val TAG = this::class.java.simpleName
 
     // SharedFlow because one time event.
@@ -257,7 +260,21 @@ class HomeViewModel @Inject constructor(
 
     fun onAppLongPressed(app: AppInfo, profile: AppProfile = AppProfile.Standard) {
         val isFavourite = favouriteApps.value.any { it.packageName == app.packageName }
-        _bottomSheetState.value = BottomSheetState.AppOptions(SelectedApp(app, isFavourite, profile))
+
+        // Edit the blank sheet state asap.
+        _bottomSheetState.value = BottomSheetState.AppOptions(
+            SelectedApp(app, isFavourite, profile),
+            shortcuts = emptyList()
+        )
+
+        viewModelScope.launch {
+            val shortcuts = shortcutRepository.getShortcuts(app)
+            val currentState = _bottomSheetState.value
+
+            if (currentState is BottomSheetState.AppOptions && currentState.selectedApp.app.packageName == app.packageName) {
+                _bottomSheetState.value = currentState.copy(shortcuts = shortcuts)
+            }
+        }
     }
 
     fun onBottomSheetDismissed() {
@@ -296,6 +313,14 @@ class HomeViewModel @Inject constructor(
     fun onHideApp(packageName: String) {
         viewModelScope.launch {
             hiddenAppsRepository.addHiddenApp(packageName)
+        }
+        onBottomSheetDismissed()
+    }
+
+    fun onLaunchShortcut(shortcut: AppShortcut) {
+        viewModelScope.launch {
+            val result = intentLauncher.launchShortcut(shortcut)
+            handleLaunchResult(result)
         }
         onBottomSheetDismissed()
     }

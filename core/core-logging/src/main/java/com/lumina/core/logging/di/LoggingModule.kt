@@ -11,6 +11,7 @@ import jakarta.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class LoggingModule {
+
     @Binds
     @Singleton
     abstract fun bindAndroidLogger(androidLogger: AndroidLogger): Logger
