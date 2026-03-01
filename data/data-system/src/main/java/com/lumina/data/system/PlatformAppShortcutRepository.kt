@@ -12,6 +12,8 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import jakarta.inject.Inject
 import jakarta.inject.Singleton
 
+private const val MAX_SHORTCUTS = 4
+
 @Singleton
 class PlatformAppShortcutRepository @Inject constructor(
     @param:ApplicationContext private val context: Context,
@@ -46,7 +48,7 @@ class PlatformAppShortcutRepository @Inject constructor(
                 )
             }
             ?.sortedBy { it.rank }
-            ?.take(4)
+            ?.take(MAX_SHORTCUTS)
             ?: emptyList()
         } catch(e: SecurityException) {
             logger.w(TAG, "To view shortcuts, this needs to be the default launcher.")

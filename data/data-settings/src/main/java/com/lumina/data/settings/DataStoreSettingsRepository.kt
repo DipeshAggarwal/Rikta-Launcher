@@ -5,9 +5,11 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.lumina.domain.settings.AppListSettings
 import com.lumina.domain.settings.AppAlignment
+import com.lumina.domain.settings.CountdownSettings
 import com.lumina.domain.settings.HomeAlignment
 import com.lumina.domain.settings.HomeSettings
 import com.lumina.domain.settings.HomeVerticalAlignment
@@ -46,6 +48,12 @@ class DataStoreSettingsRepository @Inject constructor(
         val FAVOURITE_BOOST_IN_SEARCH = booleanPreferencesKey("show_favourite_boost_in_search")
         val AUTO_OPEN_ON_SEARCH = booleanPreferencesKey("auto_open_on_search")
 
+        // COUNTDOWN
+        val COUNTDOWN_DURATION_PER_STEP = intPreferencesKey("countdown_duration_per_step")
+        val COUNTDOWN_STEPS = intPreferencesKey("countdown_steps")
+        val COUNTDOWN_WRAP_DURATION = longPreferencesKey("countdown_wrap_duration")
+        val COUNTDOWN_SHOW_TEXT = booleanPreferencesKey("countdown_show_text")
+
         // Layout
         val SPACER_HEIGHT = intPreferencesKey("spacer_height")
     }
@@ -53,6 +61,7 @@ class DataStoreSettingsRepository @Inject constructor(
     private val defaultHomeSettings = HomeSettings()
     private val defaultAppListSettings = AppListSettings()
     private val defaultSearchSettings = SearchSettings()
+    private val defaultCountdownSettings = CountdownSettings()
     private val defaultLayoutSettings = LayoutSettings()
 
     override val homeSettings: Flow<HomeSettings> = dataStore.data.map { prefs ->
@@ -88,6 +97,14 @@ class DataStoreSettingsRepository @Inject constructor(
             showHiddenAppsInSearch = prefs[Keys.SHOW_HIDDEN_APPS_IN_SEARCH] ?: defaultSearchSettings.showHiddenAppsInSearch,
             favouriteBoostInSearch = prefs[Keys.FAVOURITE_BOOST_IN_SEARCH] ?: defaultSearchSettings.favouriteBoostInSearch,
             autoOpenOnSearch = prefs[Keys.AUTO_OPEN_ON_SEARCH] ?: defaultSearchSettings.autoOpenOnSearch,
+        )
+    }
+    override val countdownSettings: Flow<CountdownSettings> = dataStore.data.map { prefs ->
+        CountdownSettings(
+            countdownDurationPerStep = prefs[Keys.COUNTDOWN_DURATION_PER_STEP] ?: defaultCountdownSettings.countdownDurationPerStep,
+            countdownSteps = prefs[Keys.COUNTDOWN_STEPS] ?: defaultCountdownSettings.countdownSteps,
+            countdownWrapDuration = prefs[Keys.COUNTDOWN_WRAP_DURATION] ?: defaultCountdownSettings.countdownWrapDuration,
+            showText = prefs[Keys.COUNTDOWN_SHOW_TEXT] ?: defaultCountdownSettings.showText
         )
     }
     override val layoutSettings: Flow<LayoutSettings> = dataStore.data.map { prefs ->
@@ -160,6 +177,23 @@ class DataStoreSettingsRepository @Inject constructor(
             prefs[Keys.SHOW_HIDDEN_APPS_IN_SEARCH] = updated.showHiddenAppsInSearch
             prefs[Keys.FAVOURITE_BOOST_IN_SEARCH] = updated.favouriteBoostInSearch
             prefs[Keys.AUTO_OPEN_ON_SEARCH] = updated.autoOpenOnSearch
+        }
+    }
+
+    override suspend fun updateCountdownSettings(update: CountdownSettings.() -> CountdownSettings) {
+        dataStore.edit { prefs ->
+            val current = CountdownSettings(
+                countdownDurationPerStep = prefs[Keys.COUNTDOWN_DURATION_PER_STEP] ?: defaultCountdownSettings.countdownDurationPerStep,
+                countdownSteps = prefs[Keys.COUNTDOWN_STEPS] ?: defaultCountdownSettings.countdownSteps,
+                countdownWrapDuration = prefs[Keys.COUNTDOWN_WRAP_DURATION] ?: defaultCountdownSettings.countdownWrapDuration,
+                showText = prefs[Keys.COUNTDOWN_SHOW_TEXT] ?: defaultCountdownSettings.showText
+            )
+
+            val updated = current.update()
+            prefs[Keys.COUNTDOWN_DURATION_PER_STEP] = updated.countdownDurationPerStep
+            prefs[Keys.COUNTDOWN_STEPS] = updated.countdownSteps
+            prefs[Keys.COUNTDOWN_WRAP_DURATION] = updated.countdownWrapDuration
+            prefs[Keys.COUNTDOWN_SHOW_TEXT] = updated.showText
         }
     }
 

@@ -27,6 +27,13 @@ data class SearchSettings(
     val autoOpenOnSearch: Boolean = true
 )
 
+data class CountdownSettings(
+    val countdownDurationPerStep: Int = 3,
+    val countdownSteps: Int = 5,
+    val countdownWrapDuration: Long = 500L,
+    val showText: Boolean = true
+)
+
 data class LayoutSettings(
     val spacerHeight: Int = DEFAULT_SPACER_HEIGHT,
     val isImmersiveMode: Boolean = false
@@ -36,5 +43,6 @@ data class LauncherSettings(
     val home: HomeSettings = HomeSettings(),
     val appList: AppListSettings = AppListSettings(),
     val search: SearchSettings = SearchSettings(),
+    val countdown: CountdownSettings = CountdownSettings(),
     val layout: LayoutSettings = LayoutSettings()
 )

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cancel">Cancel</string>
+    <string-array name="countdown_prompts">
+        <item>Take a deep breath.</item>
+        <item>Stay Focused. You got this.</item>
+        <item>Do you really want to do this?</item>
+    </string-array>
+</resources>

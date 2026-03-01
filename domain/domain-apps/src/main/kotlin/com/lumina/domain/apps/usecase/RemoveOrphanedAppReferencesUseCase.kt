@@ -34,7 +34,7 @@ class RemoveOrphanedAppReferencesUseCase @Inject constructor(
     }
 
     private suspend fun cleanHiddenApps(installedPackages: Set<String>) {
-        val hiddenPackages = hiddenAppsRepository.allHiddenApps().first()
+        val hiddenPackages = hiddenAppsRepository.hiddenAppPackages.first()
         val cleanedHiddenPackages = hiddenPackages.filter { it in installedPackages }
 
         // Update the repository only if a change occurred (avoids unnecessary DataStore writes).
@@ -44,7 +44,7 @@ class RemoveOrphanedAppReferencesUseCase @Inject constructor(
     }
 
     private suspend fun cleanFavouriteApps(installedPackages: Set<String>) {
-        val favouritePackages = favouriteAppsRepository.allFavouriteApps().first()
+        val favouritePackages = favouriteAppsRepository.favouriteAppPackages.first()
         val cleanedFavouritePackages = favouritePackages.filter { it in installedPackages }
 
         // Update the repository only if a change occurred (avoids unnecessary DataStore writes).

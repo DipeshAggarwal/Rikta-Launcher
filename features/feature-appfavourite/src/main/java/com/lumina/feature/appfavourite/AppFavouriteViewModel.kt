@@ -27,7 +27,7 @@ class AppFavouriteViewModel @Inject constructor(
         )
 
     // Reactive set of package names currently marked as favourite.
-    val favouritePackages: StateFlow<List<String>> = favouriteAppsRepository.allFavouriteApps()
+    val favouritePackages: StateFlow<List<String>> = favouriteAppsRepository.favouriteAppPackages
         .stateIn(
             viewModelScope,
             SharingStarted.Eagerly,

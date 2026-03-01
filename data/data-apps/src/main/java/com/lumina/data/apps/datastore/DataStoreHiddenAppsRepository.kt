@@ -9,8 +9,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import jakarta.inject.Inject
 
-private const val HIDDEN_APPS_KEY = "hidden_apps"
-
 /**
  * DataStore implementation of [HiddenAppsRepository].
  * Uses a 'StringSet' because the order of hidden apps is usually irrelevant, and Sets provide O(1)
@@ -19,35 +17,33 @@ private const val HIDDEN_APPS_KEY = "hidden_apps"
 class DataStoreHiddenAppsRepository @Inject constructor(
     private val dataStore: DataStore<Preferences>
 ) : HiddenAppsRepository {
-    private val hiddenAppsKey = stringSetPreferencesKey(HIDDEN_APPS_KEY)
+    private val HIDDEN_APPS_KEY = stringSetPreferencesKey("hidden_apps")
+
+    override val hiddenAppPackages: Flow<Set<String>> = dataStore.data
+        .map { prefs -> prefs[HIDDEN_APPS_KEY] ?: emptySet() }
 
     override suspend fun addHiddenApp(packageName: String) {
         dataStore.edit { prefs ->
-            val currentHiddenApps = prefs[hiddenAppsKey] ?: emptySet()
+            val currentHiddenApps = prefs[HIDDEN_APPS_KEY] ?: emptySet()
             val updatedHiddenApps = currentHiddenApps + packageName
 
-            prefs[hiddenAppsKey] = updatedHiddenApps
+            prefs[HIDDEN_APPS_KEY] = updatedHiddenApps
         }
     }
 
     override suspend fun removeHiddenApp(packageName: String) {
         dataStore.edit { prefs ->
-            val currentHiddenApps = prefs[hiddenAppsKey] ?: emptySet()
+            val currentHiddenApps = prefs[HIDDEN_APPS_KEY] ?: emptySet()
             val updatedHiddenApps = currentHiddenApps - packageName
 
-            prefs[hiddenAppsKey] = updatedHiddenApps
+            prefs[HIDDEN_APPS_KEY] = updatedHiddenApps
         }
     }
 
     override suspend fun setHiddenApps(packageNames: List<String>) {
         dataStore.edit { prefs ->
             // Overwrites the entire list (used during database cleanup/sync)
-            prefs[hiddenAppsKey] = packageNames.toSet()
+            prefs[HIDDEN_APPS_KEY] = packageNames.toSet()
         }
     }
-
-    override fun allHiddenApps(): Flow<Set<String>> {
-        return dataStore.data.map { prefs -> prefs[hiddenAppsKey] ?: emptySet() }
-    }
-
 }

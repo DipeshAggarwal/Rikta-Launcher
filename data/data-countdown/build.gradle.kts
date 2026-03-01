@@ -14,9 +14,6 @@ dependencies {
     implementation(project(":core:core-common"))
     implementation(project(":core:core-logging"))
 
-    implementation(project(":data:data-countdown"))
-
     implementation(project(":domain:domain-apps"))
     implementation(project(":domain:domain-countdown"))
-    implementation(project(":domain:domain-system"))
 }

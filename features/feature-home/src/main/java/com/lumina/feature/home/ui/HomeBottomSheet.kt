@@ -43,6 +43,14 @@ fun HomeBottomSheet(
                         onClick = { viewModel.onToggleFavourite(app.packageName) }
                     ),
                     BottomSheetAppAction(
+                        label = if (state.selectedApp.isCountdownRequired) {
+                            stringResource(R.string.remove_countdown)
+                        } else {
+                            stringResource(R.string.add_countdown)
+                        },
+                        onClick = { viewModel.onToggleCountdown(app.packageName) }
+                    ),
+                    BottomSheetAppAction(
                         label = stringResource(R.string.hide),
                         onClick = { viewModel.onHideApp(app.packageName) }
                     ),

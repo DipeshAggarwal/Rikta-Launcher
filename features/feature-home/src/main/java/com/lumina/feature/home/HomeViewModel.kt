@@ -11,11 +11,13 @@ import com.lumina.domain.apps.AppShortcutRepository
 import com.lumina.domain.apps.FavouriteAppsRepository
 import com.lumina.domain.apps.HiddenAppsRepository
 import com.lumina.domain.apps.InstalledAppsRepository
+import com.lumina.domain.countdown.CountdownRepository
 import com.lumina.domain.search.AppSearchEngine
 import com.lumina.domain.settings.AppListSettings
 import com.lumina.domain.settings.HomeSettings
 import com.lumina.domain.settings.SearchSettings
 import com.lumina.domain.settings.SettingsRepository
+import com.lumina.domain.system.AppLaunchCoordinator
 import com.lumina.domain.system.IntentLauncher
 import com.lumina.domain.system.LaunchResult
 import com.lumina.domain.system.StatusBarController
@@ -40,10 +42,12 @@ import kotlinx.coroutines.launch
 class HomeViewModel @Inject constructor(
     private val hiddenAppsRepository: HiddenAppsRepository,
     private val favouriteAppsRepository: FavouriteAppsRepository,
+    private val countdownRepository: CountdownRepository,
     settingsRepository: SettingsRepository,
     installedAppsRepository: InstalledAppsRepository,
     private val appSearchEngine: AppSearchEngine,
     private val intentLauncher: IntentLauncher,
+    private val launchCoordinator: AppLaunchCoordinator,
     private val shortcutRepository: AppShortcutRepository,
     private val statusBarController: StatusBarController,
     private val logger: Logger
@@ -78,18 +82,25 @@ class HomeViewModel @Inject constructor(
             emptyList()
         )
 
-    private val hiddenPackagesSet: StateFlow<Set<String>> = hiddenAppsRepository.allHiddenApps()
+    private val hiddenPackagesSet: StateFlow<Set<String>> = hiddenAppsRepository.hiddenAppPackages
         .stateIn(
             viewModelScope,
             SharingStarted.Eagerly,
             emptySet()
         )
 
-    private val favouritePackages: StateFlow<List<String>> = favouriteAppsRepository.allFavouriteApps()
+    private val favouritePackages: StateFlow<List<String>> = favouriteAppsRepository.favouriteAppPackages
         .stateIn(
             viewModelScope,
             SharingStarted.Eagerly,
             emptyList()
+        )
+
+    private val countdownPackages: StateFlow<Set<String>> = countdownRepository.countdownAppPackages
+        .stateIn(
+            viewModelScope,
+            SharingStarted.Eagerly,
+            emptySet()
         )
 
     // Create a map for faster lookup.
@@ -236,8 +247,7 @@ class HomeViewModel @Inject constructor(
 
     fun onAppOpened(app: AppInfo) {
         viewModelScope.launch {
-            val result = intentLauncher.openApp(app)
-            handleLaunchResult(result)
+            launchCoordinator.requestLaunch(app)
         }
         requestToGoHome()
     }
@@ -260,10 +270,16 @@ class HomeViewModel @Inject constructor(
 
     fun onAppLongPressed(app: AppInfo, profile: AppProfile = AppProfile.Standard) {
         val isFavourite = favouriteApps.value.any { it.packageName == app.packageName }
+        val isCountdownRequired = countdownPackages.value.any { it == app.packageName }
 
         // Edit the blank sheet state asap.
         _bottomSheetState.value = BottomSheetState.AppOptions(
-            SelectedApp(app, isFavourite, profile),
+            SelectedApp(
+                app,
+                isFavourite,
+                isCountdownRequired,
+                profile
+            ),
             shortcuts = emptyList()
         )
 
@@ -305,6 +321,17 @@ class HomeViewModel @Inject constructor(
                 favouriteAppsRepository.removeFavouriteApp(packageName)
             } else {
                 favouriteAppsRepository.addFavouriteApp(packageName)
+            }
+        }
+        onBottomSheetDismissed()
+    }
+
+    fun onToggleCountdown(packageName: String) {
+        viewModelScope.launch {
+            if (countdownPackages.value.contains(packageName)) {
+                countdownRepository.removeCountdownApp(packageName)
+            } else {
+                countdownRepository.addCountdownApp(packageName)
             }
         }
         onBottomSheetDismissed()

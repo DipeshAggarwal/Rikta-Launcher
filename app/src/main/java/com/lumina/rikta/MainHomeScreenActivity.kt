@@ -16,6 +16,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -25,18 +26,26 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.lumina.core.common.FeatureFlags
+import com.lumina.core.ui.Motion.SCREEN_TRANSITION_DURATION
 import com.lumina.core.ui.theme.BackgroundColor
+import com.lumina.domain.system.AppLaunchCoordinator
+import com.lumina.domain.system.LaunchState
+import com.lumina.feature.countdown.ui.CountdownScreen
 import com.lumina.feature.home.ui.HOME_ROUTE
 import com.lumina.feature.home.ui.homeNavigation
 import com.lumina.rikta.ui.views.HomeScreenPageManager
@@ -53,6 +62,7 @@ import com.lumina.rikta.utils.managers.scheduleDailyCleanup
 import com.lumina.rikta.utils.messagingInitializer
 import com.lumina.rikta.utils.setStatusBarImmersive
 import dagger.hilt.android.AndroidEntryPoint
+import jakarta.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
@@ -71,6 +81,9 @@ class MainHomeScreenActivity : ComponentActivity() {
         ActivityResultContracts.RequestPermission()
     ) { _ ->
     }
+
+    @Inject
+    lateinit var launchCoordinator: AppLaunchCoordinator
 
     fun requestLocationPermission(context: Context, activity: Activity) {
         if (ContextCompat.checkSelfPermission(
@@ -298,6 +311,11 @@ class MainHomeScreenActivity : ComponentActivity() {
     private fun SetupNavHost(startDestination: String) {
         val navController = rememberNavController()
 
+        val launchState by launchCoordinator.launchState.collectAsStateWithLifecycle()
+        val scope = rememberCoroutineScope()
+
+        val isCountdownVisible = launchState is LaunchState.RequiresCountdown
+
         LaunchedEffect(homeScreenModel.navigateHomeEvent) {
             homeScreenModel.navigateHomeEvent.collectLatest {
                 if (navController.currentDestination?.route != "home") {
@@ -381,6 +399,18 @@ class MainHomeScreenActivity : ComponentActivity() {
                         activity = this@MainHomeScreenActivity
                     )
                 }
+            }
+
+            AnimatedVisibility(
+                visible = isCountdownVisible,
+                enter = fadeIn(tween(SCREEN_TRANSITION_DURATION)),
+                exit = fadeOut(tween(SCREEN_TRANSITION_DURATION))
+            ) {
+                CountdownScreen(
+                    isVisible = isCountdownVisible,
+                    onCompleted = { scope.launch { launchCoordinator.completeLaunch() }},
+                    onCancelled = { launchCoordinator.cancelLaunch() }
+                )
             }
         }
     }

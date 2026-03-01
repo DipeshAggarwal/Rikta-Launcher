@@ -123,10 +123,12 @@ dependencies {
     implementation(project(":core:core-ui"))
 
     implementation(project(":data:data-apps"))
+    implementation(project(":data:data-countdown"))
     implementation(project(":data:data-settings"))
     implementation(project(":data:data-system"))
 
     implementation(project(":domain:domain-apps"))
+    implementation(project(":domain:domain-countdown"))
     implementation(project(":domain:domain-search"))
     implementation(project(":domain:domain-settings"))
     implementation(project(":domain:domain-system"))
@@ -134,6 +136,7 @@ dependencies {
     implementation(project(":features:feature-apphiding"))
     implementation(project(":features:feature-apppicker"))
     implementation(project(":features:feature-appfavourite"))
+    implementation(project(":features:feature-countdown"))
     implementation(project(":features:feature-home"))
     implementation(project(":features:feature-settings"))
 

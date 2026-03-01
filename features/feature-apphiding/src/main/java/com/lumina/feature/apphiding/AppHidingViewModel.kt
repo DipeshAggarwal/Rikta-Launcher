@@ -36,7 +36,7 @@ class AppHidingViewModel @Inject constructor(
         )
 
     // Reactive set of package names currently marked as hidden.
-    val hiddenPackagesSet: StateFlow<Set<String>> = hiddenAppsRepository.allHiddenApps()
+    val hiddenPackagesSet: StateFlow<Set<String>> = hiddenAppsRepository.hiddenAppPackages
         .stateIn(
             viewModelScope,
             SharingStarted.Eagerly,
