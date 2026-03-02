@@ -6,24 +6,31 @@ import android.content.pm.PackageManager
 import android.os.UserHandle
 import android.os.UserManager
 import com.lumina.core.common.IoDispatcher
+import com.lumina.core.android.di.ApplicationScope
 import com.lumina.core.logging.Logger
-import com.lumina.domain.apps.AppInfo
+import com.lumina.core.model.AppInfo
 import com.lumina.domain.apps.InstalledAppsRepository
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.withContext
 import jakarta.inject.Inject
+import jakarta.inject.Singleton
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.stateIn
 import java.util.concurrent.ConcurrentHashMap
 
 /**
  * Android implementation of [InstalledAppsRepository] using [PackageManager].
  * Uses a local cache to avoid expensive IPC calls to the system on every refresh.
  */
+@Singleton
 class PackageManagerInstalledAppsRepository @Inject constructor(
     @param:ApplicationContext private val context: Context,
+    @param:ApplicationScope private val scope: CoroutineScope,
     @param:IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val installedAppsMonitor: InstalledAppsMonitor,
     private val logger: Logger
@@ -37,7 +44,7 @@ class PackageManagerInstalledAppsRepository @Inject constructor(
     // Querying the system for labels is an Inter-Process Communication (IPC) call and is quite expensive.
     private val appCache = ConcurrentHashMap<UserHandle, List<AppInfo>>()
 
-    override suspend fun getDisplayName(packageName: String): String? = withContext(ioDispatcher) {
+    override suspend fun getLabel(packageName: String): String? = withContext(ioDispatcher) {
         try {
             appCache.values
                 .flatten()
@@ -53,13 +60,14 @@ class PackageManagerInstalledAppsRepository @Inject constructor(
      * Provides a reactive stream of installed apps with launcher activities.
      * Re-queries the system whenever [installedAppsMonitor] emits a change.
      */
-    override fun installedApps(): Flow<List<AppInfo>> =
+    override val apps: StateFlow<List<AppInfo>> =
         installedAppsMonitor.appChanges()
             .onStart { emit(AppChangeEvent.Initial) }
             .map { event ->
                 invalidateCache(event)
                 loadInstalledApps()
             }
+            .stateIn(scope, SharingStarted.Eagerly, emptyList())
 
     private suspend fun loadInstalledApps(): List<AppInfo> = withContext(ioDispatcher) {
         val profiles = userManager.userProfiles

@@ -1,7 +1,7 @@
 package com.lumina.feature.home.model
 
-import com.lumina.domain.apps.AppInfo
-import com.lumina.domain.apps.AppProfile
+import com.lumina.core.model.AppInfo
+import com.lumina.core.model.AppProfile
 
 data class SelectedApp(
     val app: AppInfo,

@@ -1,7 +1,7 @@
 package com.lumina.domain.search
 
 import com.lumina.core.common.TextUtils.UNACCENT_REGEX
-import com.lumina.domain.apps.AppInfo
+import com.lumina.core.model.AppInfo
 import jakarta.inject.Inject
 import java.text.Normalizer
 import kotlin.math.max

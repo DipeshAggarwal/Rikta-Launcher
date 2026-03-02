@@ -2,7 +2,7 @@ package com.lumina.feature.appfavourite
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.lumina.domain.apps.AppInfo
+import com.lumina.core.model.AppInfo
 import com.lumina.domain.apps.FavouriteAppsRepository
 import com.lumina.domain.apps.InstalledAppsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -19,15 +19,10 @@ class AppFavouriteViewModel @Inject constructor(
 ) : ViewModel() {
     // .Eagerly is used so that startup happens at creation time.
     // This improves animation and loading experience.
-    val installedApps: StateFlow<List<AppInfo>> = installedAppsRepository.installedApps()
-        .stateIn(
-            viewModelScope,
-            SharingStarted.Eagerly,
-            emptyList()
-        )
+    val installedApps: StateFlow<List<AppInfo>> = installedAppsRepository.apps
 
     // Reactive set of package names currently marked as favourite.
-    val favouritePackages: StateFlow<List<String>> = favouriteAppsRepository.favouriteAppPackages
+    val favouritePackages: StateFlow<List<String>> = favouriteAppsRepository.appPackages
         .stateIn(
             viewModelScope,
             SharingStarted.Eagerly,
@@ -36,19 +31,19 @@ class AppFavouriteViewModel @Inject constructor(
 
     fun addFavouriteApp(packageName: String) {
         viewModelScope.launch {
-            favouriteAppsRepository.addFavouriteApp(packageName)
+            favouriteAppsRepository.addApp(packageName)
         }
     }
 
     fun removeFavouriteApp(packageName: String) {
         viewModelScope.launch {
-            favouriteAppsRepository.removeFavouriteApp(packageName)
+            favouriteAppsRepository.removeApp(packageName)
         }
     }
 
     fun reorderFavouriteApps(fromIndex: Int, toIndex: Int) {
         viewModelScope.launch {
-            favouriteAppsRepository.reorderFavouriteApps(fromIndex, toIndex)
+            favouriteAppsRepository.reorderApps(fromIndex, toIndex)
         }
     }
 }

@@ -19,10 +19,10 @@ class DataStoreHiddenAppsRepository @Inject constructor(
 ) : HiddenAppsRepository {
     private val HIDDEN_APPS_KEY = stringSetPreferencesKey("hidden_apps")
 
-    override val hiddenAppPackages: Flow<Set<String>> = dataStore.data
+    override val appPackages: Flow<Set<String>> = dataStore.data
         .map { prefs -> prefs[HIDDEN_APPS_KEY] ?: emptySet() }
 
-    override suspend fun addHiddenApp(packageName: String) {
+    override suspend fun addApp(packageName: String) {
         dataStore.edit { prefs ->
             val currentHiddenApps = prefs[HIDDEN_APPS_KEY] ?: emptySet()
             val updatedHiddenApps = currentHiddenApps + packageName
@@ -31,7 +31,7 @@ class DataStoreHiddenAppsRepository @Inject constructor(
         }
     }
 
-    override suspend fun removeHiddenApp(packageName: String) {
+    override suspend fun removeApp(packageName: String) {
         dataStore.edit { prefs ->
             val currentHiddenApps = prefs[HIDDEN_APPS_KEY] ?: emptySet()
             val updatedHiddenApps = currentHiddenApps - packageName
@@ -40,7 +40,7 @@ class DataStoreHiddenAppsRepository @Inject constructor(
         }
     }
 
-    override suspend fun setHiddenApps(packageNames: List<String>) {
+    override suspend fun setApps(packageNames: List<String>) {
         dataStore.edit { prefs ->
             // Overwrites the entire list (used during database cleanup/sync)
             prefs[HIDDEN_APPS_KEY] = packageNames.toSet()

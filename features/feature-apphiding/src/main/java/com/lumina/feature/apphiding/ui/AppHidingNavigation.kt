@@ -43,7 +43,7 @@ fun NavGraphBuilder.appHidingNavigation(
         }
 
         // HIDDEN_APPS_MANAGEMENT_ROUTE ViewModal is passed so that both screens can share the same
-        // instance, so changes made in this screen are reflected in the management screen..
+        // instance, so changes made in this screen are reflected in the management screen.
         val viewModel: AppHidingViewModel = hiltViewModel(parentEntry)
 
         AppHidingScreen(

@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lumina.core.common.FlowDefaults.WhileSubscribedTimeoutMillis
-import com.lumina.domain.apps.AppInfo
+import com.lumina.core.model.AppInfo
 import com.lumina.domain.apps.HiddenAppsRepository
 import com.lumina.domain.apps.InstalledAppsRepository
 import com.lumina.domain.settings.SearchSettings
@@ -27,16 +27,10 @@ class AppHidingViewModel @Inject constructor(
     // .Eagerly is used so that startup happens at creation time.
     // This improves animation and loading experience.
 
-    // Master list of all launcher apps on the system.
-    val installedApps: StateFlow<List<AppInfo>> = installedAppsRepository.installedApps()
-        .stateIn(
-            viewModelScope,
-            SharingStarted.Eagerly,
-            emptyList()
-        )
+    val installedApps: StateFlow<List<AppInfo>> = installedAppsRepository.apps
 
     // Reactive set of package names currently marked as hidden.
-    val hiddenPackagesSet: StateFlow<Set<String>> = hiddenAppsRepository.hiddenAppPackages
+    val hiddenPackagesSet: StateFlow<Set<String>> = hiddenAppsRepository.appPackages
         .stateIn(
             viewModelScope,
             SharingStarted.Eagerly,
@@ -84,13 +78,13 @@ class AppHidingViewModel @Inject constructor(
 
     fun addHiddenApp(packageName: String) {
         viewModelScope.launch {
-            hiddenAppsRepository.addHiddenApp(packageName)
+            hiddenAppsRepository.addApp(packageName)
         }
     }
 
     fun removeHiddenApp(packageName: String) {
         viewModelScope.launch {
-            hiddenAppsRepository.removeHiddenApp(packageName)
+            hiddenAppsRepository.removeApp(packageName)
         }
     }
 
@@ -99,9 +93,9 @@ class AppHidingViewModel @Inject constructor(
             val currentlySelected = hiddenPackagesSet.value.contains(packageName)
 
             if (currentlySelected) {
-                hiddenAppsRepository.removeHiddenApp(packageName)
+                hiddenAppsRepository.removeApp(packageName)
             } else {
-                hiddenAppsRepository.addHiddenApp(packageName)
+                hiddenAppsRepository.addApp(packageName)
             }
         }
     }

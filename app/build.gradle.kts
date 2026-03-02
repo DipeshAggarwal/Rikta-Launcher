@@ -120,23 +120,24 @@ dependencies {
     implementation(project(":core:core-common"))
     implementation(project(":core:core-datastore"))
     implementation(project(":core:core-logging"))
+    implementation(project(":core:core-model"))
     implementation(project(":core:core-ui"))
 
     implementation(project(":data:data-apps"))
     implementation(project(":data:data-countdown"))
     implementation(project(":data:data-settings"))
-    implementation(project(":data:data-system"))
+    implementation(project(":data:data-coordination"))
 
     implementation(project(":domain:domain-apps"))
     implementation(project(":domain:domain-countdown"))
     implementation(project(":domain:domain-search"))
     implementation(project(":domain:domain-settings"))
-    implementation(project(":domain:domain-system"))
+    implementation(project(":domain:domain-coordination"))
 
     implementation(project(":features:feature-apphiding"))
     implementation(project(":features:feature-apppicker"))
     implementation(project(":features:feature-appfavourite"))
-    implementation(project(":features:feature-countdown"))
+    implementation(project(":features:feature-appcountdown"))
     implementation(project(":features:feature-home"))
     implementation(project(":features:feature-settings"))
 

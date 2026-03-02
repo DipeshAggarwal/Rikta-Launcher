@@ -2,6 +2,7 @@
 <resources>
     <string name="remove">Remove</string>
     <string name="reset_to_default">Reset to default</string>
+    <string name="swipe_to_show_app">Swipe to unhide app</string>
 
     <!-- Theme -->
     <string name="theme">Theme</string>

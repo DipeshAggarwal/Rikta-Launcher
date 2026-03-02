@@ -114,7 +114,7 @@ class HomeScreenModel @Inject constructor(
 
     val installedApps = MutableStateFlow<List<InstalledApp>>(emptyList())
 
-    val hiddenApps = hiddenAppsRepository.hiddenAppPackages
+    val hiddenApps = hiddenAppsRepository.appPackages
         .stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(WhileSubscribedTimeoutMillis),
@@ -167,13 +167,13 @@ class HomeScreenModel @Inject constructor(
 
     fun addHiddenApp(packageName: String) {
         viewModelScope.launch {
-            hiddenAppsRepository.addHiddenApp(packageName)
+            hiddenAppsRepository.addApp(packageName)
         }
     }
 
     fun removeHiddenApp(packageName: String) {
         viewModelScope.launch {
-            hiddenAppsRepository.removeHiddenApp(packageName)
+            hiddenAppsRepository.removeApp(packageName)
         }
     }
 

@@ -1,6 +1,6 @@
 package com.lumina.feature.home.model
 
-import com.lumina.domain.apps.AppInfo
+import com.lumina.core.model.AppInfo
 
 sealed interface HomeUiState {
     data object Loading : HomeUiState

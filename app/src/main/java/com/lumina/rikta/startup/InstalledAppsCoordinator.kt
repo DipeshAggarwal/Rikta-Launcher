@@ -2,8 +2,8 @@ package com.lumina.rikta.startup
 
 import com.lumina.data.apps.installed.AppChangeEvent
 import com.lumina.data.apps.installed.InstalledAppsMonitor
-import com.lumina.domain.apps.usecase.RemoveOrphanedAppReferencesUseCase
-import com.lumina.rikta.di.ApplicationScope
+import com.lumina.domain.coordination.usecase.RemoveOrphanedAppReferencesUseCase
+import com.lumina.core.android.di.ApplicationScope
 import jakarta.inject.Inject
 import jakarta.inject.Singleton
 import kotlinx.coroutines.CoroutineScope

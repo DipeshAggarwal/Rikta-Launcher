@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cancel">Cancel</string>
+    <string name="countdown_apps">Apps Requiring Countdown</string>
+    <string name="manage_countdown_apps">Manage Countdown Apps</string>
+
+    <string name="countdown_duration_per_step">Duration Per Steps</string>
+    <string name="countdown_total_steps">Total Steps</string>
+    <string name="countdown_duration_wrap">Wrap Duration</string>
+    <string name="countdown_show_text">Show Prompt</string>
+
+    <string name="set_app_countdown_time">Set App Countdown Time</string>
+    <string name="set_app_countdown_time_long">Long Time</string>
+    <string name="set_app_countdown_time_normal">Normal Time</string>
+    <string name="set_app_countdown_time_short">Short Time</string>
+    <string name="set_app_countdown_time_slider">Change Time</string>
+    <string name="set_app_countdown_steps_slider">Change Steps</string>
+
+    <string-array name="countdown_prompts">
+        <item>Take a deep breath.</item>
+        <item>Stay Focused. You got this.</item>
+        <item>Do you really want to do this?</item>
+    </string-array>
+</resources>

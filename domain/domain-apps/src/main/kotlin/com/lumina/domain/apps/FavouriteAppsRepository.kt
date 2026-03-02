@@ -7,10 +7,10 @@ import kotlinx.coroutines.flow.Flow
  * Unlike HiddenApps, the order of this list is significant for UI presentation.
  */
 interface FavouriteAppsRepository {
-    val favouriteAppPackages: Flow<List<String>>
+    val appPackages: Flow<List<String>>
 
-    suspend fun addFavouriteApp(packageName: String)
-    suspend fun removeFavouriteApp(packageName: String)
-    suspend fun setFavouriteApps(packageNames: List<String>)
-    suspend fun reorderFavouriteApps(fromIndex: Int, toIndex: Int)
+    suspend fun addApp(packageName: String)
+    suspend fun removeApp(packageName: String)
+    suspend fun setApps(packageNames: List<String>)
+    suspend fun reorderApps(fromIndex: Int, toIndex: Int)
 }

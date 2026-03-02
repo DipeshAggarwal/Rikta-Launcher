@@ -26,7 +26,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
@@ -43,9 +42,9 @@ import androidx.navigation.compose.rememberNavController
 import com.lumina.core.common.FeatureFlags
 import com.lumina.core.ui.Motion.SCREEN_TRANSITION_DURATION
 import com.lumina.core.ui.theme.BackgroundColor
-import com.lumina.domain.system.AppLaunchCoordinator
-import com.lumina.domain.system.LaunchState
-import com.lumina.feature.countdown.ui.CountdownScreen
+import com.lumina.domain.coordination.AppLaunchCoordinator
+import com.lumina.domain.coordination.LaunchState
+import com.lumina.feature.appcountdown.ui.CountdownScreen
 import com.lumina.feature.home.ui.HOME_ROUTE
 import com.lumina.feature.home.ui.homeNavigation
 import com.lumina.rikta.ui.views.HomeScreenPageManager

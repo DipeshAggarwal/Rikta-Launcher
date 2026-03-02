@@ -9,8 +9,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.lumina.core.ui.R
 import com.lumina.core.ui.layout.LocalLayoutSpacing
 import com.lumina.core.ui.theme.ContentColor
 
@@ -30,7 +32,7 @@ fun SettingsSpacer(height: Dp = LocalLayoutSpacing.current.spacerHeight) {
  * @param title The text shown on the subhead
  */
 @Composable
-fun SettingsSubheading(title: String) {
+fun SettingsSubheading(title: String = stringResource(R.string.swipe_to_show_app)) {
     Row(
         modifier = Modifier.padding(SettingsSubheadingDefaults.BottomPadding)
     ) {

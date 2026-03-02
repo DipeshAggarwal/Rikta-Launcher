@@ -28,7 +28,7 @@ import com.lumina.feature.apphiding.R
  */
 @Composable
 fun HiddenAppsManagementScreen(
-    goToBulkAppHiding: () -> Unit,
+    goToAppPickerHiding: () -> Unit,
     onBack: () -> Unit,
     viewModel: AppHidingViewModel
 ) {
@@ -53,7 +53,7 @@ fun HiddenAppsManagementScreen(
                 label = stringResource(R.string.manage_hidden_apps),
                 isTopOfGroup = true,
                 onClick = {
-                    goToBulkAppHiding()
+                    goToAppPickerHiding()
                 }
             )
         }
@@ -68,7 +68,7 @@ fun HiddenAppsManagementScreen(
         }
 
         item {
-            SettingsSubheading(stringResource(R.string.swipe_to_show_app))
+            SettingsSubheading()
         }
 
         items(
@@ -90,7 +90,6 @@ fun HiddenAppsManagementScreen(
             )
         }
 
-        item { SettingsSpacer() }
         item { SettingsSpacer() }
     }
 }

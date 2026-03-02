@@ -4,23 +4,23 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lumina.core.common.FlowDefaults.WhileSubscribedTimeoutMillis
 import com.lumina.core.logging.Logger
-import com.lumina.domain.apps.AppInfo
-import com.lumina.domain.apps.AppProfile
-import com.lumina.domain.apps.AppShortcut
+import com.lumina.core.model.AppInfo
+import com.lumina.core.model.AppProfile
+import com.lumina.core.model.AppShortcut
 import com.lumina.domain.apps.AppShortcutRepository
 import com.lumina.domain.apps.FavouriteAppsRepository
 import com.lumina.domain.apps.HiddenAppsRepository
 import com.lumina.domain.apps.InstalledAppsRepository
-import com.lumina.domain.countdown.CountdownRepository
+import com.lumina.domain.countdown.CountdownAppsRepository
 import com.lumina.domain.search.AppSearchEngine
 import com.lumina.domain.settings.AppListSettings
 import com.lumina.domain.settings.HomeSettings
 import com.lumina.domain.settings.SearchSettings
 import com.lumina.domain.settings.SettingsRepository
-import com.lumina.domain.system.AppLaunchCoordinator
-import com.lumina.domain.system.IntentLauncher
-import com.lumina.domain.system.LaunchResult
-import com.lumina.domain.system.StatusBarController
+import com.lumina.domain.coordination.AppLaunchCoordinator
+import com.lumina.domain.coordination.IntentLauncher
+import com.lumina.domain.coordination.LaunchResult
+import com.lumina.domain.coordination.StatusBarController
 import com.lumina.feature.home.model.BottomSheetState
 import com.lumina.feature.home.model.HomeUiState
 import com.lumina.feature.home.model.SelectedApp
@@ -42,7 +42,7 @@ import kotlinx.coroutines.launch
 class HomeViewModel @Inject constructor(
     private val hiddenAppsRepository: HiddenAppsRepository,
     private val favouriteAppsRepository: FavouriteAppsRepository,
-    private val countdownRepository: CountdownRepository,
+    private val countdownRepository: CountdownAppsRepository,
     settingsRepository: SettingsRepository,
     installedAppsRepository: InstalledAppsRepository,
     private val appSearchEngine: AppSearchEngine,
@@ -75,28 +75,23 @@ class HomeViewModel @Inject constructor(
 
     // .Eagerly is used so that startup happens at creation time.
     // This improves animation and loading experience.
-    private val installedApps: StateFlow<List<AppInfo>> = installedAppsRepository.installedApps()
-        .stateIn(
-            viewModelScope,
-            SharingStarted.Eagerly,
-            emptyList()
-        )
+    private val installedApps: StateFlow<List<AppInfo>> = installedAppsRepository.apps
 
-    private val hiddenPackagesSet: StateFlow<Set<String>> = hiddenAppsRepository.hiddenAppPackages
+    private val hiddenPackagesSet: StateFlow<Set<String>> = hiddenAppsRepository.appPackages
         .stateIn(
             viewModelScope,
             SharingStarted.Eagerly,
             emptySet()
         )
 
-    private val favouritePackages: StateFlow<List<String>> = favouriteAppsRepository.favouriteAppPackages
+    private val favouritePackages: StateFlow<List<String>> = favouriteAppsRepository.appPackages
         .stateIn(
             viewModelScope,
             SharingStarted.Eagerly,
             emptyList()
         )
 
-    private val countdownPackages: StateFlow<Set<String>> = countdownRepository.countdownAppPackages
+    private val countdownPackages: StateFlow<Set<String>> = countdownRepository.appPackages
         .stateIn(
             viewModelScope,
             SharingStarted.Eagerly,
@@ -280,7 +275,7 @@ class HomeViewModel @Inject constructor(
                 isCountdownRequired,
                 profile
             ),
-            shortcuts = emptyList()
+            shortcuts = emptyList<AppShortcut>()
         )
 
         viewModelScope.launch {
@@ -318,9 +313,9 @@ class HomeViewModel @Inject constructor(
     fun onToggleFavourite(packageName: String) {
         viewModelScope.launch {
             if (favouritePackages.value.contains(packageName)) {
-                favouriteAppsRepository.removeFavouriteApp(packageName)
+                favouriteAppsRepository.removeApp(packageName)
             } else {
-                favouriteAppsRepository.addFavouriteApp(packageName)
+                favouriteAppsRepository.addApp(packageName)
             }
         }
         onBottomSheetDismissed()
@@ -329,9 +324,9 @@ class HomeViewModel @Inject constructor(
     fun onToggleCountdown(packageName: String) {
         viewModelScope.launch {
             if (countdownPackages.value.contains(packageName)) {
-                countdownRepository.removeCountdownApp(packageName)
+                countdownRepository.removeApp(packageName)
             } else {
-                countdownRepository.addCountdownApp(packageName)
+                countdownRepository.addApp(packageName)
             }
         }
         onBottomSheetDismissed()
@@ -339,7 +334,7 @@ class HomeViewModel @Inject constructor(
 
     fun onHideApp(packageName: String) {
         viewModelScope.launch {
-            hiddenAppsRepository.addHiddenApp(packageName)
+            hiddenAppsRepository.addApp(packageName)
         }
         onBottomSheetDismissed()
     }

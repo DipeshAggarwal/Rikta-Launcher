@@ -38,12 +38,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import com.lumina.core.model.AppInfo
 import com.lumina.core.ui.theme.ContentColor
 import com.lumina.core.ui.components.settings.SettingsButton
 import com.lumina.core.ui.components.settings.SettingsComponentsDefaults.TEXT_WEIGHT
 import com.lumina.core.ui.components.settings.SettingsHeader
 import com.lumina.core.ui.components.settings.SettingsSpacer
-import com.lumina.domain.apps.AppInfo
 import kotlin.math.roundToInt
 
 private val DragHandlePadding = 8.dp

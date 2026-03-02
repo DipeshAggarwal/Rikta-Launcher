@@ -1,6 +1,6 @@
 package com.lumina.feature.home.model
 
-import com.lumina.domain.apps.AppShortcut
+import com.lumina.core.model.AppShortcut
 
 sealed interface BottomSheetState {
     data object None : BottomSheetState

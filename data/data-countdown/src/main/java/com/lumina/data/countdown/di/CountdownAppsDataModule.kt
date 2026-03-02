@@ -1,7 +1,7 @@
 package com.lumina.data.countdown.di
 
 import com.lumina.data.countdown.DataStoreCountdownRepository
-import com.lumina.domain.countdown.CountdownRepository
+import com.lumina.domain.countdown.CountdownAppsRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -16,5 +16,5 @@ abstract class CountdownAppsDataModule {
     @Singleton
     abstract fun bindsCountdownRepository(
         dataStoreCountdownRepository: DataStoreCountdownRepository
-    ): CountdownRepository
+    ): CountdownAppsRepository
 }

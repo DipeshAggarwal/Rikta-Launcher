@@ -6,4 +6,5 @@ dependencies {
     implementation(libs.jakarta.inject)
 
     implementation(project(":core:core-common"))
+    implementation(project(":core:core-model"))
 }

@@ -100,7 +100,7 @@
     <string name="set_spacer_size_compact">Compact</string>
     <string name="set_spacer_size_standard">Standard</string>
     <string name="set_spacer_size_relaxed">Relaxed</string>
-    <string name="set_spacer_size_slider">Change Spacing</string>
+    <string name="countdown_settings">Countdown Settings</string>
 
     <!-- First time strings -->
     <string name="continue_str">Continue</string>
