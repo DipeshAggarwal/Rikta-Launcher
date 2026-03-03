@@ -59,7 +59,7 @@ private object SliderDotTrackDefault {
 private object SliderThumbDefault {
     val OuterRadius = 24.dp
     val InnerRadius = 16.dp
-    val ShadowElevation = 12.dp
+    val ShadowElevation = 8.dp
 }
 
 private object SettingsSliderRowDefault {
@@ -67,7 +67,7 @@ private object SettingsSliderRowDefault {
     val MaxScaleFactor = 1.0f
     val EndPadding = 8.dp
     val IconAlpha = 0.64f
-    val IconSize = 20.dp
+    val IconSize = 36.dp
     val LabelSpacing = 2.dp
 }
 

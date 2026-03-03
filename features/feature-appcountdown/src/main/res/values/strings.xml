@@ -3,18 +3,21 @@
     <string name="cancel">Cancel</string>
     <string name="countdown_apps">Apps Requiring Countdown</string>
     <string name="manage_countdown_apps">Manage Countdown Apps</string>
+    <string name="total_countdown_time">Total Countdown Time</string>
+    <string name="total_countdown_time_seconds">%1$s seconds</string>
 
-    <string name="countdown_duration_per_step">Duration Per Steps</string>
-    <string name="countdown_total_steps">Total Steps</string>
-    <string name="countdown_duration_wrap">Wrap Duration</string>
+    <string name="countdown_duration_per_step">Seconds to Wait per Step</string>
+    <string name="countdown_total_steps">Total Steps Per Countdown</string>
+    <string name="countdown_duration_wrap">Delay After Wrap</string>
     <string name="countdown_show_text">Show Prompt</string>
 
     <string name="set_app_countdown_time">Set App Countdown Time</string>
     <string name="app_countdown_time_long">Long</string>
     <string name="app_countdown_time_normal">Normal</string>
     <string name="app_countdown_time_short">Short</string>
-    <string name="set_app_countdown_time_slider">Change Duration</string>
-    <string name="set_app_countdown_steps_slider">Change Steps</string>
+    <string name="app_countdown_seconds_per_step">Seconds per Step</string>
+    <string name="app_countdown_duration_slider">Delay Seconds</string>
+    <string name="set_app_countdown_steps_slider">Total Steps</string>
 
     <string-array name="countdown_prompts">
         <item>Take a deep breath.</item>

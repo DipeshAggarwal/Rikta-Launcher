@@ -101,21 +101,28 @@ class CountdownSettingsViewModel @Inject constructor(
         }
     }
 
-    fun resetAndGetCountdownSteps(): Int {
+    fun resetCountdownSteps() {
         val resetValue = CountdownSettings().countdownSteps
         viewModelScope.launch {
             settingsRepository.updateCountdownSettings {
                 copy(countdownSteps = resetValue)
             }
         }
-
-        return resetValue
     }
 
     fun setCountdownWrapDuration(duration: Long) {
         viewModelScope.launch {
             settingsRepository.updateCountdownSettings {
                 copy(countdownWrapDuration = duration)
+            }
+        }
+    }
+
+    fun resetCountdownWrapDuration() {
+        val resetValue = CountdownSettings().countdownWrapDuration
+        viewModelScope.launch {
+            settingsRepository.updateCountdownSettings {
+                copy(countdownWrapDuration = resetValue)
             }
         }
     }

@@ -32,8 +32,10 @@ private object SettingsSubHeaderDefaults {
 }
 
 private object SettingsDividerDefaults {
-    val Thickness = 0.5.dp
-    val DividerAlpha = 0.16f
+    val Thickness = 0.64.dp
+    val DividerAlpha = 0.32f
+    val TopPadding = 12.dp
+    val BottomPadding = 6.dp
 }
 
 /**
@@ -82,7 +84,12 @@ fun SettingsSubHeader(
 @Composable
 fun SettingsDivider(modifier: Modifier = Modifier) {
     HorizontalDivider(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(
+                top = SettingsDividerDefaults.TopPadding,
+                bottom = SettingsDividerDefaults.BottomPadding
+            ),
         thickness = SettingsDividerDefaults.Thickness,
         color = DividerColor.copy(alpha = SettingsDividerDefaults.DividerAlpha)
     )
