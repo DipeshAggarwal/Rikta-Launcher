@@ -84,15 +84,13 @@ class CountdownSettingsViewModel @Inject constructor(
         }
     }
 
-    fun resetAndGetCountdownDurationPerStep(): Int {
+    fun resetCountdownDurationPerStep() {
         val resetValue = CountdownSettings().countdownDurationPerStep
         viewModelScope.launch {
             settingsRepository.updateCountdownSettings {
                 copy(countdownDurationPerStep = resetValue)
             }
         }
-
-        return resetValue
     }
 
     fun setCountdownSteps(steps: Int) {

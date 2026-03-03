@@ -1,12 +1,18 @@
 package com.lumina.core.ui.components.settings
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Card
@@ -17,6 +23,7 @@ import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -27,13 +34,18 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.lumina.core.ui.R
 import com.lumina.core.ui.components.text.AutoResizingText
 import com.lumina.core.ui.theme.ContentColor
 import com.lumina.core.ui.theme.LuminaCardDefaults
+import com.lumina.core.ui.theme.SegmentSelectedColor
+import com.lumina.core.ui.theme.SegmentSelectedContentColor
+import com.lumina.core.ui.theme.TrackActiveColor
 
 private object SettingsSliderDefaults {
     const val SLIDER_WEIGHT = 1.5f
@@ -45,6 +57,22 @@ private object SettingsSliderDefaults {
 private object SettingsSegmentedButtonsDefaults {
     const val SEGMENTED_ROW_WEIGHT = 4f
     val RowStartPadding = 16.dp
+}
+
+private object SettingsSwitchRowDefaults {
+    val VerticalPadding = 14.dp
+    val TextEndPadding = 16.dp
+}
+
+private object SettingsSegmentedButtonRowDefaults {
+    const val SLIDE_TRANSITION_DURATION = 200
+    val RowAlpha = 0.5f
+    val DividerAlpha = 0.2f
+    val SegmentBoxPadding = 4.dp
+    val HorizontalPadding = 16.dp
+    val VerticalPadding = 8.dp
+    val DividerWidth = 0.5.dp
+    val DividerHeight = 16.dp
 }
 
 /**
@@ -250,6 +278,116 @@ fun SettingsSingleChoiceSegmentedButtons(
                         )
                     }
                 }
+            }
+        }
+    }
+}
+
+@Composable
+fun SettingsSwitchRow(
+    label: String,
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(vertical = SettingsSwitchRowDefaults.VerticalPadding),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(
+            text = label,
+            style = MaterialTheme.typography.bodyLarge,
+            color = ContentColor,
+            maxLines = SettingsComponentsDefaults.MAX_LINES,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier
+                .weight(SettingsComponentsDefaults.TEXT_WEIGHT)
+                .padding(SettingsSwitchRowDefaults.TextEndPadding)
+        )
+        Switch(
+            checked = checked,
+            onCheckedChange = onCheckedChange,
+            colors = SwitchDefaults.colors(
+                uncheckedBorderColor = Color.Transparent,
+                checkedBorderColor = Color.Transparent
+            )
+        )
+    }
+}
+
+@Composable
+fun <T> SettingsSegmentedButtonRow(
+    options: List<T>,
+    selectedOption: T?,
+    onOptionSelected: (T) -> Unit,
+    modifier: Modifier = Modifier,
+    itemLabel: @Composable (T) -> String = { it.toString() }
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(vertical = SettingsComponentsDefaults.RowVerticalPadding)
+            .clip(MaterialTheme.shapes.extraLarge)
+            .background(TrackActiveColor.copy(alpha = SettingsSegmentedButtonRowDefaults.RowAlpha))
+    ) {
+        options.forEachIndexed { index, option ->
+            val isSelected = option == selectedOption
+            val isNextSelected = options.getOrNull(index + 1) == selectedOption
+
+            val bgColor by animateColorAsState(
+                targetValue = if (isSelected) SegmentSelectedColor else Color.Transparent,
+                animationSpec = tween(SettingsSegmentedButtonRowDefaults.SLIDE_TRANSITION_DURATION),
+                label = "segment_bg_$index"
+            )
+            val contentColor by animateColorAsState(
+                targetValue = if (isSelected) SegmentSelectedContentColor
+                    else ContentColor.copy(alpha = SettingsSegmentedButtonRowDefaults.RowAlpha),
+                animationSpec = tween(SettingsSegmentedButtonRowDefaults.SLIDE_TRANSITION_DURATION),
+                label = "segment_content_$index"
+            )
+
+            Box(
+                modifier = Modifier
+                    .weight(SettingsComponentsDefaults.TEXT_WEIGHT)
+                    .padding(SettingsSegmentedButtonRowDefaults.SegmentBoxPadding)
+                    .clip(MaterialTheme.shapes.extraLarge)
+                    .background(bgColor)
+                    .clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null
+                    ) { onOptionSelected(option) }
+                    .padding(
+                        horizontal = SettingsSegmentedButtonRowDefaults.HorizontalPadding,
+                        vertical = SettingsSegmentedButtonRowDefaults.VerticalPadding
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = itemLabel(option),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = contentColor,
+                    fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
+                    maxLines = SettingsComponentsDefaults.MAX_LINES,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+
+            if (index < options.lastIndex) {
+                Box(
+                    modifier = Modifier
+                        .width(SettingsSegmentedButtonRowDefaults.DividerWidth)
+                        .height(SettingsSegmentedButtonRowDefaults.DividerHeight)
+                        .align(Alignment.CenterVertically)
+                        .background(
+                            color = if (!isSelected && !isNextSelected)
+                                ContentColor.copy(alpha = SettingsSegmentedButtonRowDefaults.DividerAlpha)
+                            else
+                                Color.Transparent
+                        )
+                )
             }
         }
     }

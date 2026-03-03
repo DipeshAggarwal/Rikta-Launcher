@@ -10,10 +10,10 @@
     <string name="countdown_show_text">Show Prompt</string>
 
     <string name="set_app_countdown_time">Set App Countdown Time</string>
-    <string name="set_app_countdown_time_long">Long Time</string>
-    <string name="set_app_countdown_time_normal">Normal Time</string>
-    <string name="set_app_countdown_time_short">Short Time</string>
-    <string name="set_app_countdown_time_slider">Change Time</string>
+    <string name="app_countdown_time_long">Long</string>
+    <string name="app_countdown_time_normal">Normal</string>
+    <string name="app_countdown_time_short">Short</string>
+    <string name="set_app_countdown_time_slider">Change Duration</string>
     <string name="set_app_countdown_steps_slider">Change Steps</string>
 
     <string-array name="countdown_prompts">

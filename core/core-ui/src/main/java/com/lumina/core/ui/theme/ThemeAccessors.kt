@@ -22,3 +22,20 @@ val primaryContentColor: Color
     @Composable get() = MaterialTheme.colorScheme.primary // Primary content, search bar, home screen items, use sparingly
 val SecondaryCardContainerColor: Color
     @Composable get() = MaterialTheme.colorScheme.surfaceContainer // If there needs to be a box on top of another box, try to avoid
+
+val SecondaryContentColor: Color
+    @Composable get() = MaterialTheme.colorScheme.onSurfaceVariant
+val DividerColor: Color
+    @Composable get() = MaterialTheme.colorScheme.outlineVariant
+
+val TrackActiveColor: Color
+    @Composable get() = MaterialTheme.colorScheme.primary
+
+val TrackInactiveColor: Color
+    @Composable get() = MaterialTheme.colorScheme.surfaceVariant
+
+val SegmentSelectedColor: Color
+    @Composable get() = MaterialTheme.colorScheme.primaryContainer
+
+val SegmentSelectedContentColor: Color
+    @Composable get() = MaterialTheme.colorScheme.onPrimaryContainer

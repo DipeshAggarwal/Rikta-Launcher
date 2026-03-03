@@ -18,10 +18,11 @@ object SettingsComponentsDefaults {
     val HorizontalPadding = 24.dp
     val VerticalContentPadding = 12.dp
     val ContentHeight = 48.dp
+    val RowVerticalPadding = 8.dp
 
     // Corners
     val GroupEdgeCornerRadius = 24.dp
-    val DefaultCornerRadius = 8.dp
+    val DefaultCornerRadius = 12.dp
 
     // Content layout
     val TextIconSpacing = 8.dp
