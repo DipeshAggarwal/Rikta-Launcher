@@ -7,7 +7,7 @@
         <!-- Set the background color -->
         <item name="windowSplashScreenBackground">@color/splash_background</item>
         <!-- Set the logo -->
-        <item name="windowSplashScreenAnimatedIcon">@drawable/square_icon</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_splash</item>
         <!-- Customize the icon animation duration -->
         <item name="windowSplashScreenAnimationDuration">500</item>
         <!-- Set the status bar color -->

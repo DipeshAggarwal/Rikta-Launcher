@@ -15,7 +15,7 @@ object SettingsComponentsDefaults {
 
     // Layout
     val VerticalPadding = 1.dp
-    val HorizontalPadding = 24.dp
+    val HorizontalPadding = 16.dp
     val VerticalContentPadding = 12.dp
     val ContentHeight = 48.dp
     val RowVerticalPadding = 8.dp

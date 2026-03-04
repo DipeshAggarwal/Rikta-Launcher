@@ -1,8 +1,8 @@
 package com.lumina.core.ui.theme
+
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
-
 
 val CardContainerColor: Color
     @Composable get() = MaterialTheme.colorScheme.surfaceContainerHigh // Used for items on the background like the settings boxes
@@ -26,7 +26,7 @@ val SecondaryCardContainerColor: Color
 val SecondaryContentColor: Color
     @Composable get() = MaterialTheme.colorScheme.onSurfaceVariant
 val DividerColor: Color
-    @Composable get() = MaterialTheme.colorScheme.outlineVariant
+    @Composable get() = MaterialTheme.colorScheme.background
 
 val TrackActiveColor: Color
     @Composable get() = MaterialTheme.colorScheme.primary

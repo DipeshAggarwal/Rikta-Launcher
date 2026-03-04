@@ -374,7 +374,7 @@ fun WelcomeScreen(onNext: () -> Unit, @Suppress("unused", "RedundantSuppression"
                 .offset(y = (-62).dp)
         ) {
             Icon(
-                painterResource(R.drawable.outlineicon),
+                painterResource(R.drawable.ic_launcher_monochrome),
                 "Rikta Launcher Icon",
                 Modifier
                     .padding(3.dp)

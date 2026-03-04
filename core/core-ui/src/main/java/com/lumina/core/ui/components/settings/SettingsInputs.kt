@@ -60,13 +60,12 @@ private object SettingsSegmentedButtonsDefaults {
 }
 
 private object SettingsSwitchRowDefaults {
-    val VerticalPadding = 14.dp
     val TextEndPadding = 16.dp
 }
 
 private object SettingsSegmentedButtonRowDefaults {
     const val SLIDE_TRANSITION_DURATION = 200
-    val RowAlpha = 0.5f
+    val RowAlpha = 0.75f
     val DividerAlpha = 0.2f
     val SegmentBoxPadding = 4.dp
     val HorizontalPadding = 16.dp
@@ -293,7 +292,10 @@ fun SettingsSwitchRow(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(vertical = SettingsSwitchRowDefaults.VerticalPadding),
+            .padding(
+                horizontal = SettingsComponentsDefaults.HorizontalPadding,
+                vertical = SettingsComponentsDefaults.RowVerticalPadding
+            ),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
@@ -329,7 +331,10 @@ fun <T> SettingsSegmentedButtonRow(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(vertical = SettingsComponentsDefaults.RowVerticalPadding)
+            .padding(
+                horizontal = SettingsComponentsDefaults.HorizontalPadding,
+                vertical = SettingsComponentsDefaults.RowVerticalPadding
+            )
             .clip(MaterialTheme.shapes.extraLarge)
             .background(TrackActiveColor.copy(alpha = SettingsSegmentedButtonRowDefaults.RowAlpha))
     ) {

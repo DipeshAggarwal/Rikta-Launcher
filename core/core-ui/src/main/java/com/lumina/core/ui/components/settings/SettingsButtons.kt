@@ -49,7 +49,7 @@ private object SettingsNavigationItemDefaults {
 private object SettingsNavigationRowDefaults {
     val TextEndPadding = 8.dp
     val TextAlpha = 0.64f
-    val IconSize = 24.dp
+    val IconSize = 36.dp
 }
 
 /**
@@ -214,7 +214,10 @@ fun SettingsNavigationRow(
         modifier = modifier
             .fillMaxWidth()
             .clickable(onClick = onClick)
-            .padding(vertical = SettingsComponentsDefaults.RowVerticalPadding),
+            .padding(
+                horizontal = SettingsComponentsDefaults.HorizontalPadding,
+                vertical = SettingsComponentsDefaults.RowVerticalPadding
+            ),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {

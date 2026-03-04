@@ -129,7 +129,7 @@ import com.lumina.core.ui.components.settings.SettingsSwitch
 import com.lumina.core.ui.components.settings.ThemeCard
 import com.lumina.data.settings.appThemeFromStorage
 import com.lumina.domain.settings.toStorageValue
-import com.lumina.feature.appcountdown.ui.COUNTDOWN_APPS_MANAGEMENT_ROUTE
+import com.lumina.feature.appcountdown.ui.APPS_COUNTDOWN_MANAGEMENT_ROUTE
 import com.lumina.feature.appcountdown.ui.appCountdownNavigation
 import com.lumina.feature.appfavourite.ui.FAVOURITE_APPS_ROUTE
 import com.lumina.feature.appfavourite.ui.appFavouriteNavigation
@@ -719,7 +719,7 @@ fun MainSettingsPage(
             SettingsNavigationItem(
                 label = stringResource(R.string.countdown_settings),
                 diagonalArrow = false,
-                onClick = { navController.navigate(COUNTDOWN_APPS_MANAGEMENT_ROUTE) }
+                onClick = { navController.navigate(APPS_COUNTDOWN_MANAGEMENT_ROUTE) }
             )
         }
 

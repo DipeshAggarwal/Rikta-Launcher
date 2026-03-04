@@ -1,10 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="cancel">Cancel</string>
-    <string name="countdown_apps">Apps Requiring Countdown</string>
+    <string name="countdown_apps">Countdown Manager</string>
+
     <string name="manage_countdown_apps">Manage Countdown Apps</string>
+    <string name="tune_countdown_time">Fine-tune Countdown Time</string>
+
     <string name="total_countdown_time">Total Countdown Time</string>
-    <string name="total_countdown_time_seconds">%1$s seconds</string>
+    <string name="header_countdown_settings">Countdown Settings</string>
+
+    <string name="countdown_presets">Countdown Time Presets</string>
+    <string name="manage_countdown_setting">Countdown Settings</string>
+    <string name="total_countdown_time_seconds">%1$ss</string>
 
     <string name="countdown_duration_per_step">Seconds to Wait per Step</string>
     <string name="countdown_total_steps">Total Steps Per Countdown</string>
@@ -14,7 +21,7 @@
     <string name="set_app_countdown_time">Set App Countdown Time</string>
     <string name="app_countdown_time_long">Long</string>
     <string name="app_countdown_time_normal">Normal</string>
-    <string name="app_countdown_time_short">Short</string>
+    <string name="app_countdown_time_short">Quick</string>
     <string name="app_countdown_seconds_per_step">Seconds per Step</string>
     <string name="app_countdown_duration_slider">Delay Seconds</string>
     <string name="set_app_countdown_steps_slider">Total Steps</string>

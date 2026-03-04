@@ -76,6 +76,19 @@ class CountdownSettingsViewModel @Inject constructor(
         }
     }
 
+    fun setAllCountdownSliders(stepDuration: Int, steps: Int? = null, wrapDuration: Long? = null) {
+        val default = CountdownSettings()
+        viewModelScope.launch {
+            settingsRepository.updateCountdownSettings {
+                copy(
+                    countdownDurationPerStep = stepDuration,
+                    countdownSteps = steps ?: default.countdownSteps,
+                    countdownWrapDuration = wrapDuration ?: default.countdownWrapDuration
+                )
+            }
+        }
+    }
+
     fun setCountdownDurationPerStep(duration: Int) {
         viewModelScope.launch {
             settingsRepository.updateCountdownSettings {

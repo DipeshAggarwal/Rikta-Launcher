@@ -13,8 +13,7 @@ import androidx.compose.ui.unit.dp
 
 private object SettingsCardDefault {
     val CornerRadius = 16.dp
-    val HorizontalPadding = 16.dp
-    val VerticalPadding = 12.dp
+    val VerticalPadding = 4.dp
 }
 
 @Composable
@@ -31,7 +30,6 @@ fun SettingsCard(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(
-                    horizontal = SettingsCardDefault.HorizontalPadding,
                     vertical = SettingsCardDefault.VerticalPadding
                 ),
             content = content

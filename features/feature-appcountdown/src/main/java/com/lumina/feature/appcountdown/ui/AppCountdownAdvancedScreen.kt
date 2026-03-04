@@ -18,6 +18,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lumina.core.ui.components.settings.SettingsCard
+import com.lumina.core.ui.components.settings.SettingsCardHeader
 import com.lumina.core.ui.components.settings.SettingsDivider
 import com.lumina.core.ui.components.settings.SettingsHeader
 import com.lumina.core.ui.components.settings.SettingsNavigationRow
@@ -30,12 +31,10 @@ import com.lumina.feature.appcountdown.CountdownSettingsViewModel
 import com.lumina.feature.appcountdown.R
 
 @Composable
-fun CountdownAppsManagementScreen(
-    goToAppPickerCountdown: () -> Unit,
+fun AppCountdownAdvancedScreen(
     onBack: () -> Unit,
     viewModel: CountdownSettingsViewModel
 ) {
-    val countdownApps by viewModel.countdownApps.collectAsStateWithLifecycle()
     val countdownSettings by viewModel.countdownSettings.collectAsStateWithLifecycle()
     val scrollState = rememberScrollState()
 
@@ -48,53 +47,17 @@ fun CountdownAppsManagementScreen(
     var countdownWrapDuration by remember(countdownSettings.countdownWrapDuration) {
         mutableLongStateOf(countdownSettings.countdownWrapDuration)
     }
-    val totalCountdownTime = (countdownDurationPerStep * countdownSteps) + (countdownWrapDuration * 0.001)
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(scrollState)
     ) {
-        SettingsHeader(onBack, stringResource(R.string.countdown_apps))
+        SettingsHeader(onBack, stringResource(R.string.tune_countdown_time))
 
-        SettingsCard {
-            SettingsNavigationRow(
-                label = stringResource(R.string.manage_countdown_apps),
-                onClick = { goToAppPickerCountdown() }
-            )
-        }
-
-        SettingsSpacer()
-
-        SettingsCard {
-            SettingsSubHeader(stringResource(R.string.total_countdown_time))
-            Text(
-                text = stringResource(R.string.total_countdown_time_seconds, totalCountdownTime),
-                style = MaterialTheme.typography.displaySmall,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary
-            )
-            Text(
-                text = "(Step Duration * Total Steps) + Wrap",
-                style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.align(Alignment.End)
-            )
-        }
-
-        SettingsSpacer()
-
+        SettingsCardHeader(stringResource(R.string.manage_countdown_setting))
         SettingsCard {
             SettingsSubHeader(stringResource(R.string.countdown_duration_per_step))
-
-            SettingsSegmentedButtonRow(
-                options = CountdownMode.entries,
-                selectedOption = CountdownMode.fromValue(countdownDurationPerStep),
-                onOptionSelected = { mode -> viewModel.setCountdownDurationPerStep(mode.value) },
-                itemLabel = { stringResource(it.labelRes) }
-            )
-            SettingsDivider()
-
             SettingsSliderRow(
                 label = stringResource(R.string.app_countdown_seconds_per_step),
                 value = countdownDurationPerStep.toFloat(),
@@ -104,13 +67,9 @@ fun CountdownAppsManagementScreen(
                 displayName = countdownDurationPerStep.toString(),
                 onReset = { viewModel.resetCountdownDurationPerStep()}
             )
-        }
+            SettingsDivider()
 
-        SettingsSpacer()
-
-        SettingsCard {
             SettingsSubHeader(stringResource(R.string.countdown_total_steps))
-
             SettingsSliderRow(
                 label = stringResource(R.string.set_app_countdown_steps_slider),
                 value = countdownSteps.toFloat(),
@@ -120,13 +79,9 @@ fun CountdownAppsManagementScreen(
                 displayName = countdownSteps.toString(),
                 onReset = { viewModel.resetCountdownSteps()}
             )
-        }
+            SettingsDivider()
 
-        SettingsSpacer()
-
-        SettingsCard {
             SettingsSubHeader(stringResource(R.string.countdown_duration_wrap))
-
             SettingsSliderRow(
                 label = stringResource(R.string.app_countdown_duration_slider),
                 value = (countdownWrapDuration * 0.01).toFloat(),

@@ -182,7 +182,10 @@ fun SettingsSliderRow(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(vertical = SettingsComponentsDefaults.RowVerticalPadding)
+            .padding(
+                horizontal = SettingsComponentsDefaults.HorizontalPadding,
+                vertical = SettingsComponentsDefaults.RowVerticalPadding
+            )
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),

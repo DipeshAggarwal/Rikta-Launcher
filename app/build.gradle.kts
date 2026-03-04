@@ -28,7 +28,7 @@ android {
             useSupportLibrary = true
         }
         resValue("string", "app_version", baseVersionCode)
-        resValue("string", "app_name", "Escape Launcher")
+        resValue("string", "app_name", "Rikta Launcher")
         resValue("string", "app_flavour", "Unknown Flavor")
         resValue("string", "empty", "")
     }
@@ -48,7 +48,7 @@ android {
             applicationIdSuffix = ".dev"
             dimension = "version"
             versionNameSuffix = "-dev"
-            resValue("string", "app_name", "Escape Launcher Dev")
+            resValue("string", "app_name", "Rikta Launcher Dev")
         }
         create("prod"){
             dimension = "version"

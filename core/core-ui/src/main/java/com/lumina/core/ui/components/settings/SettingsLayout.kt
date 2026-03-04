@@ -20,22 +20,28 @@ import com.lumina.core.ui.R
 import com.lumina.core.ui.layout.LocalLayoutSpacing
 import com.lumina.core.ui.theme.ContentColor
 import com.lumina.core.ui.theme.DividerColor
+import com.lumina.core.ui.theme.SecondaryContentColor
 
 private object SettingsSubheadingDefaults {
     val BottomPadding = 24.dp
 }
 
-private object SettingsSubHeaderDefaults {
-    val LetterSpacing = 0.16.sp
-    val TitleColorAlpha = 0.64f
+private object SettingsCardHeaderDefaults {
+    val LetterSpacing = 1.0.sp
+    val TitleColorAlpha = 0.75f
     val BottomPadding = 8.dp
 }
 
+private object SettingsSubHeaderDefaults {
+    val LetterSpacing = 1.0.sp
+    val TopPadding = 16.dp
+    val BottomPadding = 4.dp
+}
+
 private object SettingsDividerDefaults {
-    val Thickness = 0.64.dp
-    val DividerAlpha = 0.32f
-    val TopPadding = 12.dp
-    val BottomPadding = 6.dp
+    val LetterSpacing = 1.0.sp
+    val Thickness = 2.64.dp
+    val DividerAlpha = 0.64f
 }
 
 /**
@@ -64,20 +70,45 @@ fun SettingsSubheading(title: String = stringResource(R.string.swipe_to_show_app
 }
 
 @Composable
-fun SettingsSubHeader(
+fun SettingsCardHeader(
     title: String,
     modifier: Modifier = Modifier
 ) {
     Text(
         text = title.uppercase(),
         style = MaterialTheme.typography.labelLarge.copy(
-            letterSpacing = SettingsSubHeaderDefaults.LetterSpacing,
+            letterSpacing = SettingsCardHeaderDefaults.LetterSpacing,
             fontWeight = FontWeight.Medium
         ),
-        color = ContentColor.copy(alpha = SettingsSubHeaderDefaults.TitleColorAlpha),
+        color = MaterialTheme.colorScheme.primary.copy(alpha = SettingsCardHeaderDefaults.TitleColorAlpha),
         modifier = modifier
             .fillMaxWidth()
-            .padding(bottom = SettingsSubHeaderDefaults.BottomPadding)
+            .padding(
+                horizontal = SettingsComponentsDefaults.HorizontalPadding,
+                vertical = SettingsCardHeaderDefaults.BottomPadding
+            )
+    )
+}
+
+@Composable
+fun SettingsSubHeader(
+    title: String,
+    modifier: Modifier = Modifier
+) {
+    Text(
+        text = title.uppercase(),
+        style = MaterialTheme.typography.labelMedium.copy(
+            letterSpacing = SettingsSubHeaderDefaults.LetterSpacing,
+            fontWeight = FontWeight.Normal
+        ),
+        color = SecondaryContentColor,
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(
+                start = SettingsComponentsDefaults.HorizontalPadding,
+                top = SettingsSubHeaderDefaults.TopPadding,
+                bottom = SettingsSubHeaderDefaults.BottomPadding
+            )
     )
 }
 
@@ -85,11 +116,7 @@ fun SettingsSubHeader(
 fun SettingsDivider(modifier: Modifier = Modifier) {
     HorizontalDivider(
         modifier = modifier
-            .fillMaxWidth()
-            .padding(
-                top = SettingsDividerDefaults.TopPadding,
-                bottom = SettingsDividerDefaults.BottomPadding
-            ),
+            .fillMaxWidth(),
         thickness = SettingsDividerDefaults.Thickness,
         color = DividerColor.copy(alpha = SettingsDividerDefaults.DividerAlpha)
     )

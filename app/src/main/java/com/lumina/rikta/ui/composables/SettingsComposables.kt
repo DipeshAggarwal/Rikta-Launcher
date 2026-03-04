@@ -67,7 +67,7 @@ fun SponsorBox(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Icon(
-                painterResource(R.drawable.outlineicon),
+                painterResource(R.drawable.ic_launcher_monochrome),
                 "Escape Launcher Icon",
                 Modifier
                     .padding(3.dp),
