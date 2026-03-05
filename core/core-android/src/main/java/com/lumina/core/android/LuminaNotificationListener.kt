@@ -39,7 +39,11 @@ class LuminaNotificationListener : NotificationListenerService() {
                 isFilteringEnabled = profile?.filterNotification == true
 
                 if (isFilteringEnabled) {
-                    repository.getNotificationAllowedApps(profile.id)
+                    if (profile != null) {
+                        repository.getNotificationAllowedApps(profile.id)
+                    } else {
+                        flowOf(emptySet())
+                    }
                 } else {
                     flowOf(emptySet())
                 }
