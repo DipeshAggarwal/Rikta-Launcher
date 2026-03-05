@@ -7,7 +7,7 @@ plugins {
     alias(libs.plugins.ksp)
 }
 
-val baseVersionCode = "2.3.1"
+val baseVersionCode = "0.2.4"
 
 android {
     namespace = "com.lumina.rikta"
@@ -118,6 +118,7 @@ if (!isFoss) {
 dependencies {
     implementation(project(":core:core-android"))
     implementation(project(":core:core-common"))
+    implementation(project(":core:core-database"))
     implementation(project(":core:core-datastore"))
     implementation(project(":core:core-logging"))
     implementation(project(":core:core-model"))
@@ -130,6 +131,7 @@ dependencies {
 
     implementation(project(":domain:domain-apps"))
     implementation(project(":domain:domain-countdown"))
+    implementation(project(":domain:domain-profiles"))
     implementation(project(":domain:domain-search"))
     implementation(project(":domain:domain-settings"))
     implementation(project(":domain:domain-coordination"))
@@ -170,8 +172,10 @@ dependencies {
     // Hilt
     implementation(libs.hilt.android)
     implementation(libs.androidx.hilt.navigation.compose)
+    implementation(libs.androidx.hilt.work)
     implementation(libs.jakarta.inject)
     ksp(libs.hilt.compiler)
+    ksp(libs.androidx.hilt.compiler)
 
     // Third-Party Library
     implementation(libs.material.kolor)
@@ -182,6 +186,7 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit)
+    androidTestImplementation(libs.androidx.room.testing)
 
     // Debugging Tools
     debugImplementation(libs.androidx.compose.ui.tooling)
@@ -205,4 +210,5 @@ tasks.register("testClasses") {
     group = "verification"
     description = "Test classes for all variants."
     dependsOn(
-        tasks.matching { it.name.startsWith("compile") && it.name.endsWith("UnitTestSources") } )}
+        tasks.matching { it.name.startsWith("compile") && it.name.endsWith("UnitTestSources") }
+    )}

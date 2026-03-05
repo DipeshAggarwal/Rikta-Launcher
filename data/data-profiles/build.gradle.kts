@@ -6,12 +6,13 @@ plugins {
 
 dependencies {
     implementation(libs.androidx.datastore.preferences)
-    implementation(libs.androidx.core.ktx)
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
 
+    implementation(project(":core:core-android"))
     implementation(project(":core:core-common"))
+    implementation(project(":core:core-database"))
     implementation(project(":core:core-logging"))
     implementation(project(":core:core-model"))
 

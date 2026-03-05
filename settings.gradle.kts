@@ -22,7 +22,7 @@ pluginManagement {
         id("org.jetbrains.kotlin.android") version "2.3.10"
         id("org.jetbrains.kotlin.jvm") version "2.3.10"
         id("org.jetbrains.kotlin.plugin.compose") version "2.3.10"
-        id("com.google.dagger.hilt.android") version "2.59.1"
+        id("com.google.dagger.hilt.android") version "2.59.2"
     }
 }
 plugins {
@@ -48,6 +48,7 @@ include(":app")
 // core module
 include(":core:core-android")
 include(":core:core-common")
+include(":core:core-database")
 include(":core:core-datastore")
 include(":core:core-logging")
 include(":core:core-model")
@@ -56,15 +57,17 @@ include(":core:core-ui")
 
 // domain module
 include(":domain:domain-apps")
+include(":domain:domain-coordination")
 include(":domain:domain-countdown")
+include(":domain:domain-profiles")
 include(":domain:domain-screentime")
 include(":domain:domain-search")
 include(":domain:domain-settings")
-include(":domain:domain-coordination")
 
 // data module
 include(":data:data-apps")
 include(":data:data-countdown")
+include(":data:data-profiles")
 include(":data:data-screentime")
 include(":data:data-settings")
 include(":data:data-coordination")

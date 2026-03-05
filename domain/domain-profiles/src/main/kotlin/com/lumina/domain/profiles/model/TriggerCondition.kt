@@ -1,0 +1,21 @@
+package com.lumina.domain.profiles.model
+
+data class TriggerCondition(
+    val triggerId: Long,
+
+    val logicalOperator: LogicalOperator?,
+    val triggerType: ProfileTriggerType?,
+    val stopIfTrue: Boolean,
+
+    val startTimeMinutes: Int?,
+    val endTimeMinutes: Int?,
+
+    val daysOfWeek: List<Int>?,
+
+    val latitude: Double?,
+    val longitude: Double?,
+    val radiusMeters: Float?,
+
+    val wifiSsid: String?,
+    val bluetoothAddress: String?
+)
