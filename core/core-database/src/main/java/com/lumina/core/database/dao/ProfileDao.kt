@@ -6,6 +6,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
+import androidx.room.Update
 import com.lumina.core.database.entity.NotificationWhitelistEntity
 import com.lumina.core.database.entity.ProfileAppCrossRef
 import com.lumina.core.database.entity.ProfileEntity
@@ -28,7 +29,10 @@ interface ProfileDao {
     // Profile Operations
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertProfile(profile: ProfileEntity)
+    suspend fun saveProfile(profile: ProfileEntity)
+
+    @Update
+    suspend fun updateProfile(profile: ProfileEntity)
 
     @Query("DELETE FROM profiles WHERE id = :profileId")
     suspend fun deleteProfileById(profileId: String)
@@ -51,12 +55,11 @@ interface ProfileDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAppMapping(mapping: ProfileAppCrossRef)
 
-    @Query("" +
-            "DELETE FROM profile_app_mapping " +
-            "WHERE profileId = :profileId " +
-            "AND packageName = :packageName " +
-            "AND userHandleNumber = :userHandleNumber" +
-        "")
+    @Query("DELETE FROM profile_app_mapping " +
+        "WHERE profileId = :profileId " +
+        "AND packageName = :packageName " +
+        "AND userHandleNumber = :userHandleNumber "
+    )
     suspend fun deleteAppMapping(profileId: String, packageName: String, userHandleNumber: Long)
 
     // ------------------------------------------------

@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.lumina.core.database.LuminaDatabase
 import com.lumina.core.database.dao.ProfileDao
+import com.lumina.core.database.dao.ShortcutDao
 import com.lumina.core.database.migration.DatabaseMigrations
 import dagger.Module
 import dagger.Provides
@@ -32,5 +33,11 @@ object DatabaseModule {
     @Singleton
     fun providesProfileDao(database: LuminaDatabase): ProfileDao {
         return database.profileDao()
+    }
+
+    @Provides
+    @Singleton
+    fun providesShortcutDao(database: LuminaDatabase): ShortcutDao {
+        return database.shortcutDao()
     }
 }

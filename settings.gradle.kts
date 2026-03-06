@@ -62,6 +62,7 @@ include(":domain:domain-countdown")
 include(":domain:domain-profiles")
 include(":domain:domain-screentime")
 include(":domain:domain-search")
+include(":domain:domain-shortcut")
 include(":domain:domain-settings")
 
 // data module
@@ -70,6 +71,7 @@ include(":data:data-countdown")
 include(":data:data-profiles")
 include(":data:data-screentime")
 include(":data:data-settings")
+include(":data:data-shortcut")
 include(":data:data-coordination")
 
 // features module

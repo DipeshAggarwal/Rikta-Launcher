@@ -15,4 +15,5 @@ dependencies {
     implementation(libs.kotlinx.coroutines.core)
 
     implementation(project(":domain:domain-profiles"))
+    implementation(project(":domain:domain-shortcut"))
 }

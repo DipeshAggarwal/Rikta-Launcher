@@ -18,6 +18,7 @@ interface ProfileRepository {
     suspend fun findProfileByKey(key: String): LauncherProfile?
 
     suspend fun saveProfile(profile: LauncherProfile)
+    suspend fun updateProfile(profile: LauncherProfile)
     suspend fun deleteProfile(profileId: String)
 
     fun getAppsForProfile(profileId: String): Flow<List<AppOverrideState>>

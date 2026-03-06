@@ -3,6 +3,7 @@ package com.lumina.core.database.entity
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import com.lumina.domain.profiles.model.ProfileAuthMethod
 import com.lumina.domain.profiles.model.ProfileType
 
 private const val VERSION = 1
@@ -21,8 +22,13 @@ data class ProfileEntity(
 
     val priorityTriggerLaunch: Boolean = false,
     val filterNotification: Boolean = false,
+
     val startDnd: Boolean = false,
     val showAppList: Boolean = true,
+    val hideScreenTimeOnApps: Boolean = false,
+    val disableOnLock: Boolean = false,
+
+    val blockUnauthorisedApps: Boolean = false,
 
     val overrideBackground: String? = null,
     val overrideFont: String? = null,
@@ -32,8 +38,11 @@ data class ProfileEntity(
     val overrideShowDate: Boolean? = null,
     val overrideShowWeather: Boolean? = null,
 
+    val overrideHideScreenTime: Boolean? = null,
+
+    val entryAuthMethod: ProfileAuthMethod = ProfileAuthMethod.NONE,
+    val exitAuthMethod: ProfileAuthMethod = ProfileAuthMethod.NONE,
     val activationKey: String? = null,
-    val requiresBiometric: Boolean? = null,
 
     val version: Int = VERSION
 )

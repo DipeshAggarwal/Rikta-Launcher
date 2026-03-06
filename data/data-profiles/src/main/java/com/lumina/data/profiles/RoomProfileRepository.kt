@@ -45,14 +45,19 @@ class RoomProfileRepository @Inject constructor(
         filterNotification = filterNotification,
         startDnd = startDnd,
         showAppList = showAppList,
+        hideScreenTimeOnApps = hideScreenTimeOnApps,
+        disableOnLock = disableOnLock,
+        blockUnauthorisedApps = blockUnauthorisedApps,
         overrideBackground = overrideBackground,
         overrideFont = overrideFont,
         overrideShowClock = overrideShowClock,
         overrideShowBigClock = overrideShowBigClock,
         overrideShowDate = overrideShowDate,
         overrideShowWeather = overrideShowWeather,
+        overrideHideScreenTime = overrideHideScreenTime,
+        entryAuthMethod = entryAuthMethod,
+        exitAuthMethod = exitAuthMethod,
         activationKey = activationKey,
-        requiresBiometric = requiresBiometric
     )
 
     private fun LauncherProfile.toEntity(hashedKey: String?) = ProfileEntity(
@@ -65,14 +70,19 @@ class RoomProfileRepository @Inject constructor(
         filterNotification = filterNotification,
         startDnd = startDnd,
         showAppList = showAppList,
+        hideScreenTimeOnApps = hideScreenTimeOnApps,
+        disableOnLock = disableOnLock,
+        blockUnauthorisedApps = blockUnauthorisedApps,
         overrideBackground = overrideBackground,
         overrideFont = overrideFont,
         overrideShowClock = overrideShowClock,
         overrideShowBigClock = overrideShowBigClock,
         overrideShowDate = overrideShowDate,
         overrideShowWeather = overrideShowWeather,
+        overrideHideScreenTime = overrideHideScreenTime,
+        entryAuthMethod = entryAuthMethod,
+        exitAuthMethod = exitAuthMethod,
         activationKey = hashedKey,
-        requiresBiometric = requiresBiometric
     )
 
     private fun ProfileTriggerEntity.toDomain() = TriggerCondition(
@@ -157,8 +167,23 @@ class RoomProfileRepository @Inject constructor(
                 "This PIN is already being used.",
                 IllegalArgumentException("This PIN is already being used.")
             )
+            throw IllegalArgumentException("This PIN is already being used.")
         }
-        profileDao.insertProfile(profile.toEntity(hashedKey))
+        profileDao.saveProfile(profile.toEntity(hashedKey))
+    }
+
+    override suspend fun updateProfile(profile: LauncherProfile) {
+        val hashedKey = profile.activationKey?.hash()
+
+        if (hashedKey != null && profileDao.isKeyTaken(hashedKey, profile.id)) {
+            logger.w(
+                TAG,
+                "This PIN is already being used.",
+                IllegalArgumentException("This PIN is already being used.")
+            )
+            throw IllegalArgumentException("This PIN is already being used.")
+        }
+        profileDao.updateProfile(profile.toEntity(hashedKey))
     }
 
     override suspend fun deleteProfile(profileId: String) {

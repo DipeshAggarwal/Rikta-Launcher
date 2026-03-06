@@ -3,6 +3,7 @@ package com.lumina.domain.profiles.model
 data class LauncherProfile(
     val id: String,
     val userHandleNumber: Long,
+
     val type: ProfileType,
     val name: String,
     val strictMode: Boolean,
@@ -11,6 +12,10 @@ data class LauncherProfile(
     val filterNotification: Boolean,
     val startDnd: Boolean,
     val showAppList: Boolean,
+    val hideScreenTimeOnApps: Boolean,
+    val disableOnLock: Boolean,
+
+    val blockUnauthorisedApps: Boolean,
 
     val overrideBackground: String?,
     val overrideFont: String?,
@@ -20,6 +25,9 @@ data class LauncherProfile(
     val overrideShowDate: Boolean?,
     val overrideShowWeather: Boolean?,
 
+    val overrideHideScreenTime: Boolean?,
+
+    val entryAuthMethod: ProfileAuthMethod,
+    val exitAuthMethod: ProfileAuthMethod,
     val activationKey: String?,
-    val requiresBiometric: Boolean?
 )
