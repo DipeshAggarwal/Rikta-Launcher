@@ -1,4 +1,4 @@
-package com.lumina.domain.profiles.model
+package com.lumina.core.model
 
 enum class ProfileAuthMethod {
     NONE,

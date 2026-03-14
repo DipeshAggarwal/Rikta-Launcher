@@ -1,5 +1,8 @@
 package com.lumina.domain.profiles.model
 
+import com.lumina.core.model.ProfileAuthMethod
+import com.lumina.core.model.ProfileType
+
 data class LauncherProfile(
     val id: String,
     val userHandleNumber: Long,

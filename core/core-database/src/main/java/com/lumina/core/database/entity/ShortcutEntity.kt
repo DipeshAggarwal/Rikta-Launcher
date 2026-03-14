@@ -2,7 +2,7 @@ package com.lumina.core.database.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.lumina.domain.shortcut.model.ShortcutType
+import com.lumina.core.model.ShortcutType
 
 private const val VERSION = 1
 

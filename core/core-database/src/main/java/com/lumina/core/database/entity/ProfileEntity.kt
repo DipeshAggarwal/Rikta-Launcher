@@ -3,8 +3,8 @@ package com.lumina.core.database.entity
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import com.lumina.domain.profiles.model.ProfileAuthMethod
-import com.lumina.domain.profiles.model.ProfileType
+import com.lumina.core.model.ProfileAuthMethod
+import com.lumina.core.model.ProfileType
 
 private const val VERSION = 1
 

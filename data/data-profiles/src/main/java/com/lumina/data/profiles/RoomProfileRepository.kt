@@ -198,12 +198,19 @@ class RoomProfileRepository @Inject constructor(
             apps.map { app ->
                 AppOverrideState(
                     appBasicData = AppBasicData(app.packageName, app.userHandleNumber),
-                    customDisplayName = app.customDisplayName,
                     recommendedUsageMinutes = app.recommendedUsageMinutes,
                     customCountdown = app.customCountdown
                 )
             }
         }
+    }
+
+    override fun getAppLimitMinutes(
+        profileId: String,
+        packageName: String,
+        userHandleNumber: Long
+    ): Int? {
+        return profileDao.getAppLimitMinutes(profileId, packageName, userHandleNumber)
     }
 
     override suspend fun addAppToProfile(
@@ -231,8 +238,11 @@ class RoomProfileRepository @Inject constructor(
         customCountdown: Int?
     ) {
         profileDao.insertAppMapping(ProfileAppCrossRef(
-            profileId, packageName, userHandleNumber,
-            customName, recommendedUsageMinutes, customCountdown
+            profileId,
+            packageName,
+            userHandleNumber,
+            recommendedUsageMinutes,
+            customCountdown
         ))
     }
 

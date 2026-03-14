@@ -15,16 +15,21 @@ private const val VERSION = 1
             parentColumns = ["id"],
             childColumns = ["profileId"],
             onDelete = ForeignKey.CASCADE
+        ),
+        ForeignKey(
+            entity = AppEntity::class,
+            parentColumns = ["packageName", "userHandleNumber"],
+            childColumns = ["packageName", "userHandleNumber"],
+            onDelete = ForeignKey.CASCADE
         )
     ],
-    indices = [Index("profileId"), Index("packageName")]
+    indices = [Index(value = ["packageName", "userHandleNumber"])]
 )
 
 data class ProfileAppCrossRef(
     val profileId: String,
     val packageName: String,
     val userHandleNumber: Long,
-    val customDisplayName: String? = null,
     val recommendedUsageMinutes: Int? = null,
     val customCountdown: Int? = null,
 

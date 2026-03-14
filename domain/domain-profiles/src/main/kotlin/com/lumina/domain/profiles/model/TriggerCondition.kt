@@ -1,5 +1,8 @@
 package com.lumina.domain.profiles.model
 
+import com.lumina.core.model.LogicalOperator
+import com.lumina.core.model.ProfileTriggerType
+
 data class TriggerCondition(
     val triggerId: Long,
 

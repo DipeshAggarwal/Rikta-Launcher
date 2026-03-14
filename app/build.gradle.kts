@@ -125,16 +125,21 @@ dependencies {
     implementation(project(":core:core-ui"))
 
     implementation(project(":data:data-apps"))
-    implementation(project(":data:data-countdown"))
-    implementation(project(":data:data-settings"))
     implementation(project(":data:data-coordination"))
+    implementation(project(":data:data-countdown"))
+    implementation(project(":data:data-profiles"))
+    implementation(project(":data:data-settings"))
+    implementation(project(":data:data-shortcut"))
+    implementation(project(":data:data-usage"))
 
     implementation(project(":domain:domain-apps"))
+    implementation(project(":domain:domain-coordination"))
     implementation(project(":domain:domain-countdown"))
     implementation(project(":domain:domain-profiles"))
     implementation(project(":domain:domain-search"))
     implementation(project(":domain:domain-settings"))
-    implementation(project(":domain:domain-coordination"))
+    implementation(project(":domain:domain-shortcut"))
+    implementation(project(":domain:domain-usage"))
 
     implementation(project(":features:feature-apphiding"))
     implementation(project(":features:feature-apppicker"))
@@ -142,6 +147,7 @@ dependencies {
     implementation(project(":features:feature-appcountdown"))
     implementation(project(":features:feature-home"))
     implementation(project(":features:feature-settings"))
+    implementation(project(":features:feature-system"))
 
     // Core Android Libraries
     implementation(libs.androidx.core.ktx)

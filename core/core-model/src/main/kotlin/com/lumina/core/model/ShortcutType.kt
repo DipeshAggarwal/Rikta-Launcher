@@ -1,4 +1,4 @@
-package com.lumina.domain.shortcut.model
+package com.lumina.core.model
 
 enum class ShortcutType {
     APP_SHORTCUT,

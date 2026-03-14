@@ -1,4 +1,4 @@
-package com.lumina.core.android
+package com.lumina.feature.system
 
 import android.app.NotificationManager
 import android.content.Context

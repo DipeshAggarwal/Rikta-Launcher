@@ -1,4 +1,4 @@
-package com.lumina.domain.profiles.model
+package com.lumina.core.model
 
 object SystemProfileIds {
     const val DEFAULT = "launcher_default"

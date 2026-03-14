@@ -52,6 +52,14 @@ interface ProfileDao {
     @Query("SELECT * FROM profile_app_mapping WHERE profileId = :profileId")
     fun getAppsForProfile(profileId: String): Flow<List<ProfileAppCrossRef>>
 
+    @Query("SELECT recommendedUsageMinutes " +
+            "FROM profile_app_mapping " +
+            "WHERE profileId = :profileId " +
+            "AND packageName = :packageName " +
+            "AND userHandleNumber = :userHandleNumber"
+    )
+    fun getAppLimitMinutes(profileId: String, packageName: String, userHandleNumber: Long): Int?
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAppMapping(mapping: ProfileAppCrossRef)
 

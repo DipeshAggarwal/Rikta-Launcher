@@ -3,6 +3,7 @@ package com.lumina.core.database.di
 import android.content.Context
 import androidx.room.Room
 import com.lumina.core.database.LuminaDatabase
+import com.lumina.core.database.dao.AppUsageDao
 import com.lumina.core.database.dao.ProfileDao
 import com.lumina.core.database.dao.ShortcutDao
 import com.lumina.core.database.migration.DatabaseMigrations
@@ -39,5 +40,11 @@ object DatabaseModule {
     @Singleton
     fun providesShortcutDao(database: LuminaDatabase): ShortcutDao {
         return database.shortcutDao()
+    }
+
+    @Provides
+    @Singleton
+    fun providesAppUsageDao(database: LuminaDatabase): AppUsageDao {
+        return database.appUsageDao()
     }
 }

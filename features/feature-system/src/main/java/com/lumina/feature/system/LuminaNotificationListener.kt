@@ -1,4 +1,4 @@
-package com.lumina.core.android
+package com.lumina.feature.system
 
 import android.os.UserManager
 import android.service.notification.NotificationListenerService

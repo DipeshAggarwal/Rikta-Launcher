@@ -14,6 +14,9 @@ interface ShortcutDao {
     @Query("SELECT * FROM shortcuts")
     fun getAllShortcuts(): Flow<List<ShortcutEntity>>
 
+    @Query("SELECT * FROM shortcuts WHERE pinnedToDefault = 1")
+    fun getDefaultScreenShortcuts(): Flow<List<ShortcutEntity>>
+
     @Query("SELECT s.* FROM shortcuts s " +
             "INNER JOIN profile_shortcut_mapping m " +
             "ON s.id = m.shortcutId " +
@@ -32,6 +35,9 @@ interface ShortcutDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addShortcutToProfile(mapping: ProfileShortcutCrossRef)
+
+    @Query("UPDATE shortcuts SET pinnedToDefault = :pinned WHERE id = :shortcutId")
+    fun setPinnedToDefault(shortcutId: String, pinned: Boolean)
 
     @Query("DELETE FROM profile_shortcut_mapping " +
             "WHERE profileId = :profileId " +

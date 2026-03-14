@@ -10,7 +10,6 @@ dependencies {
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
 
-    implementation(project(":core:core-android"))
     implementation(project(":core:core-common"))
     implementation(project(":core:core-database"))
     implementation(project(":core:core-logging"))

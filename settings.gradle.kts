@@ -17,8 +17,8 @@ pluginManagement {
     }
 
     plugins {
-        id("com.android.application") version "9.0.1"
-        id("com.android.library") version "9.0.1"
+        id("com.android.application") version "9.1.0"
+        id("com.android.library") version "9.1.0"
         id("org.jetbrains.kotlin.android") version "2.3.10"
         id("org.jetbrains.kotlin.jvm") version "2.3.10"
         id("org.jetbrains.kotlin.plugin.compose") version "2.3.10"
@@ -64,15 +64,17 @@ include(":domain:domain-screentime")
 include(":domain:domain-search")
 include(":domain:domain-shortcut")
 include(":domain:domain-settings")
+include(":domain:domain-usage")
 
 // data module
 include(":data:data-apps")
+include(":data:data-coordination")
 include(":data:data-countdown")
 include(":data:data-profiles")
 include(":data:data-screentime")
 include(":data:data-settings")
 include(":data:data-shortcut")
-include(":data:data-coordination")
+include(":data:data-usage")
 
 // features module
 include(":features:feature-apphiding")
@@ -83,3 +85,4 @@ include(":features:feature-home")
 include(":features:feature-onboarding")
 include(":features:feature-screentime")
 include(":features:feature-settings")
+include(":features:feature-system")

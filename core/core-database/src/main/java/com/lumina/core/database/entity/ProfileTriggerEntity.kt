@@ -4,8 +4,8 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import com.lumina.domain.profiles.model.LogicalOperator
-import com.lumina.domain.profiles.model.ProfileTriggerType
+import com.lumina.core.model.LogicalOperator
+import com.lumina.core.model.ProfileTriggerType
 
 private const val VERSION = 1
 
