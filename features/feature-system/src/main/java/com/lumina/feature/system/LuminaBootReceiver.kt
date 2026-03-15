@@ -17,7 +17,10 @@ class LuminaBootReceiver : BroadcastReceiver() {
     private val TAG = this::class.java.simpleName
 
     override fun onReceive(p0: Context?, p1: Intent?) {
-        if (p1?.action != Intent.ACTION_LOCKED_BOOT_COMPLETED) return
+        if (p1?.action != Intent.ACTION_LOCKED_BOOT_COMPLETED &&
+            p1?.action != Intent.ACTION_BOOT_COMPLETED) {
+            return
+        }
 
         val rebootTime = System.currentTimeMillis() - SystemClock.elapsedRealtime()
         bootHandlers.forEach { it.onBoot(rebootTime) }

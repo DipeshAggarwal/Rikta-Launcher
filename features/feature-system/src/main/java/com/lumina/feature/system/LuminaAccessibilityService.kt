@@ -36,6 +36,7 @@ class LuminaAccessibilityService : AccessibilityService() {
     @Inject lateinit var usageRepository: UsageRepository
     @Inject lateinit var appUsageTracker: AppUsageTracker
     @Inject lateinit var userManager: UserManager
+    @Inject lateinit var usageEnforcementEngine: UsageEnforcementEngine
     @Inject lateinit var logger: Logger
 
     private var currentProfileId: String = SystemProfileIds.DEFAULT
@@ -87,6 +88,12 @@ class LuminaAccessibilityService : AccessibilityService() {
 
         appUsageTracker.onAppForegrounded(packageName, userHandleNumber, currentProfileId, timestamp)
         lastForegroundPackage = packageName
+
+        usageEnforcementEngine.startMonitoring(
+            scope, packageName, getUserHandleNumber(), currentProfileId
+        ) {
+            // stuff
+        }
     }
 
     override fun onInterrupt() {
@@ -127,32 +134,16 @@ class LuminaAccessibilityService : AccessibilityService() {
                             newProfileId,
                             timestamp
                         )
+
+                        usageEnforcementEngine.startMonitoring(
+                            scope, packageName, getUserHandleNumber(), currentProfileId
+                        ) {
+                            // stuff
+                        }
                     }
                 }
             }
             .launchIn(scope)
-    }
-
-    private fun checkUsageLimit(
-        packageName: String,
-        userHandleNumber: Long,
-        profileId: String
-    ) {
-        scope.launch {
-            val limitMinutes = profileRepository.getAppLimitMinutes(profileId, packageName, userHandleNumber)
-                ?: return@launch
-            val limitMs = limitMinutes * 60_000L
-
-            if (limitMs <= 0) return@launch
-
-            val summary = usageRepository.getSessionStats(
-                packageName, userHandleNumber, profileId, UsageTimeRange.TODAY
-            ) ?: return@launch
-
-            if (summary.totalMs >= limitMs) {
-                logger.d(TAG, "Usage Limit reached for $packageName.")
-            }
-        }
     }
 
     private fun getUserHandleNumber(): Long = userManager.getSerialNumberForUser(myUserHandle())
