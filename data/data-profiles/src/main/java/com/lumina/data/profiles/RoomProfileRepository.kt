@@ -87,6 +87,8 @@ class RoomProfileRepository @Inject constructor(
 
     private fun ProfileTriggerEntity.toDomain() = TriggerCondition(
         triggerId = triggerId,
+        profileId = profileId,
+        sequenceOrder = sequenceOrder,
         logicalOperator = logicalOperator,
         triggerType = triggerType,
         stopIfTrue = stopIfTrue,

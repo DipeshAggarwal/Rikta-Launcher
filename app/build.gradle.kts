@@ -194,6 +194,11 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.ui.test.junit)
     androidTestImplementation(libs.androidx.room.testing)
 
+    testImplementation(libs.kotlinx.coroutines.test)
+
+    testImplementation(libs.mockk)
+    androidTestImplementation(libs.mockk.android)
+
     // Debugging Tools
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)

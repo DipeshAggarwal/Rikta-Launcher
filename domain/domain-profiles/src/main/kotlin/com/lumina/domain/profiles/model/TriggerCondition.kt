@@ -5,6 +5,8 @@ import com.lumina.core.model.ProfileTriggerType
 
 data class TriggerCondition(
     val triggerId: Long,
+    val profileId: String,
+    val sequenceOrder: Int,
 
     val logicalOperator: LogicalOperator?,
     val triggerType: ProfileTriggerType?,

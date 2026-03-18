@@ -9,7 +9,13 @@ dependencies {
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.androidx.core.ktx)
     implementation(libs.hilt.android)
+    implementation(libs.play.services.location)
     ksp(libs.hilt.compiler)
+
+    testImplementation(libs.junit)
+    testImplementation(libs.mockk)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(project(":core:core-testing"))
 
     implementation(project(":core:core-android"))
     implementation(project(":core:core-common"))
