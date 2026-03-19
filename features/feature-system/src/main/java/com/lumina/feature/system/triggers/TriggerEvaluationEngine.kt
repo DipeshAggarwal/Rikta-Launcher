@@ -2,6 +2,7 @@ package com.lumina.feature.system.triggers
 
 import android.Manifest
 import androidx.annotation.RequiresPermission
+import com.lumina.core.android.di.ApplicationScope
 import com.lumina.core.logging.Logger
 import com.lumina.core.model.LogicalOperator
 import com.lumina.core.model.ProfileTriggerType
@@ -15,6 +16,7 @@ import com.lumina.feature.system.triggers.monitor.WifiTriggerMonitor
 import jakarta.inject.Inject
 import jakarta.inject.Singleton
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
@@ -22,33 +24,22 @@ import kotlinx.coroutines.launch
 
 @Singleton
 class TriggerEvaluationEngine @Inject constructor(
+    @param:ApplicationScope private val scope: CoroutineScope,
     private val profileRepository: ProfileRepository,
     private val triggerSystemStateCache: TriggerSystemStateCache,
     private val wifiTriggerMonitor: WifiTriggerMonitor,
     private val bluetoothTriggerMonitor: BluetoothTriggerMonitor,
     private val timeTriggerMonitor: TimeTriggerMonitor,
     private val locationTriggerMonitor: LocationTriggerMonitor,
-    private val timeTriggerScheduler: TimeTriggerScheduler,
     private val logger: Logger
 ) {
     private val TAG = this::class.java.simpleName
+    private var collectionJob: Job? = null
 
-    @RequiresPermission(allOf = [
-        Manifest.permission.ACCESS_NETWORK_STATE,
-        Manifest.permission.ACCESS_FINE_LOCATION,
-        Manifest.permission.BLUETOOTH_CONNECT
-        ]
-    )
-    fun start(scope: CoroutineScope) {
-        wifiTriggerMonitor.register()
-        bluetoothTriggerMonitor.register()
+    fun start() {
+        if (collectionJob?.isActive == true) return
 
-        scope.launch {
-            timeTriggerScheduler.scheduleNextAlarm()
-            locationTriggerMonitor.registerGeofences()
-        }
-
-        scope.launch {
+        collectionJob = scope.launch {
             merge(
                 triggerSystemStateCache.currentSsid.map { Unit },
                 triggerSystemStateCache.connectedDevices.map { Unit },
@@ -58,19 +49,8 @@ class TriggerEvaluationEngine @Inject constructor(
     }
 
     fun stop() {
-        wifiTriggerMonitor.unregister()
-        bluetoothTriggerMonitor.unregister()
-        timeTriggerScheduler.cancel()
-        locationTriggerMonitor.unregisterGeofences()
-    }
-
-    @RequiresPermission(Manifest.permission.ACCESS_FINE_LOCATION)
-    fun refresh(scope: CoroutineScope) {
-        scope.launch {
-            timeTriggerScheduler.scheduleNextAlarm()
-            locationTriggerMonitor.unregisterGeofences()
-            locationTriggerMonitor.registerGeofences()
-        }
+        collectionJob?.cancel()
+        collectionJob = null
     }
 
     suspend fun evaluateTriggers() {

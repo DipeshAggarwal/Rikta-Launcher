@@ -1,4 +1,4 @@
-package com.lumina.feature.system
+package com.lumina.feature.system.enforcement
 
 import com.lumina.core.logging.Logger
 import com.lumina.domain.profiles.ProfileRepository

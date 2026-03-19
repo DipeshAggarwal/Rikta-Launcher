@@ -4,7 +4,6 @@ import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.icu.util.Calendar
 import com.lumina.core.logging.Logger
 import com.lumina.core.model.ProfileTriggerType
 import com.lumina.domain.profiles.ProfileRepository
@@ -14,6 +13,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import jakarta.inject.Inject
 import jakarta.inject.Singleton
 import kotlinx.coroutines.flow.first
+import java.util.Calendar
 
 private const val ALARM_REQUEST_CODE = 1024
 
@@ -45,6 +45,12 @@ class TimeTriggerScheduler @Inject constructor(
         }
 
         val nextTriggerTime = computeNextTriggerTime(allTimeTriggers) ?: return
+        alarmManager.setExact(
+            AlarmManager.RTC_WAKEUP,
+            nextTriggerTime,
+            getPendingIntent()
+        )
+        logger.d(TAG, "Next trigger alarm scheduled at $nextTriggerTime.")
     }
 
     private fun computeNextTriggerTime(triggers: List<TriggerCondition>): Long? {
@@ -67,7 +73,7 @@ class TimeTriggerScheduler @Inject constructor(
             set(Calendar.MILLISECOND, 0)
 
             if (nextMinutes <= nowMinutes) {
-                add(Calendar.DAY_OF_WEEK, 1)
+                add(Calendar.DAY_OF_YEAR, 1)
             }
         }.timeInMillis
     }

@@ -1,5 +1,6 @@
 package com.lumina.feature.system
 
+import android.Manifest
 import android.accessibilityservice.AccessibilityService
 import android.accessibilityservice.AccessibilityServiceInfo
 import android.annotation.SuppressLint
@@ -10,6 +11,7 @@ import android.content.IntentFilter
 import android.os.Process.myUserHandle
 import android.os.UserManager
 import android.view.accessibility.AccessibilityEvent
+import androidx.annotation.RequiresPermission
 import androidx.core.content.ContextCompat
 import com.lumina.core.android.di.ApplicationScope
 import com.lumina.core.common.SystemActions
@@ -18,13 +20,14 @@ import com.lumina.domain.profiles.ProfileRepository
 import com.lumina.core.model.SystemProfileIds
 import com.lumina.domain.usage.AppUsageTracker
 import com.lumina.domain.usage.UsageRepository
-import com.lumina.domain.usage.model.UsageTimeRange
+import com.lumina.feature.system.enforcement.ProfileEnforcementManager
+import com.lumina.feature.system.enforcement.UsageEnforcementEngine
+import com.lumina.feature.system.triggers.TriggerLifecycleManager
 import dagger.hilt.android.AndroidEntryPoint
 import jakarta.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
 
 // Knowingly suppressed.
 // Planned: Double tap to lock and other accessibility actions.
@@ -37,6 +40,8 @@ class LuminaAccessibilityService : AccessibilityService() {
     @Inject lateinit var appUsageTracker: AppUsageTracker
     @Inject lateinit var userManager: UserManager
     @Inject lateinit var usageEnforcementEngine: UsageEnforcementEngine
+    @Inject lateinit var profileEnforcementManager: ProfileEnforcementManager
+    @Inject lateinit var triggerLifecycleManager: TriggerLifecycleManager
     @Inject lateinit var logger: Logger
 
     private var currentProfileId: String = SystemProfileIds.DEFAULT
@@ -54,6 +59,11 @@ class LuminaAccessibilityService : AccessibilityService() {
         }
     }
 
+    @RequiresPermission(allOf = [
+        Manifest.permission.ACCESS_NETWORK_STATE,
+        Manifest.permission.ACCESS_FINE_LOCATION,
+        Manifest.permission.BLUETOOTH_CONNECT
+    ])
     override fun onServiceConnected() {
         super.onServiceConnected()
         serviceInfo = AccessibilityServiceInfo().apply {
@@ -62,6 +72,9 @@ class LuminaAccessibilityService : AccessibilityService() {
             flags = AccessibilityServiceInfo.FLAG_REPORT_VIEW_IDS
             notificationTimeout = 100
         }
+
+        triggerLifecycleManager.start()
+        profileEnforcementManager.start(scope)
         observeActiveProfile()
 
         val filter = IntentFilter(SystemActions.EXPAND_NOTIFICATION_SHADE)
@@ -102,11 +115,13 @@ class LuminaAccessibilityService : AccessibilityService() {
 
     override fun onDestroy() {
         super.onDestroy()
+        triggerLifecycleManager.stop()
+
         try {
             unregisterReceiver(expandReceiver)
-            logger.d("$TAG:Destroy", "Receiver cleanly unregistered")
+            logger.d("$TAG::Destroy", "Receiver cleanly unregistered")
         } catch (e: Exception) {
-            logger.w("$TAG:Destroy", "Receiver not registered when destroying service.", e)
+            logger.w("$TAG::Destroy", "Receiver not registered when destroying service.", e)
         }
     }
 
