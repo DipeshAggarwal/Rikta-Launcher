@@ -1,5 +1,6 @@
 plugins {
     id("convention.android.library")
+    id("convention.compose")
 }
 
 android {
@@ -8,7 +9,6 @@ android {
 
 dependencies {
     implementation(libs.androidx.compose.material.icons.extended)
-    implementation(libs.androidx.compose.foundation.layout)
 
     implementation(project(":core:core-common"))
     implementation(project(":core:core-model"))

@@ -1,7 +1,7 @@
 plugins {
     id("convention.android.library")
-    alias(libs.plugins.hilt)
-    alias(libs.plugins.ksp)
+    id("convention.compose")
+    id("convention.hilt")
 }
 
 android {
@@ -9,11 +9,8 @@ android {
 }
 
 dependencies {
-    implementation(libs.androidx.lifecycle.runtime)
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.androidx.compose.material.icons.extended)
-    implementation(libs.hilt.android)
-    ksp(libs.hilt.compiler)
 
     implementation(project(":core:core-android"))
     implementation(project(":core:core-common"))

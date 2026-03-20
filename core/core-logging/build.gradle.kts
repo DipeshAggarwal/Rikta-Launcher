@@ -1,7 +1,6 @@
 plugins {
     id("convention.android.library")
-    alias(libs.plugins.hilt)
-    alias(libs.plugins.ksp)
+    id("convention.hilt")
 }
 
 dependencies {

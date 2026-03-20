@@ -1,6 +1,7 @@
 package convention.android
 
 import com.android.build.api.dsl.LibraryExtension
+import convention.libs
 import org.gradle.api.JavaVersion
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -9,11 +10,10 @@ import org.gradle.kotlin.dsl.dependencies
 
 import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension
 
-class AndroidLibraryConventionPlugin: Plugin<Project> {
+class AndroidLibraryConventionPlugin : Plugin<Project> {
 
     override fun apply(target: Project) {
         target.pluginManager.apply("com.android.library")
-        target.pluginManager.apply("org.jetbrains.kotlin.plugin.compose")
 
         val baseNamespace = target.providers
             .gradleProperty("BASE_NAMESPACE")
@@ -38,10 +38,6 @@ class AndroidLibraryConventionPlugin: Plugin<Project> {
                 sourceCompatibility = JavaVersion.VERSION_17
                 targetCompatibility = JavaVersion.VERSION_17
             }
-
-            buildFeatures {
-                compose = true
-            }
         }
 
         target.extensions.configure<KotlinAndroidProjectExtension> {
@@ -49,13 +45,10 @@ class AndroidLibraryConventionPlugin: Plugin<Project> {
         }
 
         target.dependencies {
-            add("implementation", platform("androidx.compose:compose-bom:2026.01.01"))
+            add("implementation", target.libs.findLibrary("androidx-core-ktx").get())
+            add("implementation", target.libs.findLibrary("androidx-lifecycle-runtime").get())
 
-            add("implementation", "androidx.core:core-ktx:1.17.0")
-            add("implementation", "androidx.lifecycle:lifecycle-runtime-ktx:2.10.0")
-
-            add("implementation", "androidx.compose.ui:ui")
-            add("implementation", "androidx.compose.material3:material3")
+            add("implementation", target.libs.findLibrary("kotlinx-coroutines-core").get())
         }
     }
 }

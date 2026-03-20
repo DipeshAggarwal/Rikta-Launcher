@@ -3,8 +3,7 @@ plugins {
 }
 
 dependencies {
-    implementation(libs.kotlinx.coroutines.core)
-
+    implementation(project(":core:core-database"))
     implementation(project(":core:core-model"))
 
     implementation(project(":domain:domain-profiles"))

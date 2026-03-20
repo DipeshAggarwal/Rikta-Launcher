@@ -1,7 +1,7 @@
 plugins {
     id("convention.android.library")
-    alias(libs.plugins.hilt)
-    alias(libs.plugins.ksp)
+    id("convention.room")
+    id("convention.test.android")
 }
 
 dependencies {
