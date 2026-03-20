@@ -54,6 +54,9 @@ class TriggerEvaluationEngine @Inject constructor(
     }
 
     suspend fun evaluateTriggers() {
+        val activeProfile = profileRepository.activeProfile.first()
+        if (activeProfile?.blockProfileTriggerSwitching == true) return
+
         val profiles = profileRepository.getAllProfiles().first()
             .sortedByDescending { it.priorityTriggerLaunch }
 

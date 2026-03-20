@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.pm.LauncherApps
 import android.content.pm.LauncherApps.ShortcutQuery
 import android.os.UserManager
+import com.lumina.core.common.IoDispatcher
 import com.lumina.core.logging.Logger
 import com.lumina.core.model.AppInfo
 import com.lumina.core.model.AppShortcut
@@ -11,22 +12,25 @@ import com.lumina.domain.apps.AppShortcutRepository
 import dagger.hilt.android.qualifiers.ApplicationContext
 import jakarta.inject.Inject
 import jakarta.inject.Singleton
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.withContext
 
 private const val MAX_SHORTCUTS = 4
 
 @Singleton
 class PlatformAppShortcutRepository @Inject constructor(
     @param:ApplicationContext private val context: Context,
+    @param:IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val logger: Logger
 ) : AppShortcutRepository{
     private val TAG = this::class.java.simpleName
     private val launcherApps = context.getSystemService(LauncherApps::class.java)
     private val userManager = context.getSystemService(UserManager::class.java)
 
-    override suspend fun getShortcuts(app: AppInfo): List<AppShortcut> {
-        return try {
+    override suspend fun getShortcuts(app: AppInfo): List<AppShortcut> = withContext(ioDispatcher) {
+        try {
             val userHandle = userManager.getUserForSerialNumber(app.userHandleNumber)
-                ?: return emptyList()
+                ?: return@withContext emptyList()
 
             val query = ShortcutQuery().apply {
                 setQueryFlags(

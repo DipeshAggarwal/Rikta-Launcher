@@ -23,6 +23,8 @@ data class ProfileEntity(
     val priorityTriggerLaunch: Boolean = false,
     val filterNotification: Boolean = false,
 
+    val blockProfileTriggerSwitching: Boolean  = false,
+
     val startDnd: Boolean = false,
     val showAppList: Boolean = true,
     val hideScreenTimeOnApps: Boolean = false,

@@ -13,6 +13,9 @@ data class LauncherProfile(
 
     val priorityTriggerLaunch: Boolean,
     val filterNotification: Boolean,
+
+    val blockProfileTriggerSwitching: Boolean,
+
     val startDnd: Boolean,
     val showAppList: Boolean,
     val hideScreenTimeOnApps: Boolean,
