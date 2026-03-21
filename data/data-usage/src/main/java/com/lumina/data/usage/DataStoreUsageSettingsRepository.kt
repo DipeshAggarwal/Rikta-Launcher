@@ -16,9 +16,8 @@ class DataStoreUsageSettingsRepository @Inject constructor(
 ) : UsageSettingsRepository {
     private val RAW_RETENTION_DAYS_KEY = intPreferencesKey("usage_raw_retention_days")
 
-    override val rawRetentionDays: Flow<Int> = dataStore.data.map { prefs ->
-        prefs[RAW_RETENTION_DAYS_KEY] ?: DEFAULT_RAW_RETENTION_DAYS
-    }
+    override val rawRetentionDays: Flow<Int>
+        get() = dataStore.data.map { prefs -> prefs[RAW_RETENTION_DAYS_KEY] ?: DEFAULT_RAW_RETENTION_DAYS }
 
     override suspend fun setRawRetentionDays(days: Int) {
         require(days > 0) { "Retention days must be positive." }

@@ -13,4 +13,6 @@ dependencies {
     implementation(project(":core:core-model"))
 
     implementation(project(":domain:domain-profiles"))
+
+    testImplementation(project(":core:core-testing"))
 }

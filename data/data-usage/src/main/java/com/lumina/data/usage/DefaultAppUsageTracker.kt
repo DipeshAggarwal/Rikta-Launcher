@@ -6,29 +6,23 @@ import com.lumina.core.database.dao.ProfileDao
 import com.lumina.core.database.entity.AppUsageSessionEntity
 import com.lumina.core.database.entity.ProfileSwitchLogEntity
 import com.lumina.core.logging.Logger
-import com.lumina.core.model.AppBasicData
 import com.lumina.data.usage.UsageConstants.HEARTBEAT_INTERVAL_MILLISECONDS
 import com.lumina.data.usage.UsageConstants.MIN_SESSION_MILLISECONDS
 import com.lumina.domain.usage.AppUsageTracker
-import com.lumina.data.usage.ActiveSession
-import com.lumina.domain.usage.model.UsageTimeRange
 import jakarta.inject.Inject
 import jakarta.inject.Singleton
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 @Singleton
 class DefaultAppUsageTracker @Inject constructor(
     @param:ApplicationScope private val scope: CoroutineScope,
-    private val profileDao: ProfileDao,
     private val appUsageDao: AppUsageDao,
     private val logger: Logger
 ) : AppUsageTracker {
@@ -36,6 +30,7 @@ class DefaultAppUsageTracker @Inject constructor(
 
     private val activeSessions = ConcurrentHashMap<String, ActiveSession>()
 
+    @OptIn(ExperimentalUuidApi::class)
     override fun onAppForegrounded(
         packageName: String,
         userHandleNumber: Long,
@@ -45,7 +40,7 @@ class DefaultAppUsageTracker @Inject constructor(
         val key = sessionKey(packageName, userHandleNumber)
         activeSessions[key]?.let { closeSession(it, timestamp) }
 
-        val sessionId = UUID.randomUUID().toString()
+        val sessionId = Uuid.random().toString()
         val session = ActiveSession(
             sessionId = sessionId,
             packageName = packageName,

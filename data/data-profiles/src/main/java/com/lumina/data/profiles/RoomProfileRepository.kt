@@ -306,7 +306,7 @@ class RoomProfileRepository @Inject constructor(
         packageName: String,
         userHandleNumber: Long
     ) {
-        profileDao.insertWhitelist(
+        profileDao.insertNotificationWhitelist(
             NotificationWhitelistEntity(profileId, packageName, userHandleNumber)
         )
     }
@@ -316,7 +316,7 @@ class RoomProfileRepository @Inject constructor(
         packageName: String,
         userHandleNumber: Long
     ) {
-        profileDao.deleteWhitelist(
+        profileDao.deleteNotificationWhitelist(
             NotificationWhitelistEntity(profileId, packageName, userHandleNumber)
         )
     }

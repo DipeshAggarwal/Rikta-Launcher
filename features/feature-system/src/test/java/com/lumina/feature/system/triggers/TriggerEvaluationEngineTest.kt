@@ -1,5 +1,6 @@
 package com.lumina.feature.system.triggers
 
+import com.lumina.core.logging.Logger
 import com.lumina.core.model.LogicalOperator
 import com.lumina.core.testing.builder.LauncherProfileBuilder
 import com.lumina.core.testing.fake.FakeProfileRepository
@@ -12,6 +13,8 @@ import com.lumina.feature.system.triggers.monitor.WifiTriggerMonitor
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
@@ -25,6 +28,10 @@ class TriggerEvaluationEngineTest {
     private lateinit var timeTriggerMonitor: TimeTriggerMonitor
     private lateinit var locationTriggerMonitor: LocationTriggerMonitor
     private lateinit var timeTriggerScheduler: TimeTriggerScheduler
+    private lateinit var logger: Logger
+
+    private val testDispatcher = StandardTestDispatcher()
+    private val testScope = TestScope(testDispatcher)
 
     private val profileOne = LauncherProfileBuilder.build(
         id = "profile_test_1",
@@ -55,13 +62,13 @@ class TriggerEvaluationEngineTest {
         timeTriggerScheduler = mockk(relaxed = true)
 
         triggerEvaluationEngine = TriggerEvaluationEngine(
+            scope = testScope,
             profileRepository = fakeProfileRepository,
             triggerSystemStateCache = triggerSystemStateCache,
             wifiTriggerMonitor = wifiTriggerMonitor,
             bluetoothTriggerMonitor = bluetoothTriggerMonitor,
             timeTriggerMonitor = timeTriggerMonitor,
             locationTriggerMonitor = locationTriggerMonitor,
-            timeTriggerScheduler = timeTriggerScheduler,
             logger = mockk(relaxed = true)
         )
     }

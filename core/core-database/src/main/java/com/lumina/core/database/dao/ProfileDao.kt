@@ -101,8 +101,8 @@ interface ProfileDao {
     fun getNotificationWhitelist(profileId: String): Flow<List<NotificationWhitelistEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertWhitelist(entry: NotificationWhitelistEntity)
+    suspend fun insertNotificationWhitelist(entry: NotificationWhitelistEntity)
 
     @Delete
-    suspend fun deleteWhitelist(entry: NotificationWhitelistEntity)
+    suspend fun deleteNotificationWhitelist(entry: NotificationWhitelistEntity)
 }

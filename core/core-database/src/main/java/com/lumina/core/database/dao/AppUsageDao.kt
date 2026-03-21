@@ -72,7 +72,8 @@ interface AppUsageDao {
             "AND profileId = :profileId " +
             "AND endTime IS NOT NULL " +
             "AND startTime < :endMs " +
-            "AND endTime > :startMs"
+            "AND endTime > :startMs " +
+            "GROUP BY packageName"
     )
     suspend fun getAppSessionStats(
         packageName: String,

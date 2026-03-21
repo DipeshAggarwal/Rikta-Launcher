@@ -1,10 +1,10 @@
 package com.lumina.core.testing.builder
 
+import com.lumina.core.database.entity.ProfileEntity
 import com.lumina.core.model.ProfileAuthMethod
 import com.lumina.core.model.ProfileType
-import com.lumina.domain.profiles.model.LauncherProfile
 
-object LauncherProfileBuilder {
+object ProfileEntityBuilder {
     fun build(
         id: String = "profile_test",
         name: String = "Test Profile",
@@ -29,15 +29,15 @@ object LauncherProfileBuilder {
         entryAuthMethod: ProfileAuthMethod = ProfileAuthMethod.NONE,
         exitAuthMethod: ProfileAuthMethod = ProfileAuthMethod.NONE,
         activationKey: String? = null,
-    ) = LauncherProfile(
+    ) = ProfileEntity(
         id = id,
-        name = name,
-        type = type,
         userHandleNumber = userHandleNumber,
-        blockProfileTriggerSwitching = blockProfileTriggerSwitching,
+        type = type,
+        name = name,
         strictMode = strictMode,
         priorityTriggerLaunch = priorityTriggerLaunch,
         filterNotification = filterNotification,
+        blockProfileTriggerSwitching = blockProfileTriggerSwitching,
         startDnd = startDnd,
         showAppList = showAppList,
         hideScreenTimeOnApps = hideScreenTimeOnApps,

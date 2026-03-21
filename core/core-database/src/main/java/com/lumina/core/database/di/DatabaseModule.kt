@@ -3,6 +3,7 @@ package com.lumina.core.database.di
 import android.content.Context
 import androidx.room.Room
 import com.lumina.core.database.LuminaDatabase
+import com.lumina.core.database.dao.AppDao
 import com.lumina.core.database.dao.AppUsageDao
 import com.lumina.core.database.dao.ProfileDao
 import com.lumina.core.database.dao.ShortcutDao
@@ -34,6 +35,12 @@ object DatabaseModule {
     @Singleton
     fun providesProfileDao(database: LuminaDatabase): ProfileDao {
         return database.profileDao()
+    }
+
+    @Provides
+    @Singleton
+    fun providesAppDao(database: LuminaDatabase): AppDao {
+        return database.appDao()
     }
 
     @Provides

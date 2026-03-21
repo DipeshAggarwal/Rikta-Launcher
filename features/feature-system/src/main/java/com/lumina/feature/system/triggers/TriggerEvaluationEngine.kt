@@ -74,10 +74,13 @@ class TriggerEvaluationEngine @Inject constructor(
     }
 
     private fun evaluateSequence(triggers: List<TriggerCondition>): Boolean {
-        val sorted = triggers.sortedBy { it.sequenceOrder }
-        var result = false
+        if (triggers.isEmpty()) return false
 
-        for (trigger in sorted) {
+        val sorted = triggers.sortedBy { it.sequenceOrder }
+        var result = evaluateSingle(sorted[0])
+        if (sorted[0].stopIfTrue && result) return true
+
+        for (trigger in sorted.drop(1)) {
             val match = evaluateSingle(trigger)
             if (trigger.stopIfTrue && match) return true
 
