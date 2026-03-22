@@ -21,11 +21,11 @@ private const val MAX_SHORTCUTS = 4
 class PlatformAppShortcutRepository @Inject constructor(
     @param:ApplicationContext private val context: Context,
     @param:IoDispatcher private val ioDispatcher: CoroutineDispatcher,
+    private val userManager: UserManager,
     private val logger: Logger
 ) : AppShortcutRepository{
     private val TAG = this::class.java.simpleName
     private val launcherApps = context.getSystemService(LauncherApps::class.java)
-    private val userManager = context.getSystemService(UserManager::class.java)
 
     override suspend fun getShortcuts(app: AppInfo): List<AppShortcut> = withContext(ioDispatcher) {
         try {

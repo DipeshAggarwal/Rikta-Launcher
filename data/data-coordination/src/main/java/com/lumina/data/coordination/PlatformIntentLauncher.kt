@@ -21,11 +21,11 @@ import jakarta.inject.Singleton
 @Singleton
 class PlatformIntentLauncher @Inject constructor(
     @param:ApplicationContext private val context: Context,
+    private val userManager: UserManager,
     private val logger: Logger
 ) : IntentLauncher {
     private val TAG = this::class.java.simpleName
     private val launcherApps = context.getSystemService(LauncherApps::class.java)
-    private val userManager = context.getSystemService(UserManager::class.java)
 
     override suspend fun openApp(app: AppInfo): LaunchResult {
         return try {
@@ -48,14 +48,14 @@ class PlatformIntentLauncher @Inject constructor(
                 ?.apply { addFlags(Intent.FLAG_ACTIVITY_NEW_TASK) }
 
             if (intent == null) {
-                logger.e("$TAG:App", "Fallback launch also failed for ${app.packageName}.")
+                logger.e(TAG, "Fallback launch also failed for ${app.packageName}.")
                 LaunchResult.NoLaunchIntent
             } else {
                 context.startActivity(intent)
                 LaunchResult.Success
             }
         } catch (e: Exception) {
-            logger.e("$TAG:App", "Failed to launch package: ${app.packageName}.", e)
+            logger.e(TAG, "Failed to launch package: ${app.packageName}.", e)
             LaunchResult.Error(e)
         }
     }
@@ -74,7 +74,7 @@ class PlatformIntentLauncher @Inject constructor(
             )
             LaunchResult.Success
         } catch (e: Exception) {
-            logger.e("$TAG:App", "Failed to open app info for ${app.packageName}.", e)
+            logger.e(TAG, "Failed to open app info for ${app.packageName}.", e)
             LaunchResult.Error(e)
         }
     }
@@ -88,7 +88,7 @@ class PlatformIntentLauncher @Inject constructor(
             context.startActivity(intent)
             LaunchResult.Success
         } catch (e: Exception) {
-            logger.e("$TAG:App", "Failed to launch uninstall for ${app.packageName}.", e)
+            logger.e(TAG, "Failed to launch uninstall for ${app.packageName}.", e)
             LaunchResult.Error(e)
         }
     }
@@ -107,7 +107,7 @@ class PlatformIntentLauncher @Inject constructor(
             )
             LaunchResult.Success
         } catch (e: Exception) {
-            logger.e("$TAG:Shortcut", "Failed to launch shortcut ${shortcut.shortcutId}.", e)
+            logger.e(TAG, "Failed to launch shortcut ${shortcut.shortcutId}.", e)
             LaunchResult.Error(e)
         }
     }
@@ -119,14 +119,14 @@ class PlatformIntentLauncher @Inject constructor(
             }
 
             if (intent.resolveActivity(context.packageManager) == null) {
-                logger.w("$TAG:Alarm", "No alarm app available.")
+                logger.w(TAG, "No alarm app available.")
                 LaunchResult.NoLaunchIntent
             } else {
                 context.startActivity(intent)
                 LaunchResult.Success
             }
         } catch (e: Exception) {
-            logger.e("$TAG:Alarm", "Failed to open alarm app.", e)
+            logger.e(TAG, "Failed to open alarm app.", e)
             LaunchResult.Error(e)
         }
     }
@@ -139,14 +139,14 @@ class PlatformIntentLauncher @Inject constructor(
             }
 
             if (intent.resolveActivity(context.packageManager) == null) {
-                logger.w("$TAG:Calendar", "No calendar app available.")
+                logger.w(TAG, "No calendar app available.")
                 LaunchResult.NoLaunchIntent
             } else {
                 context.startActivity(intent)
                 LaunchResult.Success
             }
         } catch (e: Exception) {
-            logger.e("$TAG:Calendar", "Failed to open calendar app.", e)
+            logger.e(TAG, "Failed to open calendar app.", e)
             LaunchResult.Error(e)
         }
     }

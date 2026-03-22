@@ -12,4 +12,6 @@ dependencies {
     implementation(project(":core:core-model"))
 
     implementation(project(":domain:domain-shortcut"))
+
+    testImplementation(project(":core:core-testing"))
 }

@@ -9,6 +9,5 @@ data class ActiveSession(
     val profileId: String,
     val startTime: Long,
 
-    var heartbeatJob: Job? = null,
-    var writtenToDb: Boolean = false
+    @Volatile var writtenToDb: Boolean = false
 )

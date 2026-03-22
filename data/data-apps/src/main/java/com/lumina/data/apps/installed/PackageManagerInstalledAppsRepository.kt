@@ -33,12 +33,12 @@ class PackageManagerInstalledAppsRepository @Inject constructor(
     @param:ApplicationScope private val scope: CoroutineScope,
     @param:IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val installedAppsMonitor: InstalledAppsMonitor,
+    private val userManager: UserManager,
     private val logger: Logger
 ) : InstalledAppsRepository {
     private val TAG = this::class.java.simpleName
 
     private val launcherApps = context.getSystemService(LauncherApps::class.java)
-    private val userManager = context.getSystemService(UserManager::class.java)
 
     // Per-Profile Cache.
     // Querying the system for labels is an Inter-Process Communication (IPC) call and is quite expensive.

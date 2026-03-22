@@ -8,6 +8,7 @@ import android.os.UserManager
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import com.lumina.core.common.time.TimeProvider
 import com.lumina.core.database.dao.AppUsageDao
 import com.lumina.core.database.entity.AppUsageSessionEntity
 import com.lumina.core.logging.Logger
@@ -24,6 +25,7 @@ class UsageGapFillerWorker @AssistedInject constructor(
     @Assisted params: WorkerParameters,
     private val usageStatsManager: UsageStatsManager,
     private val appUsageDao: AppUsageDao,
+    private val timeProvider: TimeProvider,
     private val userManager: UserManager,
     private val logger: Logger
 ) : CoroutineWorker(context, params) {
@@ -43,7 +45,7 @@ class UsageGapFillerWorker @AssistedInject constructor(
     }
 
     private suspend fun fillGaps() {
-        val now= System.currentTimeMillis()
+        val now = timeProvider.now()
         val since = now - TimeUnit.HOURS.toMillis(1)
 
         val userHandleNumber = userManager.getSerialNumberForUser(myUserHandle())
