@@ -4,7 +4,9 @@ import com.lumina.domain.apps.FavouriteAppsRepository
 import com.lumina.domain.apps.HiddenAppsRepository
 import com.lumina.domain.apps.InstalledAppsRepository
 import com.lumina.domain.countdown.CountdownAppsRepository
+import com.lumina.domain.profiles.ProfileRepository
 import jakarta.inject.Inject
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
 
 /**
@@ -18,22 +20,31 @@ class RemoveOrphanedAppReferencesUseCase @Inject constructor(
     private val hiddenAppsRepository: HiddenAppsRepository,
     private val favouriteAppsRepository: FavouriteAppsRepository,
     private val countdownAppsRepository: CountdownAppsRepository,
-    private val installedAppsRepository: InstalledAppsRepository
+    private val installedAppsRepository: InstalledAppsRepository,
+    private val profileRepository: ProfileRepository
 ) {
     /**
      * Executes the cleanup logic.
      * Compares the current set of system-installed packages against the hidden list.
      */
     suspend operator fun invoke() {
-        // Retrieve currently installed package names as a Set for O(1) lookup.
-        val installedPackages = installedAppsRepository.apps
+        val installedApps = installedAppsRepository.apps
+            .filter { it.isNotEmpty() }
             .first()
+
+        // Retrieve currently installed package names as a Set for O(1) lookup.
+        val installedPackages = installedApps
             .map { it.packageName }
+            .toSet()
+
+        val installedKeys = installedApps
+            .map { "${it.packageName}:${it.userHandleNumber}" }
             .toSet()
 
         cleanHiddenApps(installedPackages)
         cleanFavouriteApps(installedPackages)
         cleanCountdownApps(installedPackages)
+        cleanProfileAppMappings(installedKeys)
     }
 
     private suspend fun cleanHiddenApps(installedPackages: Set<String>) {
@@ -57,12 +68,16 @@ class RemoveOrphanedAppReferencesUseCase @Inject constructor(
     }
 
     private suspend fun cleanCountdownApps(installedPackages: Set<String>) {
-        val favouritePackages = countdownAppsRepository.appPackages.first()
-        val cleanedFavouritePackages = favouritePackages.filter { it in installedPackages }
+        val countdownPackages = countdownAppsRepository.appPackages.first()
+        val cleanedCountdownPackages = countdownPackages.filter { it in installedPackages }
 
         // Update the repository only if a change occurred (avoids unnecessary DataStore writes).
-        if (favouritePackages != cleanedFavouritePackages) {
-            countdownAppsRepository.setApps(cleanedFavouritePackages)
+        if (countdownPackages != cleanedCountdownPackages) {
+            countdownAppsRepository.setApps(cleanedCountdownPackages)
         }
+    }
+
+    private suspend fun cleanProfileAppMappings(installedKeys: Set<String>) {
+        profileRepository.removeAllUninstalledApps(installedKeys)
     }
 }

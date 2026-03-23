@@ -18,4 +18,5 @@ dependencies {
     implementation(libs.material.kolor)
 
     implementation(project(":core:core-common"))
+    implementation(project(":core:core-model"))
 }

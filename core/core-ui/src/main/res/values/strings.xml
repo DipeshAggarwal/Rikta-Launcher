@@ -68,4 +68,23 @@
     <string name="private_space_settings">Private Space Settings</string>
     <string name="private_space_search_term">pri</string>
 
+    <!-- App Category -->
+    <string name="category_game">Game</string>
+    <string name="category_social">Social</string>
+    <string name="category_work_social">Work Social</string>
+    <string name="category_productivity">Productivity</string>
+    <string name="category_entertainment">Entertainment</string>
+    <string name="category_communication">Communication</string>
+    <string name="category_work_communication">Work Communication</string>
+    <string name="category_tools">Tools</string>
+    <string name="category_health">Health</string>
+    <string name="category_fitness">Fitness</string>
+    <string name="category_finance">Finance</string>
+    <string name="category_news">News</string>
+    <string name="category_education">Education</string>
+    <string name="category_shopping">Shopping</string>
+    <string name="category_travel">Travel</string>
+    <string name="category_uncategorised">Uncategorised</string>
+    <string name="category_custom">Custom</string>
+
 </resources>

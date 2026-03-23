@@ -27,13 +27,6 @@ class FakeUsageRepository : UsageRepository {
         return MutableStateFlow(profileUsageSummary)
     }
 
-    override fun getCategoryUsage(
-        profileId: String,
-        range: UsageTimeRange
-    ): Flow<List<CategoryUsageSummary>> {
-        return MutableStateFlow(categoryUsageSummary)
-    }
-
     override suspend fun getSessionStats(
         packageName: String,
         userHandleNumber: Long,

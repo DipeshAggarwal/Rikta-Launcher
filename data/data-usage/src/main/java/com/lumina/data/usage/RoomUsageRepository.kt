@@ -48,23 +48,6 @@ class RoomUsageRepository @Inject constructor(
         }
     }
 
-    override fun getCategoryUsage(
-        profileId: String,
-        range: UsageTimeRange
-    ): Flow<List<CategoryUsageSummary>> {
-        val (startMs, endMs) = range.toEpochBounds()
-
-        return appUsageDao.getCategoryUsage(profileId, startMs, endMs).map { rows ->
-            rows.map { row ->
-                CategoryUsageSummary(
-                    category = row.category,
-                    customLabel = row.customCategoryName,
-                    totalMs = row.totalMs
-                )
-            }
-        }
-    }
-
     override suspend fun getSessionStats(
         packageName: String,
         userHandleNumber: Long,

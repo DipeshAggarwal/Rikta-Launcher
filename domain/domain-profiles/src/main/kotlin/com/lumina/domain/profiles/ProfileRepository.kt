@@ -25,11 +25,12 @@ interface ProfileRepository {
     fun getAppLimitMinutes(profileId: String, packageName: String, userHandleNumber: Long): Int?
     suspend fun addAppToProfile(profileId: String, packageName: String, userHandleNumber: Long)
     suspend fun removeAppFromProfile(profileId: String, packageName: String, userHandleNumber: Long)
+    suspend fun removeAppFromAllProfiles(packageName: String, userHandleNumber: Long)
+    suspend fun removeAllUninstalledApps(installedKeys: Set<String>)
     suspend fun updateAppOverride(
         profileId: String,
         packageName: String,
         userHandleNumber: Long,
-        customName: String?,
         recommendedUsageMinutes: Int?,
         customCountdown: Int?
     )

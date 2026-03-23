@@ -70,6 +70,17 @@ interface ProfileDao {
     )
     suspend fun deleteAppMapping(profileId: String, packageName: String, userHandleNumber: Long)
 
+    @Query("DELETE FROM profile_app_mapping " +
+            "WHERE packageName = :packageName " +
+            "AND userHandleNumber = :userHandleNumber"
+    )
+    suspend fun deleteAppMappingAcrossAllProfiles(packageName: String, userHandleNumber: Long)
+
+    @Query("DELETE FROM profile_app_mapping " +
+            "WHERE (packageName || ':' || userHandleNumber) NOT IN (:installedKeys)"
+    )
+    suspend fun deleteAppMappingForUninstalledApps(installedKeys: Set<String>)
+
     // ------------------------------------------------
     // Profile Trigger
 

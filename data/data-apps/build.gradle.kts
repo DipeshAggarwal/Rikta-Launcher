@@ -8,6 +8,7 @@ dependencies {
 
     implementation(project(":core:core-android"))
     implementation(project(":core:core-common"))
+    implementation(project(":core:core-database"))
     implementation(project(":core:core-logging"))
     implementation(project(":core:core-model"))
 

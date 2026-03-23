@@ -15,12 +15,6 @@ private const val VERSION = 1
             parentColumns = ["id"],
             childColumns = ["profileId"],
             onDelete = ForeignKey.CASCADE
-        ),
-        ForeignKey(
-            entity = AppEntity::class,
-            parentColumns = ["packageName", "userHandleNumber"],
-            childColumns = ["packageName", "userHandleNumber"],
-            onDelete = ForeignKey.CASCADE
         )
     ],
     indices = [Index(value = ["packageName", "userHandleNumber"])]

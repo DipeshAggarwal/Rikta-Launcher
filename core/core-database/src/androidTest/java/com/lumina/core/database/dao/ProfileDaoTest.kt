@@ -4,10 +4,8 @@ import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.lumina.core.database.LuminaDatabase
-import com.lumina.core.database.entity.AppEntity
 import com.lumina.core.database.entity.NotificationWhitelistEntity
 import com.lumina.core.database.entity.ProfileAppCrossRef
-import com.lumina.core.model.AppCategory
 import com.lumina.core.testing.builder.ProfileEntityBuilder
 import com.lumina.core.testing.builder.ProfileTriggerEntityBuilder
 import kotlinx.coroutines.flow.first
@@ -26,14 +24,6 @@ import org.junit.runner.RunWith
 class ProfileDaoTest {
     private lateinit var database: LuminaDatabase
     private lateinit var profileDao: ProfileDao
-    private lateinit var appDao: AppDao
-
-    private suspend fun insertTestApp(packageName: String, userHandleNumber: Long) {
-        return appDao.addApp(AppEntity(
-            packageName, userHandleNumber,
-            AppCategory.ENTERTAINMENT, null, null, null
-        ))
-    }
 
     @Before
     fun setup() {
@@ -42,7 +32,6 @@ class ProfileDaoTest {
             LuminaDatabase::class.java
         ).build()
         profileDao = database.profileDao()
-        appDao = database.appDao()
     }
 
     @After
@@ -121,7 +110,6 @@ class ProfileDaoTest {
         val profile = ProfileEntityBuilder.build(id = "profile_test_1")
         val mapping = ProfileAppCrossRef(profile.id, "com.example.app", 0L)
 
-        insertTestApp("com.example.app", 0L)
         profileDao.saveProfile(profile)
         profileDao.insertAppMapping(mapping)
         profileDao.deleteProfileById(profile.id)
@@ -203,7 +191,6 @@ class ProfileDaoTest {
         val profile = ProfileEntityBuilder.build(id = "profile_test_1")
         val mapping = ProfileAppCrossRef(profile.id, "com.example.app", 0L)
 
-        insertTestApp(mapping.packageName, mapping.userHandleNumber)
         profileDao.saveProfile(profile)
         profileDao.insertAppMapping(mapping)
 
@@ -217,9 +204,6 @@ class ProfileDaoTest {
         val profile = ProfileEntityBuilder.build(id = "profile_test_1")
         val mappingOne = ProfileAppCrossRef(profile.id, "com.example.app.one", 0L)
         val mappingTwo = ProfileAppCrossRef(profile.id, "com.example.app.two", 0L)
-
-        insertTestApp(mappingOne.packageName, mappingOne.userHandleNumber)
-        insertTestApp(mappingTwo.packageName, mappingTwo.userHandleNumber)
 
         profileDao.saveProfile(profile)
         profileDao.insertAppMapping(mappingOne)
@@ -237,7 +221,6 @@ class ProfileDaoTest {
         val profile = ProfileEntityBuilder.build(id = "profile_test_1")
         val mapping = ProfileAppCrossRef(profile.id, "com.example.app", 0L)
 
-        insertTestApp(mapping.packageName, mapping.userHandleNumber)
         profileDao.saveProfile(profile)
         profileDao.insertAppMapping(mapping)
 
@@ -252,7 +235,6 @@ class ProfileDaoTest {
             recommendedUsageMinutes = 64
         )
 
-        insertTestApp(mapping.packageName, mapping.userHandleNumber)
         profileDao.saveProfile(profile)
         profileDao.insertAppMapping(mapping)
 

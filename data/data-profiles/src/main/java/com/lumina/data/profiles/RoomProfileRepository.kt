@@ -233,11 +233,18 @@ class RoomProfileRepository @Inject constructor(
         profileDao.deleteAppMapping(profileId, packageName, userHandleNumber)
     }
 
+    override suspend fun removeAppFromAllProfiles(packageName: String, userHandleNumber: Long) {
+        profileDao.deleteAppMappingAcrossAllProfiles(packageName, userHandleNumber)
+    }
+
+    override suspend fun removeAllUninstalledApps(installedKeys: Set<String>) {
+        profileDao.deleteAppMappingForUninstalledApps(installedKeys)
+    }
+
     override suspend fun updateAppOverride(
         profileId: String,
         packageName: String,
         userHandleNumber: Long,
-        customName: String?,
         recommendedUsageMinutes: Int?,
         customCountdown: Int?
     ) {

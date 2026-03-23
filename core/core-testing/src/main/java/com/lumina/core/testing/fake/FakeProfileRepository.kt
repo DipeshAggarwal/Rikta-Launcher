@@ -32,10 +32,6 @@ class FakeProfileRepository : ProfileRepository {
         }.value = trigger.toList()
     }
 
-    fun setActiveProfileValue(profile: LauncherProfile) {
-        _activeProfile.value = profile
-    }
-
     override val activeProfile: Flow<LauncherProfile?> = _activeProfile
 
     override suspend fun setActiveProfile(profileId: String) {
@@ -102,11 +98,17 @@ class FakeProfileRepository : ProfileRepository {
         userHandleNumber: Long
     ) { }
 
+    override suspend fun removeAppFromAllProfiles(
+        packageName: String,
+        userHandleNumber: Long
+    ) { }
+
+    override suspend fun removeAllUninstalledApps(installedKeys: Set<String>) { }
+
     override suspend fun updateAppOverride(
         profileId: String,
         packageName: String,
         userHandleNumber: Long,
-        customName: String?,
         recommendedUsageMinutes: Int?,
         customCountdown: Int?
     ) { }

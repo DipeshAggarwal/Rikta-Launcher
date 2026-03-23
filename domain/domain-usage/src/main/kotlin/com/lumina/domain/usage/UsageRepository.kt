@@ -9,7 +9,6 @@ import kotlinx.coroutines.flow.Flow
 interface UsageRepository {
     fun getUsageForProfile(profileID: String, range: UsageTimeRange): Flow<List<AppUsageSummary>>
     fun getTotalUsageAllProfiles(range: UsageTimeRange): Flow<List<AppUsageSummary>>
-    fun getCategoryUsage(profileId: String, range: UsageTimeRange): Flow<List<CategoryUsageSummary>>
 
     suspend fun getSessionStats(
         packageName: String,

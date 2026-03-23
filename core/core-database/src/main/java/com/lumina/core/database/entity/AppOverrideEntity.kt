@@ -6,14 +6,13 @@ import com.lumina.core.model.AppCategory
 private const val VERSION = 1
 
 @Entity(
-    tableName = "apps",
+    tableName = "app_overrides",
     primaryKeys = ["packageName", "userHandleNumber"]
 )
-data class AppEntity(
+data class AppOverrideEntity(
     val packageName: String,
     val userHandleNumber: Long,
 
-    val category: AppCategory,
     val categoryOverride: AppCategory? = null,
     val customCategoryName: String? = null,
 

@@ -6,7 +6,9 @@ package com.lumina.core.model
  */
 data class AppInfo (
     val packageName: String,
-    val displayName: String,
     val componentClassName: String,
-    val userHandleNumber: Long
+    val userHandleNumber: Long,
+    val displayName: String,
+    val category: AppCategory,
+    val customCategoryName: String? = null
 )

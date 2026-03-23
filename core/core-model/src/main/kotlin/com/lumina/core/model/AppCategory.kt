@@ -16,5 +16,6 @@ enum class AppCategory {
     EDUCATION,
     SHOPPING,
     TRAVEL,
+    UNCATEGORISED,
     CUSTOM
 }

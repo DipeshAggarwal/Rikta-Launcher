@@ -7,7 +7,6 @@ plugins {
 
 dependencies {
     implementation(project(":core:core-model"))
-    implementation(project(":domain:domain-profiles"))
 
     androidTestImplementation(project(":core:core-testing"))
 }

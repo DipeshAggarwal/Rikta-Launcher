@@ -2,11 +2,11 @@ package com.lumina.core.database
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import com.lumina.core.database.dao.AppDao
+import com.lumina.core.database.dao.AppOverrideDao
 import com.lumina.core.database.dao.AppUsageDao
 import com.lumina.core.database.dao.ProfileDao
 import com.lumina.core.database.dao.ShortcutDao
-import com.lumina.core.database.entity.AppEntity
+import com.lumina.core.database.entity.AppOverrideEntity
 import com.lumina.core.database.entity.AppUsageSessionEntity
 import com.lumina.core.database.entity.NotificationWhitelistEntity
 import com.lumina.core.database.entity.ProfileAppCrossRef
@@ -23,7 +23,7 @@ import com.lumina.core.database.entity.ShortcutEntity
         ProfileTriggerEntity::class,
         NotificationWhitelistEntity::class,
 
-        AppEntity::class,
+        AppOverrideEntity::class,
 
         ShortcutEntity::class,
         ProfileShortcutCrossRef::class,
@@ -37,7 +37,7 @@ import com.lumina.core.database.entity.ShortcutEntity
 
 abstract class LuminaDatabase : RoomDatabase() {
     abstract fun profileDao(): ProfileDao
-    abstract fun appDao(): AppDao
+    abstract fun appOverrideDao(): AppOverrideDao
     abstract fun shortcutDao(): ShortcutDao
     abstract fun appUsageDao(): AppUsageDao
 }

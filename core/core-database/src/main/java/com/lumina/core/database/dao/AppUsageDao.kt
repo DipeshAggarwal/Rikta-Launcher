@@ -124,23 +124,6 @@ interface AppUsageDao {
     ): List<AppUsageHourlyRow>
 
     // ------------------------------------------------
-    // Category Breakdown
-
-    @Query("SELECT COALESCE(a.categoryOverride, a.category) AS category, " +
-            "a.customCategoryName, " +
-            "SUM(MIN(s.endTime, :endMs) - MAX(s.startTime, :startMs)) AS totalMs " +
-            "FROM app_usage_sessions s " +
-            "INNER JOIN apps a ON s.packageName = a.packageName " +
-            "AND s.userHandleNumber = a.userHandleNumber " +
-            "WHERE s.profileId = :profileId " +
-            "AND s.endTime IS NOT NULL " +
-            "AND s.startTime < :endMs " +
-            "AND s.endTime > :startMs " +
-            "GROUP BY COALESCE(a.categoryOverride, a.category), a.customCategoryName"
-    )
-    fun getCategoryUsage(profileId: String, startMs: Long, endMs: Long): Flow<List<AppUsageCategoryRow>>
-
-    // ------------------------------------------------
     // Detect Gap
 
     @Query("SELECT COUNT(*) FROM app_usage_sessions " +
