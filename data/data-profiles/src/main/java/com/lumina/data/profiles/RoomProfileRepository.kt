@@ -8,13 +8,14 @@ import com.lumina.core.database.entity.ProfileTriggerEntity
 import com.lumina.core.logging.Logger
 import com.lumina.core.model.AppBasicData
 import com.lumina.domain.profiles.ProfileRepository
-import com.lumina.domain.profiles.model.AppOverrideState
+import com.lumina.core.model.AppOverrideState
 import com.lumina.domain.profiles.model.LauncherProfile
 import com.lumina.domain.profiles.model.TriggerCondition
 import jakarta.inject.Inject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
@@ -22,6 +23,7 @@ import java.security.MessageDigest
 import kotlin.text.split
 
 private const val DAYS_DELIMITER = ","
+private const val FAVOURITE_GAP = 128
 
 class RoomProfileRepository @Inject constructor(
     private val profileDao: ProfileDao,
@@ -202,19 +204,12 @@ class RoomProfileRepository @Inject constructor(
             apps.map { app ->
                 AppOverrideState(
                     appBasicData = AppBasicData(app.packageName, app.userHandleNumber),
+                    favouriteOrder = app.favouriteOrder,
+                    showCountdown = app.showCountdown,
                     recommendedUsageMinutes = app.recommendedUsageMinutes,
-                    customCountdown = app.customCountdown
                 )
             }
         }
-    }
-
-    override fun getAppLimitMinutes(
-        profileId: String,
-        packageName: String,
-        userHandleNumber: Long
-    ): Int? {
-        return profileDao.getAppLimitMinutes(profileId, packageName, userHandleNumber)
     }
 
     override suspend fun addAppToProfile(
@@ -241,20 +236,78 @@ class RoomProfileRepository @Inject constructor(
         profileDao.deleteAppMappingForUninstalledApps(installedKeys)
     }
 
-    override suspend fun updateAppOverride(
+    override suspend fun getRecommendedUsageMinutes(
+        profileId: String,
+        packageName: String,
+        userHandleNumber: Long
+    ): Int? {
+        return profileDao.getAppUsageMinutes(profileId, packageName, userHandleNumber)
+    }
+
+    override suspend fun updateRecommendedUsageMinutes(
         profileId: String,
         packageName: String,
         userHandleNumber: Long,
-        recommendedUsageMinutes: Int?,
-        customCountdown: Int?
+        minutes: Int?
     ) {
-        profileDao.insertAppMapping(ProfileAppCrossRef(
-            profileId,
-            packageName,
-            userHandleNumber,
-            recommendedUsageMinutes,
-            customCountdown
-        ))
+        profileDao.insertAppMapping(ProfileAppCrossRef(profileId, packageName, userHandleNumber))
+        profileDao.updateAppUsageMinutes(profileId, packageName, userHandleNumber, minutes)
+    }
+
+    override suspend fun isShowCountdownForApp(
+        profileId: String,
+        packageName: String,
+        userHandleNumber: Long
+    ): Boolean? {
+        return profileDao.isAppCountdownEnabled(profileId, packageName, userHandleNumber)
+    }
+
+    override suspend fun updateShowCountdownForApp(
+        profileId: String,
+        packageName: String,
+        userHandleNumber: Long,
+        show: Boolean
+    ) {
+        profileDao.insertAppMapping(ProfileAppCrossRef(profileId, packageName, userHandleNumber))
+        profileDao.updateAppCountdown(profileId, packageName, userHandleNumber, show)
+    }
+
+    override fun getFavouriteAppsList(profileId: String): Flow<List<AppOverrideState>> {
+        return profileDao.getFavouriteApps(profileId).map { apps ->
+            apps.map { app ->
+                AppOverrideState(
+                    appBasicData = AppBasicData(app.packageName, app.userHandleNumber),
+                    favouriteOrder = app.favouriteOrder,
+                    showCountdown = app.showCountdown,
+                    recommendedUsageMinutes = app.recommendedUsageMinutes,
+                )
+            }
+        }
+    }
+
+    override suspend fun updateFavouriteAppOrder(
+        profileId: String,
+        packageName: String,
+        userHandleNumber: Long,
+        previous: Int,
+        next: Int
+    ) {
+        val newOrder = (previous + next) / 2
+
+        if (newOrder == previous || newOrder == next) {
+            val current = profileDao.getFavouriteApps(profileId).first()
+            profileDao.rebalanceFavouriteApps(profileId, current, FAVOURITE_GAP)
+        } else {
+            profileDao.updateFavouriteAppOrder(profileId, packageName, userHandleNumber, newOrder)
+        }
+    }
+
+    override suspend fun toggleFavouriteApp(
+        profileId: String,
+        packageName: String,
+        userHandleNumber: Long
+    ) {
+        profileDao.toggleFavouriteApp(profileId, packageName, userHandleNumber, FAVOURITE_GAP)
     }
 
     // ------------------------------------------------

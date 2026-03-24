@@ -34,7 +34,7 @@ class UsageEnforcementEngine @Inject constructor(
         monitorJob?.cancel()
 
         monitorJob = scope.launch {
-            val limitMinutes = profileRepository.getAppLimitMinutes(profileId, packageName, userHandleNumber)
+            val limitMinutes = profileRepository.getRecommendedUsageMinutes(profileId, packageName, userHandleNumber)
                 ?: return@launch
 
             val limitMs = limitMinutes * 60_000L

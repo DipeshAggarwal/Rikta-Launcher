@@ -1,5 +1,6 @@
 package com.lumina.domain.coordination.usecase
 
+import com.lumina.core.model.componentKey
 import com.lumina.domain.apps.FavouriteAppsRepository
 import com.lumina.domain.apps.HiddenAppsRepository
 import com.lumina.domain.apps.InstalledAppsRepository
@@ -38,7 +39,7 @@ class RemoveOrphanedAppReferencesUseCase @Inject constructor(
             .toSet()
 
         val installedKeys = installedApps
-            .map { "${it.packageName}:${it.userHandleNumber}" }
+            .map { it.componentKey }
             .toSet()
 
         cleanHiddenApps(installedPackages)

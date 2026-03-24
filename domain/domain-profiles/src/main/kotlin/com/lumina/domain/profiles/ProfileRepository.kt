@@ -1,7 +1,7 @@
 package com.lumina.domain.profiles
 
 import com.lumina.core.model.AppBasicData
-import com.lumina.domain.profiles.model.AppOverrideState
+import com.lumina.core.model.AppOverrideState
 import com.lumina.domain.profiles.model.LauncherProfile
 import com.lumina.domain.profiles.model.TriggerCondition
 import kotlinx.coroutines.flow.Flow
@@ -22,18 +22,36 @@ interface ProfileRepository {
     suspend fun deleteProfile(profileId: String)
 
     fun getAppsForProfile(profileId: String): Flow<List<AppOverrideState>>
-    fun getAppLimitMinutes(profileId: String, packageName: String, userHandleNumber: Long): Int?
     suspend fun addAppToProfile(profileId: String, packageName: String, userHandleNumber: Long)
     suspend fun removeAppFromProfile(profileId: String, packageName: String, userHandleNumber: Long)
     suspend fun removeAppFromAllProfiles(packageName: String, userHandleNumber: Long)
     suspend fun removeAllUninstalledApps(installedKeys: Set<String>)
-    suspend fun updateAppOverride(
+
+    suspend fun getRecommendedUsageMinutes(profileId: String, packageName: String, userHandleNumber: Long): Int?
+    suspend fun updateRecommendedUsageMinutes(
         profileId: String,
         packageName: String,
         userHandleNumber: Long,
-        recommendedUsageMinutes: Int?,
-        customCountdown: Int?
+        minutes: Int?
     )
+
+    suspend fun isShowCountdownForApp(profileId: String, packageName: String, userHandleNumber: Long): Boolean?
+    suspend fun updateShowCountdownForApp(
+        profileId: String,
+        packageName: String,
+        userHandleNumber: Long,
+        show: Boolean
+    )
+
+    fun getFavouriteAppsList(profileId: String): Flow<List<AppOverrideState>>
+    suspend fun updateFavouriteAppOrder(
+        profileId: String,
+        packageName: String,
+        userHandleNumber: Long,
+        previous: Int,
+        next: Int
+    )
+    suspend fun toggleFavouriteApp(profileId: String, packageName: String, userHandleNumber: Long)
 
     fun getProfileTriggers(profileId: String): Flow<List<TriggerCondition>>
     suspend fun addProfileTrigger(profileId: String, conditions: TriggerCondition)

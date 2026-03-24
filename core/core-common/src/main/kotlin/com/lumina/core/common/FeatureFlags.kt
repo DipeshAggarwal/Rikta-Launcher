@@ -9,4 +9,5 @@ package com.lumina.core.common
  */
 object FeatureFlags {
     const val USE_NEW_HOME_SCREEN = true
+    const val USE_ROOM_FOR_FAV_COUNTDOWN = false
 }

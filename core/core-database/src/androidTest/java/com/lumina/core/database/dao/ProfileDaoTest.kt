@@ -224,7 +224,7 @@ class ProfileDaoTest {
         profileDao.saveProfile(profile)
         profileDao.insertAppMapping(mapping)
 
-        assertNull(profileDao.getAppLimitMinutes(profile.id, mapping.packageName, mapping.userHandleNumber))
+        assertNull(profileDao.getAppUsageMinutes(profile.id, mapping.packageName, mapping.userHandleNumber))
     }
 
     @Test
@@ -238,7 +238,7 @@ class ProfileDaoTest {
         profileDao.saveProfile(profile)
         profileDao.insertAppMapping(mapping)
 
-        assertEquals(64, profileDao.getAppLimitMinutes(
+        assertEquals(64, profileDao.getAppUsageMinutes(
             profile.id, mapping.packageName, mapping.userHandleNumber
         ))
     }

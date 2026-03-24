@@ -12,6 +12,7 @@ interface InstalledAppsRepository {
      * Usually filters for apps with [Intent.CATEGORY_LAUNCHER].
      */
     val apps: StateFlow<List<AppInfo>>
+    val appsMap: StateFlow<Map<String, AppInfo>>
 
     /**
      * Resolves the human-readable label for a specific package.

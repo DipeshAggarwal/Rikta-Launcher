@@ -2,7 +2,7 @@ package com.lumina.core.testing.fake
 
 import com.lumina.core.model.AppBasicData
 import com.lumina.domain.profiles.ProfileRepository
-import com.lumina.domain.profiles.model.AppOverrideState
+import com.lumina.core.model.AppOverrideState
 import com.lumina.domain.profiles.model.LauncherProfile
 import com.lumina.domain.profiles.model.TriggerCondition
 import kotlinx.coroutines.flow.Flow
@@ -78,14 +78,6 @@ class FakeProfileRepository : ProfileRepository {
         return MutableStateFlow(emptyList())
     }
 
-    override fun getAppLimitMinutes(
-        profileId: String,
-        packageName: String,
-        userHandleNumber: Long
-    ): Int? {
-        return null
-    }
-
     override suspend fun addAppToProfile(
         profileId: String,
         packageName: String,
@@ -105,12 +97,52 @@ class FakeProfileRepository : ProfileRepository {
 
     override suspend fun removeAllUninstalledApps(installedKeys: Set<String>) { }
 
-    override suspend fun updateAppOverride(
+    override suspend fun getRecommendedUsageMinutes(
+        profileId: String,
+        packageName: String,
+        userHandleNumber: Long
+    ): Int? {
+        return null
+    }
+
+    override suspend fun updateRecommendedUsageMinutes(
         profileId: String,
         packageName: String,
         userHandleNumber: Long,
-        recommendedUsageMinutes: Int?,
-        customCountdown: Int?
+        minutes: Int?
+    ) { }
+
+    override suspend fun isShowCountdownForApp(
+        profileId: String,
+        packageName: String,
+        userHandleNumber: Long
+    ): Boolean? {
+        return null
+    }
+
+    override suspend fun updateShowCountdownForApp(
+        profileId: String,
+        packageName: String,
+        userHandleNumber: Long,
+        show: Boolean
+    ) { }
+
+    override fun getFavouriteAppsList(profileId: String): Flow<List<AppOverrideState>> {
+        return MutableStateFlow(emptyList())
+    }
+
+    override suspend fun updateFavouriteAppOrder(
+        profileId: String,
+        packageName: String,
+        userHandleNumber: Long,
+        previous: Int,
+        next: Int
+    ) { }
+
+    override suspend fun toggleFavouriteApp(
+        profileId: String,
+        packageName: String,
+        userHandleNumber: Long
     ) { }
 
     override fun getProfileTriggers(profileId: String): Flow<List<TriggerCondition>> {

@@ -52,16 +52,15 @@ interface ProfileDao {
     @Query("SELECT * FROM profile_app_mapping WHERE profileId = :profileId")
     fun getAppsForProfile(profileId: String): Flow<List<ProfileAppCrossRef>>
 
-    @Query("SELECT recommendedUsageMinutes " +
-            "FROM profile_app_mapping " +
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertAppMapping(mapping: ProfileAppCrossRef)
+
+    @Query("SELECT * FROM profile_app_mapping " +
             "WHERE profileId = :profileId " +
             "AND packageName = :packageName " +
             "AND userHandleNumber = :userHandleNumber"
     )
-    fun getAppLimitMinutes(profileId: String, packageName: String, userHandleNumber: Long): Int?
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAppMapping(mapping: ProfileAppCrossRef)
+    suspend fun getAppMapping(profileId: String, packageName: String, userHandleNumber: Long): ProfileAppCrossRef?
 
     @Query("DELETE FROM profile_app_mapping " +
         "WHERE profileId = :profileId " +
@@ -77,9 +76,114 @@ interface ProfileDao {
     suspend fun deleteAppMappingAcrossAllProfiles(packageName: String, userHandleNumber: Long)
 
     @Query("DELETE FROM profile_app_mapping " +
-            "WHERE (packageName || ':' || userHandleNumber) NOT IN (:installedKeys)"
+            "WHERE (packageName || '::' || userHandleNumber) NOT IN (:installedKeys)"
     )
     suspend fun deleteAppMappingForUninstalledApps(installedKeys: Set<String>)
+
+    // ------------------------------------------------
+    // Recommended Usage Apps
+
+    @Query("SELECT recommendedUsageMinutes " +
+            "FROM profile_app_mapping " +
+            "WHERE profileId = :profileId " +
+            "AND packageName = :packageName " +
+            "AND userHandleNumber = :userHandleNumber"
+    )
+    suspend fun getAppUsageMinutes(profileId: String, packageName: String, userHandleNumber: Long): Int?
+
+    @Query("UPDATE profile_app_mapping " +
+            "SET recommendedUsageMinutes = :minutes " +
+            "WHERE profileId = :profileId " +
+            "AND packageName = :packageName " +
+            "AND userHandleNumber = :userHandleNumber"
+    )
+    suspend fun updateAppUsageMinutes(
+        profileId: String,
+        packageName: String,
+        userHandleNumber: Long,
+        minutes: Int?
+    )
+
+    // ------------------------------------------------
+    // Countdown Apps
+
+    @Query("SELECT showCountdown " +
+            "FROM profile_app_mapping " +
+            "WHERE profileId = :profileId " +
+            "AND packageName = :packageName " +
+            "AND userHandleNumber = :userHandleNumber"
+    )
+    suspend fun isAppCountdownEnabled(profileId: String, packageName: String, userHandleNumber: Long): Boolean?
+
+    @Query("UPDATE profile_app_mapping " +
+            "SET showCountdown = :show " +
+            "WHERE profileId = :profileId " +
+            "AND packageName = :packageName " +
+            "AND userHandleNumber = :userHandleNumber"
+    )
+    suspend fun updateAppCountdown(
+        profileId: String,
+        packageName: String,
+        userHandleNumber: Long,
+        show: Boolean
+    )
+
+    // ------------------------------------------------
+    // Favourite Apps
+
+    @Query("SELECT * FROM profile_app_mapping " +
+            "WHERE profileId = :profileId " +
+            "AND favouriteOrder IS NOT NULL " +
+            "ORDER BY favouriteOrder ASC"
+    )
+    fun getFavouriteApps(profileId: String): Flow<List<ProfileAppCrossRef>>
+
+    @Query("SELECT MAX(favouriteOrder) FROM profile_app_mapping WHERE profileId = :profileId")
+    suspend fun getMaxFavouriteOrder(profileId: String): Int?
+
+    @Query("SELECT favouriteOrder FROM profile_app_mapping " +
+            "WHERE profileId = :profileId " +
+            "AND packageName = :packageName " +
+            "AND userHandleNumber = :userHandleNumber"
+    )
+    suspend fun getOrderForApp(profileId: String, packageName: String, userHandleNumber: Long): Int?
+
+    @Query("UPDATE profile_app_mapping SET favouriteOrder = :order " +
+            "WHERE profileId = :profileId " +
+            "AND packageName = :packageName " +
+            "AND userHandleNumber = :userHandleNumber"
+    )
+    suspend fun updateFavouriteAppOrder(
+        profileId: String,
+        packageName: String,
+        userHandleNumber: Long,
+        order: Int?
+    )
+
+    @Transaction
+    suspend fun toggleFavouriteApp(
+        profileId: String,
+        packageName: String,
+        userHandleNumber: Long,
+        gap: Int
+    ) {
+        insertAppMapping(ProfileAppCrossRef(profileId, packageName, userHandleNumber))
+        val currentFavouriteOrder = getOrderForApp(profileId, packageName, userHandleNumber)
+
+        if (currentFavouriteOrder != null) {
+            updateFavouriteAppOrder(profileId, packageName, userHandleNumber, null)
+        } else {
+            val max = getMaxFavouriteOrder(profileId) ?: 0
+            updateFavouriteAppOrder(profileId, packageName, userHandleNumber, max + gap)
+        }
+    }
+
+    @Transaction
+    suspend fun rebalanceFavouriteApps(profileId: String, apps: List<ProfileAppCrossRef>, gap: Int) {
+        apps.forEachIndexed { index, app ->
+            updateFavouriteAppOrder(profileId, app.packageName, app.userHandleNumber, (index + 1) * gap)
+        }
+    }
 
     // ------------------------------------------------
     // Profile Trigger

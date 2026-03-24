@@ -24,8 +24,10 @@ data class ProfileAppCrossRef(
     val profileId: String,
     val packageName: String,
     val userHandleNumber: Long,
+
+    val favouriteOrder: Int? = null,
+    val showCountdown: Boolean = false,
     val recommendedUsageMinutes: Int? = null,
-    val customCountdown: Int? = null,
 
     val version: Int = VERSION
 )

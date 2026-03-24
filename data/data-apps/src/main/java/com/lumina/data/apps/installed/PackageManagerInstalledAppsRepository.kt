@@ -12,6 +12,7 @@ import com.lumina.core.database.dao.AppOverrideDao
 import com.lumina.core.logging.Logger
 import com.lumina.core.model.AppCategory
 import com.lumina.core.model.AppInfo
+import com.lumina.core.model.componentKey
 import com.lumina.domain.apps.InstalledAppsRepository
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.withContext
@@ -23,10 +24,14 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlin.collections.emptyList
+
+// Note: Look into swapping out AppInfo to AppOverrideState. Maybe only one model is needed.
+// This will simplify the usecase too, which needs the extra data.
 
 /**
  * Android implementation of [InstalledAppsRepository] using [PackageManager].
@@ -67,8 +72,7 @@ class PackageManagerInstalledAppsRepository @Inject constructor(
         val overrideMap = appOverrides.associateBy { "${it.packageName}:${it.userHandleNumber}" }
 
         systemApps.map { systemApp ->
-            val key = "${systemApp.packageName}:${systemApp.userHandleNumber}"
-            val overrideData = overrideMap[key]
+            val overrideData = overrideMap[systemApp.componentKey]
             val overrideCategory = overrideData?.categoryOverride
 
             if (overrideData != null) {
@@ -82,6 +86,10 @@ class PackageManagerInstalledAppsRepository @Inject constructor(
             }
         }.sortedBy { it.displayName.lowercase() }
     }.stateIn(scope, SharingStarted.Eagerly, emptyList())
+
+    override val appsMap: StateFlow<Map<String, AppInfo>> = apps
+        .map { list -> list.associateBy { it.componentKey } }
+        .stateIn(scope, SharingStarted.Eagerly, emptyMap())
 
     override suspend fun getLabel(packageName: String): String? {
         return apps.value.firstOrNull { it.packageName == packageName }?.displayName
