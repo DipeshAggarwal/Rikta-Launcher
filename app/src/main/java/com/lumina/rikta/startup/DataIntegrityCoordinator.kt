@@ -4,6 +4,7 @@ import com.lumina.data.apps.installed.AppChangeEvent
 import com.lumina.data.apps.installed.InstalledAppsMonitor
 import com.lumina.domain.coordination.usecase.RemoveOrphanedAppReferencesUseCase
 import com.lumina.core.android.di.ApplicationScope
+import com.lumina.domain.profiles.usecase.SyncActiveProfileUseCase
 import jakarta.inject.Inject
 import jakarta.inject.Singleton
 import kotlinx.coroutines.CoroutineScope
@@ -17,13 +18,16 @@ import kotlinx.coroutines.launch
  * list doesn't contain "ghost" entries for uninstalled packages.
  */
 @Singleton
-class InstalledAppsCoordinator @Inject constructor(
-    installedAppsMonitor: InstalledAppsMonitor,
+class DataIntegrityCoordinator @Inject constructor(
+    @ApplicationScope private val applicationScope: CoroutineScope,
     private val removeOrphanedAppReferencesUseCase: RemoveOrphanedAppReferencesUseCase,
-    @ApplicationScope private val applicationScope: CoroutineScope
+    private val syncActiveProfileUseCase: SyncActiveProfileUseCase,
+    installedAppsMonitor: InstalledAppsMonitor
 ) {
     init {
         applicationScope.launch {
+            syncActiveProfileUseCase()
+
             installedAppsMonitor.appChanges()
                 // .onStart ensures we scrub the DB immediately on app launch, catching uninstalls
                 // that happened while the launcher was stopped.

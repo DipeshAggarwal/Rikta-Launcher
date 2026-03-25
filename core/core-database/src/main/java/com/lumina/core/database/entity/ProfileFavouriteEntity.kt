@@ -2,13 +2,13 @@ package com.lumina.core.database.entity
 
 import androidx.room.Entity
 import androidx.room.ForeignKey
-import androidx.room.Index
+import com.lumina.core.model.FavouriteItemType
 
 private const val VERSION = 1
 
 @Entity(
-    tableName = "profile_app_mapping",
-    primaryKeys = ["profileId", "packageName", "userHandleNumber"],
+    tableName = "profile_favourites",
+    primaryKeys = ["profileId", "itemId"],
     foreignKeys = [
         ForeignKey(
             entity = ProfileEntity::class,
@@ -16,17 +16,13 @@ private const val VERSION = 1
             childColumns = ["profileId"],
             onDelete = ForeignKey.CASCADE
         )
-    ],
-    indices = [Index(value = ["packageName", "userHandleNumber"])]
+    ]
 )
-
-data class ProfileAppCrossRef(
+data class ProfileFavouriteEntity(
     val profileId: String,
-    val packageName: String,
-    val userHandleNumber: Long,
-
-    val showCountdown: Boolean = false,
-    val recommendedUsageMinutes: Int? = null,
+    val itemId: String,
+    val itemType: FavouriteItemType,
+    val favouriteOrder: Int,
 
     val version: Int = VERSION
 )

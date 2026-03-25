@@ -40,7 +40,7 @@ class ShortcutDaoTest {
 
     @Test
     fun getAllShortcuts_returns_empty_on_fresh_database() = runTest {
-        assertTrue(shortcutDao.getAllShortcuts().first().isEmpty())
+        assertTrue(shortcutDao.getAll().first().isEmpty())
     }
 
     @Test
@@ -48,30 +48,9 @@ class ShortcutDaoTest {
         val shortcutOne = ShortcutEntityBuilder.build("shortcut_1")
         val shortcutTwo = ShortcutEntityBuilder.build("shortcut_2")
 
-        shortcutDao.saveShortcut(shortcutOne)
-        shortcutDao.saveShortcut(shortcutTwo)
-        assertEquals(2, shortcutDao.getAllShortcuts().first().size)
-    }
-
-    @Test
-    fun getDefaultScreenShortcuts_returns_only_pinned_shortcuts() = runTest {
-        val shortcutOne = ShortcutEntityBuilder.build("shortcut_1", pinnedToDefault = true)
-        val shortcutTwo = ShortcutEntityBuilder.build("shortcut_2", pinnedToDefault = false)
-
-        shortcutDao.saveShortcut(shortcutOne)
-        shortcutDao.saveShortcut(shortcutTwo)
-
-        val result = shortcutDao.getDefaultScreenShortcuts().first()
-        assertEquals(1, result.size)
-        assertEquals(shortcutOne.id, result.first().id)
-    }
-
-    @Test
-    fun getDefaultScreenShortcuts_returns_empty_when_none_pinned() = runTest {
-        val shortcut = ShortcutEntityBuilder.build("shortcut_1", pinnedToDefault = false)
-        shortcutDao.saveShortcut(shortcut)
-
-        assertTrue(shortcutDao.getDefaultScreenShortcuts().first().isEmpty())
+        shortcutDao.save(shortcutOne)
+        shortcutDao.save(shortcutTwo)
+        assertEquals(2, shortcutDao.getAll().first().size)
     }
 
     @Test
@@ -82,11 +61,11 @@ class ShortcutDaoTest {
         val shortcutTwo = ShortcutEntityBuilder.build("shortcut_2")
 
         profileDao.saveProfile(profile)
-        shortcutDao.saveShortcut(shortcutOne)
-        shortcutDao.saveShortcut(shortcutTwo)
-        shortcutDao.addShortcutToProfile(ProfileShortcutCrossRef(profile.id, shortcutTwo.id))
+        shortcutDao.save(shortcutOne)
+        shortcutDao.save(shortcutTwo)
+        shortcutDao.addToProfile(ProfileShortcutCrossRef(profile.id, shortcutTwo.id))
 
-        val result = shortcutDao.getShortcutsForProfile(profile.id).first()
+        val result = shortcutDao.get(profile.id).first()
         assertEquals(1, result.size)
         assertEquals(shortcutTwo.id, result.first().id)
     }
@@ -96,7 +75,7 @@ class ShortcutDaoTest {
         val profile = ProfileEntityBuilder.build(id = "profile_test_1")
         val shortcut = ShortcutEntityBuilder.build("shortcut_1")
 
-        assertTrue(shortcutDao.getShortcutsForProfile(profile.id).first().isEmpty())
+        assertTrue(shortcutDao.get(profile.id).first().isEmpty())
     }
 
     @Test
@@ -109,14 +88,14 @@ class ShortcutDaoTest {
 
         profileDao.saveProfile(profileOne)
         profileDao.saveProfile(profileTwo)
-        shortcutDao.saveShortcut(shortcutOne)
-        shortcutDao.saveShortcut(shortcutTwo)
+        shortcutDao.save(shortcutOne)
+        shortcutDao.save(shortcutTwo)
 
-        shortcutDao.addShortcutToProfile(ProfileShortcutCrossRef(profileOne.id, shortcutOne.id))
-        shortcutDao.addShortcutToProfile(ProfileShortcutCrossRef(profileTwo.id, shortcutTwo.id))
+        shortcutDao.addToProfile(ProfileShortcutCrossRef(profileOne.id, shortcutOne.id))
+        shortcutDao.addToProfile(ProfileShortcutCrossRef(profileTwo.id, shortcutTwo.id))
 
-        val resultOne = shortcutDao.getShortcutsForProfile(profileOne.id).first()
-        val resultTwo = shortcutDao.getShortcutsForProfile(profileTwo.id).first()
+        val resultOne = shortcutDao.get(profileOne.id).first()
+        val resultTwo = shortcutDao.get(profileTwo.id).first()
 
         assertEquals(1, resultOne.size)
         assertEquals(shortcutOne.id, resultOne.first().id)
@@ -129,10 +108,10 @@ class ShortcutDaoTest {
         val shortcutOld = ShortcutEntityBuilder.build("shortcut_1", label = "Old Name")
         val shortcutNew = ShortcutEntityBuilder.build("shortcut_1", label = "New Name")
 
-        shortcutDao.saveShortcut(shortcutOld)
-        shortcutDao.saveShortcut(shortcutNew)
+        shortcutDao.save(shortcutOld)
+        shortcutDao.save(shortcutNew)
 
-        val result = shortcutDao.getAllShortcuts().first()
+        val result = shortcutDao.getAll().first()
         assertEquals(1, result.size)
         assertEquals(shortcutNew.label, result.first().label)
     }
@@ -142,20 +121,20 @@ class ShortcutDaoTest {
         val shortcutOld = ShortcutEntityBuilder.build("shortcut_1", label = "Old Name")
         val shortcutNew = ShortcutEntityBuilder.build("shortcut_1", label = "New Name")
 
-        shortcutDao.saveShortcut(shortcutOld)
-        shortcutDao.updateShortcut(shortcutNew)
+        shortcutDao.save(shortcutOld)
+        shortcutDao.update(shortcutNew)
 
-        assertEquals(shortcutNew.label, shortcutDao.getAllShortcuts().first().first().label)
+        assertEquals(shortcutNew.label, shortcutDao.getAll().first().first().label)
     }
 
     @Test
     fun deleteShortcut_removes_shortcut_from_getAllShortcuts() = runTest {
         val shortcut = ShortcutEntityBuilder.build("shortcut_1")
 
-        shortcutDao.saveShortcut(shortcut)
-        shortcutDao.deleteShortcut(shortcut.id)
+        shortcutDao.save(shortcut)
+        shortcutDao.delete(shortcut.id)
 
-        assertTrue(shortcutDao.getAllShortcuts().first().isEmpty())
+        assertTrue(shortcutDao.getAll().first().isEmpty())
     }
 
     @Test
@@ -164,33 +143,11 @@ class ShortcutDaoTest {
         val shortcut = ShortcutEntityBuilder.build("shortcut_1")
 
         profileDao.saveProfile(profile)
-        shortcutDao.saveShortcut(shortcut)
-        shortcutDao.addShortcutToProfile(ProfileShortcutCrossRef(profile.id, shortcut.id))
+        shortcutDao.save(shortcut)
+        shortcutDao.addToProfile(ProfileShortcutCrossRef(profile.id, shortcut.id))
 
-        shortcutDao.deleteShortcut(shortcut.id)
-        assertTrue(shortcutDao.getShortcutsForProfile(profile.id).first().isEmpty())
-    }
-
-    @Test
-    fun setPinnedToDefault_true_makes_shortcut_appear_in_defaults() = runTest {
-        val shortcut = ShortcutEntityBuilder.build("shortcut_1")
-
-        shortcutDao.saveShortcut(shortcut)
-        shortcutDao.setPinnedToDefault(shortcut.id, true)
-
-        val result = shortcutDao.getDefaultScreenShortcuts().first()
-        assertEquals(1, result.size)
-        assertEquals(shortcut.id, result.first().id)
-    }
-
-    @Test
-    fun setPinnedToDefault_false_removes_shortcut_from_defaults() = runTest {
-        val shortcut = ShortcutEntityBuilder.build("shortcut_1", pinnedToDefault = true)
-
-        shortcutDao.saveShortcut(shortcut)
-        shortcutDao.setPinnedToDefault(shortcut.id, false)
-
-        assertTrue(shortcutDao.getDefaultScreenShortcuts().first().isEmpty())
+        shortcutDao.delete(shortcut.id)
+        assertTrue(shortcutDao.get(profile.id).first().isEmpty())
     }
 
     @Test
@@ -199,12 +156,12 @@ class ShortcutDaoTest {
         val shortcut = ShortcutEntityBuilder.build("shortcut_1")
 
         profileDao.saveProfile(profile)
-        shortcutDao.saveShortcut(shortcut)
-        shortcutDao.addShortcutToProfile(ProfileShortcutCrossRef(profile.id, shortcut.id))
-        shortcutDao.removeShortcutFromProfile(profile.id, shortcut.id)
+        shortcutDao.save(shortcut)
+        shortcutDao.addToProfile(ProfileShortcutCrossRef(profile.id, shortcut.id))
+        shortcutDao.removeFromProfile(profile.id, shortcut.id)
 
-        assertTrue(shortcutDao.getShortcutsForProfile(profile.id).first().isEmpty())
-        assertEquals(1, shortcutDao.getAllShortcuts().first().size)
+        assertTrue(shortcutDao.get(profile.id).first().isEmpty())
+        assertEquals(1, shortcutDao.getAll().first().size)
     }
 
     @Test
@@ -215,12 +172,12 @@ class ShortcutDaoTest {
 
         profileDao.saveProfile(profileOne)
         profileDao.saveProfile(profileTwo)
-        shortcutDao.saveShortcut(shortcut)
+        shortcutDao.save(shortcut)
 
-        shortcutDao.addShortcutToProfile(ProfileShortcutCrossRef(profileOne.id, shortcut.id))
-        shortcutDao.addShortcutToProfile(ProfileShortcutCrossRef(profileTwo.id, shortcut.id))
-        shortcutDao.removeShortcutFromProfile(profileOne.id, shortcut.id)
+        shortcutDao.addToProfile(ProfileShortcutCrossRef(profileOne.id, shortcut.id))
+        shortcutDao.addToProfile(ProfileShortcutCrossRef(profileTwo.id, shortcut.id))
+        shortcutDao.removeFromProfile(profileOne.id, shortcut.id)
 
-        assertEquals(1, shortcutDao.getShortcutsForProfile(profileTwo.id).first().size)
+        assertEquals(1, shortcutDao.get(profileTwo.id).first().size)
     }
 }

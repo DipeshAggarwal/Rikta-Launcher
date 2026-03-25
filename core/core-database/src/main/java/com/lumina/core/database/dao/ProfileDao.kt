@@ -129,63 +129,6 @@ interface ProfileDao {
     )
 
     // ------------------------------------------------
-    // Favourite Apps
-
-    @Query("SELECT * FROM profile_app_mapping " +
-            "WHERE profileId = :profileId " +
-            "AND favouriteOrder IS NOT NULL " +
-            "ORDER BY favouriteOrder ASC"
-    )
-    fun getFavouriteApps(profileId: String): Flow<List<ProfileAppCrossRef>>
-
-    @Query("SELECT MAX(favouriteOrder) FROM profile_app_mapping WHERE profileId = :profileId")
-    suspend fun getMaxFavouriteOrder(profileId: String): Int?
-
-    @Query("SELECT favouriteOrder FROM profile_app_mapping " +
-            "WHERE profileId = :profileId " +
-            "AND packageName = :packageName " +
-            "AND userHandleNumber = :userHandleNumber"
-    )
-    suspend fun getOrderForApp(profileId: String, packageName: String, userHandleNumber: Long): Int?
-
-    @Query("UPDATE profile_app_mapping SET favouriteOrder = :order " +
-            "WHERE profileId = :profileId " +
-            "AND packageName = :packageName " +
-            "AND userHandleNumber = :userHandleNumber"
-    )
-    suspend fun updateFavouriteAppOrder(
-        profileId: String,
-        packageName: String,
-        userHandleNumber: Long,
-        order: Int?
-    )
-
-    @Transaction
-    suspend fun toggleFavouriteApp(
-        profileId: String,
-        packageName: String,
-        userHandleNumber: Long,
-        gap: Int
-    ) {
-        insertAppMapping(ProfileAppCrossRef(profileId, packageName, userHandleNumber))
-        val currentFavouriteOrder = getOrderForApp(profileId, packageName, userHandleNumber)
-
-        if (currentFavouriteOrder != null) {
-            updateFavouriteAppOrder(profileId, packageName, userHandleNumber, null)
-        } else {
-            val max = getMaxFavouriteOrder(profileId) ?: 0
-            updateFavouriteAppOrder(profileId, packageName, userHandleNumber, max + gap)
-        }
-    }
-
-    @Transaction
-    suspend fun rebalanceFavouriteApps(profileId: String, apps: List<ProfileAppCrossRef>, gap: Int) {
-        apps.forEachIndexed { index, app ->
-            updateFavouriteAppOrder(profileId, app.packageName, app.userHandleNumber, (index + 1) * gap)
-        }
-    }
-
-    // ------------------------------------------------
     // Profile Trigger
 
     @Query("SELECT * FROM profile_triggers WHERE profileId = :profileId  ORDER BY sequenceOrder")

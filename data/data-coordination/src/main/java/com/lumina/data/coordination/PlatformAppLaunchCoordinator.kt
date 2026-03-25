@@ -1,9 +1,12 @@
 package com.lumina.data.coordination
 
+import com.lumina.core.common.FeatureFlags
 import com.lumina.core.model.AppInfo
+import com.lumina.core.model.componentKey
 import com.lumina.domain.coordination.AppLaunchCoordinator
 import com.lumina.domain.coordination.IntentLauncher
 import com.lumina.domain.coordination.LaunchState
+import com.lumina.domain.coordination.usecase.ObserveActiveProfileCountdownAppsUseCase
 import com.lumina.domain.countdown.CountdownAppsRepository
 import jakarta.inject.Inject
 import jakarta.inject.Singleton
@@ -14,7 +17,8 @@ import kotlinx.coroutines.flow.first
 @Singleton
 class PlatformAppLaunchCoordinator @Inject constructor(
     private val intentLauncher: IntentLauncher,
-    private val countdownRepository: CountdownAppsRepository
+    private val countdownRepository: CountdownAppsRepository,
+    private val observeCountdownApps: ObserveActiveProfileCountdownAppsUseCase
 ) : AppLaunchCoordinator{
     private val _launchState = MutableStateFlow<LaunchState>(LaunchState.Idle)
     override val launchState = _launchState.asStateFlow()
@@ -23,7 +27,13 @@ class PlatformAppLaunchCoordinator @Inject constructor(
 
     override suspend fun requestLaunch(app: AppInfo) {
         val currentPackages = countdownRepository.appPackages.first()
-        val needsCountdown = currentPackages.contains(app.packageName)
+        val needsCountdown = if (FeatureFlags.USE_ROOM_FOR_FAV_COUNTDOWN) {
+            observeCountdownApps().first().any {
+                it.info.componentKey == app.componentKey
+            }
+        } else {
+            currentPackages.contains(app.packageName)
+        }
 
         if (needsCountdown) {
             pendingApp = app

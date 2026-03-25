@@ -30,9 +30,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlin.collections.emptyList
 
-// Note: Look into swapping out AppInfo to AppOverrideState. Maybe only one model is needed.
-// This will simplify the usecase too, which needs the extra data.
-
 /**
  * Android implementation of [InstalledAppsRepository] using [PackageManager].
  * Uses a local cache to avoid expensive IPC calls to the system on every refresh.

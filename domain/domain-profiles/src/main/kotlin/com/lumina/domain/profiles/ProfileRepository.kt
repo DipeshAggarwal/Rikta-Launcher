@@ -43,16 +43,6 @@ interface ProfileRepository {
         show: Boolean
     )
 
-    fun getFavouriteAppsList(profileId: String): Flow<List<AppOverrideState>>
-    suspend fun updateFavouriteAppOrder(
-        profileId: String,
-        packageName: String,
-        userHandleNumber: Long,
-        previous: Int,
-        next: Int
-    )
-    suspend fun toggleFavouriteApp(profileId: String, packageName: String, userHandleNumber: Long)
-
     fun getProfileTriggers(profileId: String): Flow<List<TriggerCondition>>
     suspend fun addProfileTrigger(profileId: String, conditions: TriggerCondition)
     suspend fun removeProfileTrigger(triggerId: Long)

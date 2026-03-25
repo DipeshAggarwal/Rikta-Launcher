@@ -17,7 +17,6 @@ class RoomShortcutRepository @Inject constructor(
     private fun ShortcutEntity.toDomain() = LauncherShortcut(
         id = id,
         label = label,
-        pinnedToDefault = pinnedToDefault,
         type = type,
         shortcutPackage = shortcutPackage,
         shortcutId = shortcutId,
@@ -28,7 +27,6 @@ class RoomShortcutRepository @Inject constructor(
     private fun LauncherShortcut.toEntity() = ShortcutEntity(
         id = id,
         label = label,
-        pinnedToDefault = pinnedToDefault,
         type = type,
         shortcutPackage = shortcutPackage,
         shortcutId = shortcutId,
@@ -36,48 +34,36 @@ class RoomShortcutRepository @Inject constructor(
         targetPackage = targetPackage
     )
 
-    override fun getAllShortcuts(): Flow<List<LauncherShortcut>> {
-        return shortcutDao.getAllShortcuts().map { it.map { it.toDomain() } }
+    override fun get(profileId: String): Flow<List<LauncherShortcut>> {
+        return shortcutDao.get(profileId).map { it.map { it.toDomain() } }
     }
 
-    override fun getDefaultScreenShortcuts(): Flow<List<LauncherShortcut>> {
-        return shortcutDao.getDefaultScreenShortcuts().map { it.map { it.toDomain() } }
+    override fun getAll(): Flow<List<LauncherShortcut>> {
+        return shortcutDao.getAll().map { it.map { it.toDomain() } }
     }
 
-    override fun getShortcutsForProfile(profileId: String): Flow<List<LauncherShortcut>> {
-        return shortcutDao.getShortcutsForProfile(profileId).map { it.map { it.toDomain() } }
+    override suspend fun save(shortcut: LauncherShortcut) {
+        shortcutDao.save(shortcut.toEntity())
     }
 
-    override suspend fun saveShortcut(shortcut: LauncherShortcut) {
-        shortcutDao.saveShortcut(shortcut.toEntity())
+    override suspend fun update(shortcut: LauncherShortcut) {
+        shortcutDao.update(shortcut.toEntity())
     }
 
-    override suspend fun updateShortcut(shortcut: LauncherShortcut) {
-        shortcutDao.updateShortcut(shortcut.toEntity())
+    override suspend fun delete(shortcutId: String) {
+        shortcutDao.delete(shortcutId)
     }
 
-    override suspend fun deleteShortcut(shortcutId: String) {
-        shortcutDao.deleteShortcut(shortcutId)
-    }
-
-    override suspend fun addShortcutToProfile(profileId: String, shortcutId: String) {
-        shortcutDao.addShortcutToProfile(
+    override suspend fun addToProfile(profileId: String, shortcutId: String) {
+        shortcutDao.addToProfile(
             ProfileShortcutCrossRef(profileId, shortcutId)
         )
     }
 
-    override suspend fun removeShortcutFromProfile(
+    override suspend fun removeFromProfile(
         profileId: String,
         shortcutId: String
     ) {
-        shortcutDao.removeShortcutFromProfile(profileId, shortcutId)
-    }
-
-    override suspend fun pinToDefault(shortcutId: String) {
-        shortcutDao.setPinnedToDefault(shortcutId, true)
-    }
-
-    override suspend fun unpinFromDefault(shortcutId: String) {
-        shortcutDao.setPinnedToDefault(shortcutId, false)
+        shortcutDao.removeFromProfile(profileId, shortcutId)
     }
 }

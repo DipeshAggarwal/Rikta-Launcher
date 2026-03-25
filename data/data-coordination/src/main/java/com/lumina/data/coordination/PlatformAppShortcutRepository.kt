@@ -6,6 +6,7 @@ import android.content.pm.LauncherApps.ShortcutQuery
 import android.os.UserManager
 import com.lumina.core.common.IoDispatcher
 import com.lumina.core.logging.Logger
+import com.lumina.core.model.AppBasicData
 import com.lumina.core.model.AppInfo
 import com.lumina.core.model.AppShortcut
 import com.lumina.domain.apps.AppShortcutRepository
@@ -45,7 +46,7 @@ class PlatformAppShortcutRepository @Inject constructor(
             shortcuts?.map { info ->
                 AppShortcut(
                     shortcutId = info.id,
-                    app = app,
+                    app = AppBasicData(app.packageName, app.userHandleNumber),
                     shortLabel = info.shortLabel?.toString() ?: app.displayName,
                     longLabel = info.longLabel?.toString() ?: app.displayName,
                     rank = info.rank

@@ -11,37 +11,30 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ShortcutDao {
-    @Query("SELECT * FROM shortcuts")
-    fun getAllShortcuts(): Flow<List<ShortcutEntity>>
-
-    @Query("SELECT * FROM shortcuts WHERE pinnedToDefault = 1")
-    fun getDefaultScreenShortcuts(): Flow<List<ShortcutEntity>>
 
     @Query("SELECT s.* FROM shortcuts s " +
             "INNER JOIN profile_shortcut_mapping m " +
             "ON s.id = m.shortcutId " +
             "WHERE m.profileId = :profileId"
     )
-    fun getShortcutsForProfile(profileId: String): Flow<List<ShortcutEntity>>
+    fun get(profileId: String): Flow<List<ShortcutEntity>>
+    @Query("SELECT * FROM shortcuts")
+    fun getAll(): Flow<List<ShortcutEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun saveShortcut(shortcut: ShortcutEntity)
+    suspend fun save(shortcut: ShortcutEntity)
 
     @Update
-    suspend fun updateShortcut(shortcut: ShortcutEntity)
+    suspend fun update(shortcut: ShortcutEntity)
 
     @Query("DELETE FROM shortcuts WHERE id = :shortcutId")
-    suspend fun deleteShortcut(shortcutId: String)
+    suspend fun delete(shortcutId: String)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun addShortcutToProfile(mapping: ProfileShortcutCrossRef)
-
-    @Query("UPDATE shortcuts SET pinnedToDefault = :pinned WHERE id = :shortcutId")
-    fun setPinnedToDefault(shortcutId: String, pinned: Boolean)
+    suspend fun addToProfile(mapping: ProfileShortcutCrossRef)
 
     @Query("DELETE FROM profile_shortcut_mapping " +
-            "WHERE profileId = :profileId " +
-            "AND shortcutId = :shortcutId"
+            "WHERE profileId = :profileId AND shortcutId = :shortcutId"
     )
-    suspend fun removeShortcutFromProfile(profileId: String, shortcutId: String)
+    suspend fun removeFromProfile(profileId: String, shortcutId: String)
 }

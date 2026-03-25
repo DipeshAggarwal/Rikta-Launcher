@@ -11,4 +11,5 @@ dependencies {
     implementation(project(":domain:domain-apps"))
     implementation(project(":domain:domain-countdown"))
     implementation(project(":domain:domain-profiles"))
+    implementation(project(":domain:domain-shortcut"))
 }

@@ -30,11 +30,11 @@ class RoomShortcutRepositoryTest {
 
     @Test
     fun `getAllShortcuts maps entities to domain`() = runTest {
-        every { shortcutDao.getAllShortcuts() } returns flowOf(
+        every { shortcutDao.getAll() } returns flowOf(
             listOf(ShortcutEntityBuilder.build("shortcut_1", "Rikta"))
         )
 
-        val result = roomShortcutRepository.getAllShortcuts().first()
+        val result = roomShortcutRepository.getAll().first()
         assertEquals(1, result.size)
         assertEquals("shortcut_1", result.first().id)
         assertEquals("Rikta", result.first().label)
@@ -42,28 +42,17 @@ class RoomShortcutRepositoryTest {
 
     @Test
     fun `getAllShortcuts returns empty list when DAO returns empty`() = runTest {
-        every { shortcutDao.getAllShortcuts() } returns flowOf(emptyList())
-        assertTrue(roomShortcutRepository.getAllShortcuts().first().isEmpty())
-    }
-
-    @Test
-    fun `getDefaultScreenShortcuts maps pinned shortcuts correctly`() = runTest {
-        every { shortcutDao.getDefaultScreenShortcuts() } returns flowOf(
-            listOf(ShortcutEntityBuilder.build("shortcut_1", pinnedToDefault = true))
-        )
-
-        val result = roomShortcutRepository.getDefaultScreenShortcuts().first()
-        assertEquals(1, result.size)
-        assertTrue(result.first().pinnedToDefault)
+        every { shortcutDao.getAll() } returns flowOf(emptyList())
+        assertTrue(roomShortcutRepository.getAll().first().isEmpty())
     }
 
     @Test
     fun `getShortcutsForProfile returns all shortcut for profileId`() = runTest {
-        every { shortcutDao.getShortcutsForProfile("profile_test") } returns flowOf(
+        every { shortcutDao.get("profile_test") } returns flowOf(
             listOf(ShortcutEntityBuilder.build("shortcut_1"))
         )
 
-        val result = roomShortcutRepository.getShortcutsForProfile("profile_test").first()
+        val result = roomShortcutRepository.get("profile_test").first()
         assertEquals(1, result.size)
         assertEquals("shortcut_1", result.first().id)
     }
@@ -71,9 +60,9 @@ class RoomShortcutRepositoryTest {
     @Test
     fun `saveShortcut maps domain model to entity`() = runTest {
         val entitySlot = slot<ShortcutEntity>()
-        coEvery { shortcutDao.saveShortcut(capture(entitySlot)) } returns Unit
+        coEvery { shortcutDao.save(capture(entitySlot)) } returns Unit
 
-        roomShortcutRepository.saveShortcut(LauncherShortcutBuilder.build("shortcut_1", "Rikta"))
+        roomShortcutRepository.save(LauncherShortcutBuilder.build("shortcut_1", "Rikta"))
         assertEquals("shortcut_1", entitySlot.captured.id)
         assertEquals("Rikta", entitySlot.captured.label)
     }
@@ -82,33 +71,33 @@ class RoomShortcutRepositoryTest {
     fun `updateShortcut maps domain model to entity`() = runTest {
         val entitySlot = slot<ShortcutEntity>()
 
-        coEvery { shortcutDao.saveShortcut(capture(entitySlot)) } returns Unit
-        coEvery { shortcutDao.updateShortcut(capture(entitySlot)) } returns Unit
+        coEvery { shortcutDao.save(capture(entitySlot)) } returns Unit
+        coEvery { shortcutDao.update(capture(entitySlot)) } returns Unit
 
-        roomShortcutRepository.saveShortcut(LauncherShortcutBuilder.build("shortcut_1", "Rikta"))
-        roomShortcutRepository.updateShortcut(LauncherShortcutBuilder.build("shortcut_1", "Rikta New"))
+        roomShortcutRepository.save(LauncherShortcutBuilder.build("shortcut_1", "Rikta"))
+        roomShortcutRepository.update(LauncherShortcutBuilder.build("shortcut_1", "Rikta New"))
         assertEquals("Rikta New", entitySlot.captured.label)
     }
 
     @Test
     fun `deleteShortcut deletes shortcut`() = runTest {
-        roomShortcutRepository.deleteShortcut("shortcut_1")
-        coVerify { shortcutDao.deleteShortcut("shortcut_1") }
+        roomShortcutRepository.delete("shortcut_1")
+        coVerify { shortcutDao.delete("shortcut_1") }
     }
 
     @Test
     fun `addShortcutToProfile creates cross ref between profile and shortcut`() = runTest {
         val crossRefSlot = slot<ProfileShortcutCrossRef>()
-        coEvery { shortcutDao.addShortcutToProfile(capture(crossRefSlot)) } returns Unit
+        coEvery { shortcutDao.addToProfile(capture(crossRefSlot)) } returns Unit
 
-        roomShortcutRepository.addShortcutToProfile("profile_test", "shortcut_1")
+        roomShortcutRepository.addToProfile("profile_test", "shortcut_1")
         assertEquals("profile_test", crossRefSlot.captured.profileId)
         assertEquals("shortcut_1", crossRefSlot.captured.shortcutId)
     }
 
     @Test
     fun `removeShortcutFromProfile removes cross ref between profile and shortcut`() = runTest {
-        roomShortcutRepository.removeShortcutFromProfile("profile_test", "shortcut_1")
-        coVerify { shortcutDao.removeShortcutFromProfile("profile_test", "shortcut_1") }
+        roomShortcutRepository.removeFromProfile("profile_test", "shortcut_1")
+        coVerify { shortcutDao.removeFromProfile("profile_test", "shortcut_1") }
     }
 }

@@ -7,14 +7,12 @@ object ShortcutEntityBuilder {
     fun build(
         id: String = "shortcut_1",
         label: String = "Shortcut $id",
-        pinnedToDefault: Boolean = false,
         type: ShortcutType = ShortcutType.APP_SHORTCUT,
         shortcutPackage: String = "com.example.app",
         shortcutId: String = "shortcut_id"
     ) = ShortcutEntity(
         id = id,
         label = label,
-        pinnedToDefault = pinnedToDefault,
         type = type,
         shortcutPackage = shortcutPackage,
         shortcutId = shortcutId,

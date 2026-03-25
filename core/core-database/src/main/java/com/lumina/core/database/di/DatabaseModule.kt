@@ -6,6 +6,7 @@ import com.lumina.core.database.LuminaDatabase
 import com.lumina.core.database.dao.AppOverrideDao
 import com.lumina.core.database.dao.AppUsageDao
 import com.lumina.core.database.dao.ProfileDao
+import com.lumina.core.database.dao.ProfileFavouriteDao
 import com.lumina.core.database.dao.ShortcutDao
 import com.lumina.core.database.migration.DatabaseMigrations
 import dagger.Module
@@ -35,6 +36,12 @@ object DatabaseModule {
     @Singleton
     fun providesProfileDao(database: LuminaDatabase): ProfileDao {
         return database.profileDao()
+    }
+
+    @Provides
+    @Singleton
+    fun providesProfileFavouriteDao(database: LuminaDatabase): ProfileFavouriteDao {
+        return database.profileFavouriteDao()
     }
 
     @Provides

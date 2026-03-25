@@ -127,24 +127,6 @@ class FakeProfileRepository : ProfileRepository {
         show: Boolean
     ) { }
 
-    override fun getFavouriteAppsList(profileId: String): Flow<List<AppOverrideState>> {
-        return MutableStateFlow(emptyList())
-    }
-
-    override suspend fun updateFavouriteAppOrder(
-        profileId: String,
-        packageName: String,
-        userHandleNumber: Long,
-        previous: Int,
-        next: Int
-    ) { }
-
-    override suspend fun toggleFavouriteApp(
-        profileId: String,
-        packageName: String,
-        userHandleNumber: Long
-    ) { }
-
     override fun getProfileTriggers(profileId: String): Flow<List<TriggerCondition>> {
         return triggers.getOrPut(profileId) { MutableStateFlow(emptyList()) }
     }

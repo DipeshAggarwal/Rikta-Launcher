@@ -4,17 +4,13 @@ import com.lumina.domain.shortcut.model.LauncherShortcut
 import kotlinx.coroutines.flow.Flow
 
 interface ShortcutRepository {
-    fun getAllShortcuts(): Flow<List<LauncherShortcut>>
-    fun getDefaultScreenShortcuts(): Flow<List<LauncherShortcut>>
-    fun getShortcutsForProfile(profileId: String): Flow<List<LauncherShortcut>>
+    fun get(profileId: String): Flow<List<LauncherShortcut>>
+    fun getAll(): Flow<List<LauncherShortcut>>
 
-    suspend fun saveShortcut(shortcut: LauncherShortcut)
-    suspend fun updateShortcut(shortcut: LauncherShortcut)
-    suspend fun deleteShortcut(shortcutId: String)
+    suspend fun save(shortcut: LauncherShortcut)
+    suspend fun update(shortcut: LauncherShortcut)
+    suspend fun delete(shortcutId: String)
 
-    suspend fun addShortcutToProfile(profileId: String, shortcutId: String)
-    suspend fun removeShortcutFromProfile(profileId: String, shortcutId: String)
-
-    suspend fun pinToDefault(shortcutId: String)
-    suspend fun unpinFromDefault(shortcutId: String)
+    suspend fun addToProfile(profileId: String, shortcutId: String)
+    suspend fun removeFromProfile(profileId: String, shortcutId: String)
 }

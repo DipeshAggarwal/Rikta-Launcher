@@ -10,7 +10,6 @@ private const val VERSION = 1
 data class ShortcutEntity(
     @PrimaryKey val id: String,
     val label: String,
-    val pinnedToDefault: Boolean,
     val type: ShortcutType,
 
     val shortcutPackage: String?,
