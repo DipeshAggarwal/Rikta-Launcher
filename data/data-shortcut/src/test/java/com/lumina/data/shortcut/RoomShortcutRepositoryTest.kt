@@ -3,7 +3,6 @@ package com.lumina.data.shortcut
 import com.lumina.core.database.dao.ShortcutDao
 import com.lumina.core.database.entity.ProfileShortcutCrossRef
 import com.lumina.core.database.entity.ShortcutEntity
-import com.lumina.core.testing.builder.ShortcutEntityBuilder
 import com.lumina.data.shortcut.builder.LauncherShortcutBuilder
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -31,7 +30,7 @@ class RoomShortcutRepositoryTest {
     @Test
     fun `getAllShortcuts maps entities to domain`() = runTest {
         every { shortcutDao.getAll() } returns flowOf(
-            listOf(ShortcutEntityBuilder.build("shortcut_1", "Rikta"))
+            listOf(LauncherShortcutBuilder.build("shortcut_1", "Rikta"))
         )
 
         val result = roomShortcutRepository.getAll().first()
@@ -49,7 +48,7 @@ class RoomShortcutRepositoryTest {
     @Test
     fun `getShortcutsForProfile returns all shortcut for profileId`() = runTest {
         every { shortcutDao.get("profile_test") } returns flowOf(
-            listOf(ShortcutEntityBuilder.build("shortcut_1"))
+            listOf(LauncherShortcutBuilder.build("shortcut_1"))
         )
 
         val result = roomShortcutRepository.get("profile_test").first()

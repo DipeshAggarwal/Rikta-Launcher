@@ -7,7 +7,6 @@ import com.lumina.domain.profiles.model.LauncherProfile
 import com.lumina.domain.profiles.model.TriggerCondition
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.forEach
 import kotlinx.coroutines.flow.map
 
 class FakeProfileRepository : ProfileRepository {

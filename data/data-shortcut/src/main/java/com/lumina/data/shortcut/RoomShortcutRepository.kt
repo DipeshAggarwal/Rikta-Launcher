@@ -4,7 +4,7 @@ import com.lumina.core.database.dao.ShortcutDao
 import com.lumina.core.database.entity.ProfileShortcutCrossRef
 import com.lumina.core.database.entity.ShortcutEntity
 import com.lumina.domain.shortcut.ShortcutRepository
-import com.lumina.domain.shortcut.model.LauncherShortcut
+import com.lumina.core.model.LauncherShortcut
 import jakarta.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -35,11 +35,11 @@ class RoomShortcutRepository @Inject constructor(
     )
 
     override fun get(profileId: String): Flow<List<LauncherShortcut>> {
-        return shortcutDao.get(profileId).map { it.map { it.toDomain() } }
+        return shortcutDao.get(profileId).map { it }
     }
 
     override fun getAll(): Flow<List<LauncherShortcut>> {
-        return shortcutDao.getAll().map { it.map { it.toDomain() } }
+        return shortcutDao.getAll().map { it }
     }
 
     override suspend fun save(shortcut: LauncherShortcut) {

@@ -9,8 +9,8 @@ interface ProfileFavouriteRepository {
     suspend fun update(
         profileId: String,
         itemId: String,
-        previous: Int,
-        next: Int
+        previous: Int?,
+        next: Int?
     )
     suspend fun toggle(profileId: String, itemId: String, itemType: FavouriteItemType)
 }

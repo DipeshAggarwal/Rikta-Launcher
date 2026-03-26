@@ -11,14 +11,22 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface AppOverrideDao {
 
+    @Query("SELECT * FROM app_overrides " +
+            "WHERE packageName = :packageName AND userHandleNumber = :userHandleNumber"
+    )
+    suspend fun get(packageName: String, userHandleNumber: Long): AppOverrideEntity?
+
+    @Query("SELECT * FROM app_overrides")
+    fun getAll(): Flow<List<AppOverrideEntity>>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun saveOverride(app: AppOverrideEntity)
+    suspend fun save(app: AppOverrideEntity)
 
     @Query("DELETE FROM app_overrides " +
             "WHERE packageName = :packageName " +
             "AND userHandleNumber = :userHandleNumber"
     )
-    suspend fun deleteOverride(packageName: String, userHandleNumber: Long)
+    suspend fun delete(packageName: String, userHandleNumber: Long)
 
     @Query("UPDATE app_overrides " +
             "SET customDisplayName = :displayName " +
@@ -32,7 +40,4 @@ interface AppOverrideDao {
         packageName: String, userHandleNumber: Long,
         category: AppCategory?, customCategoryName: String?
     )
-
-    @Query("SELECT * FROM app_overrides")
-    fun getAllOverrides(): Flow<List<AppOverrideEntity>>
 }

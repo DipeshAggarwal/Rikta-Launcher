@@ -1,6 +1,6 @@
 package com.lumina.domain.shortcut
 
-import com.lumina.domain.shortcut.model.LauncherShortcut
+import com.lumina.core.model.LauncherShortcut
 import kotlinx.coroutines.flow.Flow
 
 interface ShortcutRepository {

@@ -64,7 +64,7 @@ class PackageManagerInstalledAppsRepository @Inject constructor(
      * Re-queries the system whenever [installedAppsMonitor] emits a change.
      */
     override val apps: StateFlow<List<AppInfo>> = combine(
-        _systemApps, appOverrideDao.getAllOverrides()
+        _systemApps, appOverrideDao.getAll()
     ) { systemApps, appOverrides ->
         val overrideMap = appOverrides.associateBy { "${it.packageName}:${it.userHandleNumber}" }
 
@@ -185,7 +185,7 @@ class PackageManagerInstalledAppsRepository @Inject constructor(
                 currentAppsList.removeAll { it.packageName == event.packageName && it.userHandleNumber == serial }
 
                 _systemApps.value = currentAppsList
-                appOverrideDao.deleteOverride(event.packageName, serial)
+                appOverrideDao.delete(event.packageName, serial)
             }
 
             is AppChangeEvent.PackagesAvailable -> {
@@ -203,7 +203,7 @@ class PackageManagerInstalledAppsRepository @Inject constructor(
                 val serial = userManager.getSerialNumberForUser(event.userHandle)
                 event.packageNames.forEach { packageName ->
                     currentAppsList.removeAll { it.packageName == packageName && it.userHandleNumber == serial }
-                    appOverrideDao.deleteOverride(packageName, serial)
+                    appOverrideDao.delete(packageName, serial)
                 }
                 _systemApps.value = currentAppsList
             }

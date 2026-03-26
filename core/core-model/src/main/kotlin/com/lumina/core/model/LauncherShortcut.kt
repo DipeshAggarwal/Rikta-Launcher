@@ -1,6 +1,4 @@
-package com.lumina.domain.shortcut.model
-
-import com.lumina.core.model.ShortcutType
+package com.lumina.core.model
 
 data class LauncherShortcut(
     val id: String,

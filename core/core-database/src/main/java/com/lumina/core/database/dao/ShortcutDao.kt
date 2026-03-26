@@ -7,6 +7,7 @@ import androidx.room.Query
 import androidx.room.Update
 import com.lumina.core.database.entity.ProfileShortcutCrossRef
 import com.lumina.core.database.entity.ShortcutEntity
+import com.lumina.core.model.LauncherShortcut
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -17,9 +18,9 @@ interface ShortcutDao {
             "ON s.id = m.shortcutId " +
             "WHERE m.profileId = :profileId"
     )
-    fun get(profileId: String): Flow<List<ShortcutEntity>>
+    fun get(profileId: String): Flow<List<LauncherShortcut>>
     @Query("SELECT * FROM shortcuts")
-    fun getAll(): Flow<List<ShortcutEntity>>
+    fun getAll(): Flow<List<LauncherShortcut>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun save(shortcut: ShortcutEntity)

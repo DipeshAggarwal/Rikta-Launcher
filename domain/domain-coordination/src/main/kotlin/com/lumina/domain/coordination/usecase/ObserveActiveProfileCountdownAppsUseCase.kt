@@ -1,14 +1,12 @@
 package com.lumina.domain.coordination.usecase
 
 import com.lumina.core.model.LauncherItem
-import com.lumina.domain.apps.InstalledAppsRepository
 import jakarta.inject.Inject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 class ObserveActiveProfileCountdownAppsUseCase @Inject constructor(
-    private val installedAppsRepository: InstalledAppsRepository,
     private val appsMappingUseCase: ObserveActiveProfileAppsMappingUseCase
 ) {
     @OptIn(ExperimentalCoroutinesApi::class)

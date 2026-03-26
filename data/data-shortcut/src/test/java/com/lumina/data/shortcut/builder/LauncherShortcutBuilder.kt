@@ -1,7 +1,7 @@
 package com.lumina.data.shortcut.builder
 
 import com.lumina.core.model.ShortcutType
-import com.lumina.domain.shortcut.model.LauncherShortcut
+import com.lumina.core.model.LauncherShortcut
 
 object LauncherShortcutBuilder {
     fun build(

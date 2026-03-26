@@ -25,6 +25,7 @@ import org.junit.Assert.assertThrows
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
+import java.security.MessageDigest
 
 // Relaxed mock of ProfileDataStore returns an empty flow by default.
 // And this gets stored in activeProfile. Because of this, stub in test fun are too late.
@@ -42,6 +43,11 @@ class RoomProfileRepositoryTest {
     private lateinit var fakeProfileDataStore: FakeProfileDataStore
     private lateinit var roomProfileRepository: RoomProfileRepository
     private lateinit var logger: Logger
+
+    private fun String.mockHash(): String {
+        val bytes = MessageDigest.getInstance("SHA-256").digest(toByteArray())
+        return bytes.joinToString("") { "%02x".format(it) }
+    }
 
     @Before
     fun setup() {
@@ -168,6 +174,26 @@ class RoomProfileRepositoryTest {
         val result = roomProfileRepository.findProfileByKey("abc123")
         assertEquals(profile.id, result!!.id)
         assertEquals(profile.name, result.name)
+    }
+
+    @Test
+    fun `saveProfile throws IllegalArgumentException when PIN is reused`() = runTest {
+        val profile = LauncherProfileBuilder.build(id = "profile_test", activationKey = "abc123")
+        coEvery { profileDao.isKeyTaken("abc123".mockHash(), profile.id) } returns true
+
+        assertThrows(IllegalArgumentException::class.java) {
+            runBlocking { roomProfileRepository.saveProfile(profile) }
+        }
+        coVerify(exactly = 0) { profileDao.saveProfile(any()) }
+    }
+
+    @Test
+    fun `saveProfile saves when PIN is unique`() = runTest {
+        val profile = LauncherProfileBuilder.build(id = "profile_test", activationKey = "abc123")
+        coEvery { profileDao.isKeyTaken("abc123".mockHash(), profile.id) } returns false
+
+        roomProfileRepository.saveProfile(profile)
+        coVerify(exactly = 1) { profileDao.saveProfile(any()) }
     }
 
     @Test

@@ -217,6 +217,43 @@ class ProfileDaoTest {
     }
 
     @Test
+    fun deleteAppMappingAcrossAllProfiles_removes_from_everywhere() = runTest {
+        val profileOne = ProfileEntityBuilder.build(id = "profile_test_1")
+        val profileTwo = ProfileEntityBuilder.build(id = "profile_test_2")
+
+        val mappingOne = ProfileAppCrossRef(profileOne.id, "com.example.app", 0L)
+        val mappingTwo = ProfileAppCrossRef(profileTwo.id, "com.example.app", 0L)
+
+        profileDao.saveProfile(profileOne)
+        profileDao.saveProfile(profileTwo)
+
+        profileDao.insertAppMapping(mappingOne)
+        profileDao.insertAppMapping(mappingTwo)
+
+        profileDao.deleteAppMappingAcrossAllProfiles(mappingTwo.packageName, mappingTwo.userHandleNumber)
+        assertTrue(profileDao.getAppsForProfile(profileOne.id).first().isEmpty())
+        assertTrue(profileDao.getAppsForProfile(profileTwo.id).first().isEmpty())
+    }
+
+    @Test
+    fun deleteAppMappingAcrossAllProfiles_cleans_up_removed_apps() = runTest {
+        val profile = ProfileEntityBuilder.build(id = "profile_test_1")
+
+        val mappingOne = ProfileAppCrossRef(profile.id, "com.example.app.one", 0L)
+        val mappingTwo = ProfileAppCrossRef(profile.id, "com.example.app.two", 0L)
+
+        profileDao.saveProfile(profile)
+        profileDao.insertAppMapping(mappingOne)
+        profileDao.insertAppMapping(mappingTwo)
+
+        profileDao.deleteAppMappingForUninstalledApps(setOf("com.example.app.one::0"))
+        val result = profileDao.getAppsForProfile(profile.id).first()
+
+        assertEquals(1, result.size)
+        assertEquals(mappingOne.packageName, result.first().packageName)
+    }
+
+    @Test
     fun getAppLimitMinutes_returns_null_when_not_set() = runTest {
         val profile = ProfileEntityBuilder.build(id = "profile_test_1")
         val mapping = ProfileAppCrossRef(profile.id, "com.example.app", 0L)
@@ -239,6 +276,47 @@ class ProfileDaoTest {
         profileDao.insertAppMapping(mapping)
 
         assertEquals(64, profileDao.getAppUsageMinutes(
+            profile.id, mapping.packageName, mapping.userHandleNumber
+        ))
+    }
+
+    @Test
+    fun updateAppUsageMinutes_modifies_existing_mapping() = runTest {
+        val profile = ProfileEntityBuilder.build(id = "profile_test_1")
+        val mapping = ProfileAppCrossRef(profile.id, "com.example.app", 0L)
+
+        profileDao.saveProfile(profile)
+        profileDao.insertAppMapping(mapping)
+
+        profileDao.updateAppUsageMinutes(profile.id, mapping.packageName, mapping.userHandleNumber, 16)
+        assertEquals(16, profileDao.getAppUsageMinutes(profile.id, mapping.packageName, mapping.userHandleNumber))
+    }
+
+    @Test
+    fun isAppCountdownEnabled_returns_stored_value() = runTest {
+        val profile = ProfileEntityBuilder.build(id = "profile_test_1")
+        val mapping = ProfileAppCrossRef(
+            profile.id, "com.example.app", 0L, true
+        )
+
+        profileDao.saveProfile(profile)
+        profileDao.insertAppMapping(mapping)
+
+        assertEquals(true, profileDao.isAppCountdownEnabled(
+            profile.id, mapping.packageName, mapping.userHandleNumber
+        ))
+    }
+
+    @Test
+    fun updateAppCountdown_modifies_existing_mapping() = runTest {
+        val profile = ProfileEntityBuilder.build(id = "profile_test_1")
+        val mapping = ProfileAppCrossRef(profile.id, "com.example.app", 0L)
+
+        profileDao.saveProfile(profile)
+        profileDao.insertAppMapping(mapping)
+
+        profileDao.updateAppCountdown(profile.id, mapping.packageName, mapping.userHandleNumber, true)
+        assertEquals(true, profileDao.isAppCountdownEnabled(
             profile.id, mapping.packageName, mapping.userHandleNumber
         ))
     }

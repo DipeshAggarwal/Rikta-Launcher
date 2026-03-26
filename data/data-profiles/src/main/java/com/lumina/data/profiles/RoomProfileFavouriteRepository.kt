@@ -7,7 +7,7 @@ import com.lumina.core.model.FavouriteItemType
 import com.lumina.domain.profiles.ProfileFavouriteRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import javax.inject.Inject
+import jakarta.inject.Inject
 
 private const val FAVOURITE_GAP = 128
 
@@ -32,12 +32,18 @@ class RoomProfileFavouriteRepository @Inject constructor(
     override suspend fun update(
         profileId: String,
         itemId: String,
-        previous: Int,
-        next: Int
+        previous: Int?,
+        next: Int?
     ) {
-        val newOrder = (previous + next) / 2
+        val newOrder = when {
+            previous == null && next != null -> next / 2
+            next == null && previous != null -> previous + FAVOURITE_GAP
+            previous != null && next != null -> (previous + next) / 2
+            else -> FAVOURITE_GAP
+        }
 
         if (newOrder == previous || newOrder == next) {
+            profileFavouriteDao.update(profileId, itemId, newOrder)
             profileFavouriteDao.rebalance(profileId, FAVOURITE_GAP)
         } else {
             profileFavouriteDao.update(profileId, itemId, newOrder)

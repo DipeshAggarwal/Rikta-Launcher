@@ -17,7 +17,6 @@ class ObserveActiveProfileFavouritesUseCase @Inject constructor(
     private val profileRepository: ProfileRepository,
     private val profileFavouriteRepository: ProfileFavouriteRepository,
     private val shortcutRepository: ShortcutRepository,
-    private val installedAppsRepository: InstalledAppsRepository,
     private val appsMappingUseCase: ObserveActiveProfileAppsMappingUseCase
 ) {
 
