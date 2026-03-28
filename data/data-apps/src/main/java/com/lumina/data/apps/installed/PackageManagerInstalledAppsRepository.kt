@@ -41,12 +41,11 @@ class PackageManagerInstalledAppsRepository @Inject constructor(
     @param:IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val installedAppsMonitor: InstalledAppsMonitor,
     private val appOverrideDao: AppOverrideDao,
+    private val launcherApps: LauncherApps,
     private val userManager: UserManager,
     private val logger: Logger
 ) : InstalledAppsRepository {
     private val TAG = this::class.java.simpleName
-
-    private val launcherApps = context.getSystemService(LauncherApps::class.java)
 
     // Live OS state.
     private val _systemApps = MutableStateFlow<List<AppInfo>>(emptyList())
@@ -66,7 +65,7 @@ class PackageManagerInstalledAppsRepository @Inject constructor(
     override val apps: StateFlow<List<AppInfo>> = combine(
         _systemApps, appOverrideDao.getAll()
     ) { systemApps, appOverrides ->
-        val overrideMap = appOverrides.associateBy { "${it.packageName}:${it.userHandleNumber}" }
+        val overrideMap = appOverrides.associateBy { "${it.packageName}::${it.userHandleNumber}" }
 
         systemApps.map { systemApp ->
             val overrideData = overrideMap[systemApp.componentKey]

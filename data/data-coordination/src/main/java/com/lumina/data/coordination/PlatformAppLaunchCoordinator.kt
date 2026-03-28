@@ -26,12 +26,12 @@ class PlatformAppLaunchCoordinator @Inject constructor(
     private var pendingApp: AppInfo? = null
 
     override suspend fun requestLaunch(app: AppInfo) {
-        val currentPackages = countdownRepository.appPackages.first()
         val needsCountdown = if (FeatureFlags.USE_ROOM_FOR_FAV_COUNTDOWN) {
             observeCountdownApps().first().any {
                 it.info.componentKey == app.componentKey
             }
         } else {
+            val currentPackages = countdownRepository.appPackages.first()
             currentPackages.contains(app.packageName)
         }
 

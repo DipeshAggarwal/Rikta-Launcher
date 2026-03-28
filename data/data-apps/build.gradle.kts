@@ -1,6 +1,7 @@
 plugins {
     id("convention.android.library")
     id("convention.hilt")
+    id("convention.test.android")
 }
 
 dependencies {

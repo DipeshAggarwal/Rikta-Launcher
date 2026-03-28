@@ -1,6 +1,7 @@
 plugins {
     id("convention.android.library")
     id("convention.hilt")
+    id("convention.test.android")
 }
 
 dependencies {
@@ -14,4 +15,6 @@ dependencies {
     implementation(project(":domain:domain-countdown"))
 
     implementation(project(":data:data-countdown"))
+
+    androidTestImplementation(project(":core:core-testing"))
 }

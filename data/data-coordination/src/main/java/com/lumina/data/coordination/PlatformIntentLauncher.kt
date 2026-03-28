@@ -21,12 +21,11 @@ import jakarta.inject.Singleton
 @Singleton
 class PlatformIntentLauncher @Inject constructor(
     @param:ApplicationContext private val context: Context,
+    private val launcherApps: LauncherApps,
     private val userManager: UserManager,
     private val logger: Logger
 ) : IntentLauncher {
     private val TAG = this::class.java.simpleName
-    private val launcherApps = context.getSystemService(LauncherApps::class.java)
-
     override suspend fun openApp(app: AppInfo): LaunchResult {
         return try {
             val componentName = ComponentName(app.packageName, app.componentClassName)
