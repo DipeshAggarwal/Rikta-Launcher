@@ -7,7 +7,7 @@ plugins {
     alias(libs.plugins.ksp)
 }
 
-val baseVersionCode = "0.3.0.0328"
+val baseVersionCode = "0.3.0.0429"
 
 android {
     namespace = "com.lumina.rikta"
@@ -35,6 +35,7 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"

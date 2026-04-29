@@ -1,6 +1,6 @@
 [versions]
-agp = "9.1.0"
-kotlin = "2.3.20"
+agp = "9.2.0"
+kotlin = "2.3.21"
 
 coreKtx = "1.18.0"
 appcompat = "1.7.1"
@@ -11,10 +11,10 @@ coroutines = "1.10.2"
 
 lifecycleRuntimeKtx = "2.10.0"
 activityCompose = "1.13.0"
-navigationCompose = "2.9.7"
+navigationCompose = "2.9.8"
 workRuntimeKtx = "2.11.2"
 
-composeBom = "2026.03.01"
+composeBom = "2026.04.01"
 
 room = "2.8.4"
 
@@ -30,7 +30,7 @@ junitVersion = "1.3.0"
 espressoCore = "3.7.0"
 mockk = "1.14.9"
 
-gson = "2.13.2"
+gson = "2.14.0"
 okhttp = "5.3.2"
 coreSplashscreen = "1.2.0"
 graphicsShapes = "1.1.0"
@@ -41,10 +41,10 @@ crashlytics-gradle = "3.0.7"
 
 google-services = "4.4.4"
 play-services-location = "21.3.0"
-google-fonts-compose = "1.10.6"
+google-fonts-compose = "1.11.0"
 
 materialKolor = "4.1.1"
-foundationLayout = "1.10.6"
+foundationLayout = "1.11.0"
 lifecycleViewmodelKtx = "2.10.0"
 hiltCommon = "1.3.0"
 

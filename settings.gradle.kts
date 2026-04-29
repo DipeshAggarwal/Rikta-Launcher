@@ -17,11 +17,11 @@ pluginManagement {
     }
 
     plugins {
-        id("com.android.application") version "9.1.0"
-        id("com.android.library") version "9.1.0"
-        id("org.jetbrains.kotlin.android") version "2.3.20"
-        id("org.jetbrains.kotlin.jvm") version "2.3.20"
-        id("org.jetbrains.kotlin.plugin.compose") version "2.3.20"
+        id("com.android.application") version "9.2.0"
+        id("com.android.library") version "9.2.0"
+        id("org.jetbrains.kotlin.android") version "2.3.21"
+        id("org.jetbrains.kotlin.jvm") version "2.3.21"
+        id("org.jetbrains.kotlin.plugin.compose") version "2.3.21"
         id("com.google.dagger.hilt.android") version "2.59.2"
     }
 }
