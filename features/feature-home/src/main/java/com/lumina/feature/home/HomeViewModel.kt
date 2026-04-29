@@ -2,16 +2,14 @@ package com.lumina.feature.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.lumina.core.common.FlowDefaults.WhileSubscribedTimeoutMillis
 import com.lumina.core.logging.Logger
 import com.lumina.core.model.AppInfo
 import com.lumina.core.model.AppProfile
 import com.lumina.core.model.AppShortcut
+import com.lumina.core.model.FavouriteItemType
+import com.lumina.core.model.LauncherItem
 import com.lumina.domain.apps.AppShortcutRepository
-import com.lumina.domain.apps.FavouriteAppsRepository
 import com.lumina.domain.apps.HiddenAppsRepository
-import com.lumina.domain.apps.InstalledAppsRepository
-import com.lumina.domain.countdown.CountdownAppsRepository
 import com.lumina.domain.search.AppSearchEngine
 import com.lumina.domain.settings.AppListSettings
 import com.lumina.domain.settings.HomeSettings
@@ -21,6 +19,12 @@ import com.lumina.domain.coordination.AppLaunchCoordinator
 import com.lumina.domain.coordination.IntentLauncher
 import com.lumina.domain.coordination.LaunchResult
 import com.lumina.domain.coordination.StatusBarController
+import com.lumina.domain.coordination.usecase.ObserveActiveProfileAppsMappingUseCase
+import com.lumina.domain.coordination.usecase.ObserveActiveProfileAppsUseCase
+import com.lumina.domain.coordination.usecase.ObserveActiveProfileFavouritesUseCase
+import com.lumina.domain.profiles.ProfileFavouriteRepository
+import com.lumina.domain.profiles.ProfileRepository
+import com.lumina.domain.shortcut.ShortcutRepository
 import com.lumina.feature.home.model.BottomSheetState
 import com.lumina.feature.home.model.HomeUiState
 import com.lumina.feature.home.model.SelectedApp
@@ -34,21 +38,24 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val hiddenAppsRepository: HiddenAppsRepository,
-    private val favouriteAppsRepository: FavouriteAppsRepository,
-    private val countdownRepository: CountdownAppsRepository,
+    private val profileRepository: ProfileRepository,
+    private val profileFavouriteRepository: ProfileFavouriteRepository,
+    private val shortcutRepository: ShortcutRepository,
+    observeAppMapping: ObserveActiveProfileAppsMappingUseCase,
+    observeActiveProfileApps: ObserveActiveProfileAppsUseCase,
+    observeActiveProfileFavourites: ObserveActiveProfileFavouritesUseCase,
     settingsRepository: SettingsRepository,
-    installedAppsRepository: InstalledAppsRepository,
     private val appSearchEngine: AppSearchEngine,
     private val intentLauncher: IntentLauncher,
     private val launchCoordinator: AppLaunchCoordinator,
-    private val shortcutRepository: AppShortcutRepository,
+    private val appShortcutRepository: AppShortcutRepository,
     private val statusBarController: StatusBarController,
     private val logger: Logger
 ) : ViewModel() {
@@ -75,48 +82,14 @@ class HomeViewModel @Inject constructor(
 
     // .Eagerly is used so that startup happens at creation time.
     // This improves animation and loading experience.
-    private val installedApps: StateFlow<List<AppInfo>> = installedAppsRepository.apps
+    private val activeProfileApps: StateFlow<List<LauncherItem.App>> = observeActiveProfileApps()
+        .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
-    private val hiddenPackagesSet: StateFlow<Set<String>> = hiddenAppsRepository.appPackages
-        .stateIn(
-            viewModelScope,
-            SharingStarted.Eagerly,
-            emptySet()
-        )
+    private val activeProfileFavourites: StateFlow<List<LauncherItem>> = observeActiveProfileFavourites()
+        .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
-    private val favouritePackages: StateFlow<List<String>> = favouriteAppsRepository.appPackages
-        .stateIn(
-            viewModelScope,
-            SharingStarted.Eagerly,
-            emptyList()
-        )
-
-    private val countdownPackages: StateFlow<Set<String>> = countdownRepository.appPackages
-        .stateIn(
-            viewModelScope,
-            SharingStarted.Eagerly,
-            emptySet()
-        )
-
-    // Create a map for faster lookup.
-    private val installedAppsMap: StateFlow<Map<String, AppInfo>> = installedApps
-        .map { list -> list.associateBy { it.packageName } }
-        .stateIn(
-            viewModelScope,
-            SharingStarted.WhileSubscribed(WhileSubscribedTimeoutMillis),
-            emptyMap()
-        )
-
-    private val favouriteApps: StateFlow<List<AppInfo>> = combine(
-        favouritePackages, installedAppsMap
-    ) { pkg, map ->
-        pkg.mapNotNull { map[it] }
-    }
-        .stateIn(
-            viewModelScope,
-            SharingStarted.WhileSubscribed(WhileSubscribedTimeoutMillis),
-            emptyList()
-        )
+    private val rawAppsMap: StateFlow<Map<String, LauncherItem.App>> = observeAppMapping()
+        .stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap())
 
     val homeSettings: StateFlow<HomeSettings> = settingsRepository.homeSettings
         .stateIn(
@@ -142,30 +115,33 @@ class HomeViewModel @Inject constructor(
     // For future ref: Combine can only take a maximum of five Flows.
     // This is recomputed anytime any of the source changes.
     val homeUiState: StateFlow<HomeUiState> = combine(
-        installedApps,
-        hiddenPackagesSet,
-        favouriteApps,
+        activeProfileApps,
+        activeProfileFavourites,
         searchQuery,
-        searchSettings
-    ) { apps, hiddenApps, favApps, query, searchPrefs ->
-        val favouriteSet = favApps.map { it.packageName }.toSet()
+        searchSettings,
+        rawAppsMap
+    ) { apps, favItems, query, searchPrefs, rawApps ->
         val isSearching = query.isNotBlank()
-        val showHiddenAppsWhileSearching = searchPrefs.showHiddenAppsInSearch && isSearching
-        val visibleApps = if (showHiddenAppsWhileSearching) {
-            apps
-        } else {
-            apps.filterNot { it.packageName in hiddenApps }
-        }
-        val favForBoosting = if (searchPrefs.favouriteBoostInSearch) favouriteSet else emptySet()
+        val favForBoosting = if (searchPrefs.favouriteBoostInSearch) {
+            favItems.mapNotNull {
+                when (it) {
+                    is LauncherItem.App -> it.info.packageName
+                    is LauncherItem.Shortcut -> it.targetPackage
+                }
+            }.toSet()
+        } else emptySet()
 
         val finalAppsList = if (isSearching) {
-            appSearchEngine.search(visibleApps, query, favForBoosting)
+            val searchableApps = getVisibleAppsForSearch(searchPrefs, apps)
+            val searchResults = appSearchEngine.search(searchableApps, query, favForBoosting)
+
+            searchResults.mapNotNull { rawApps[it.packageName] }
         } else {
-            visibleApps.sortedBy { it.displayName.lowercase() }
+            apps
         }
 
         HomeUiState.Ready(
-            favApps,
+            favItems,
             finalAppsList,
             query,
             isSearching
@@ -188,12 +164,15 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    private fun getVisibleAppsForSearch(searchPrefs: SearchSettings): List<AppInfo> {
-        val apps = installedApps.value
-        val hidden = hiddenPackagesSet.value
-
-        return if (searchPrefs.showHiddenAppsInSearch) apps
-        else apps.filterNot { it.packageName in hidden }
+    private fun getVisibleAppsForSearch(
+        searchPrefs: SearchSettings,
+        activeProfileApps: List<LauncherItem.App>
+    ): List<AppInfo> {
+        return if (searchPrefs.showHiddenAppsInSearch) {
+            rawAppsMap.value.values.map { it.info }.toList()
+        } else {
+            activeProfileApps.map { it.info }
+        }
     }
 
     fun requestToGoHome() {
@@ -213,14 +192,21 @@ class HomeViewModel @Inject constructor(
         val searchPrefs = searchSettings.value
         if (!searchPrefs.autoOpenOnSearch) return
 
-        val visibleApps = getVisibleAppsForSearch(searchPrefs)
+        val visibleApps = getVisibleAppsForSearch(searchPrefs, activeProfileApps.value)
         val favForBoosting = if (searchPrefs.favouriteBoostInSearch) {
-            favouriteApps.value.map { it.packageName }.toSet()
+            activeProfileFavourites.value.map {
+                (it as LauncherItem.App).info.packageName
+            }.toSet()
         } else emptySet()
 
         val results = appSearchEngine.search(visibleApps, query, favForBoosting)
         if (results.size == 1) {
-            onAppOpened(results.first())
+            val matchedApp = results.first()
+            val launcherApp = rawAppsMap.value[matchedApp.packageName]
+
+            if (launcherApp != null) {
+                onAppOpened(launcherApp)
+            }
         }
     }
 
@@ -229,18 +215,20 @@ class HomeViewModel @Inject constructor(
         if (query.isBlank()) return
 
         val searchPrefs = searchSettings.value
-        val visibleApps = getVisibleAppsForSearch(searchPrefs)
+        val visibleApps = getVisibleAppsForSearch(searchPrefs, activeProfileApps.value)
         val favForBoosting = if (searchPrefs.favouriteBoostInSearch) {
-            favouriteApps.value.map { it.packageName }.toSet()
+            activeProfileFavourites.value.map {
+                (it as LauncherItem.App).info.packageName
+            }.toSet()
         } else emptySet()
 
         val results = appSearchEngine.search(visibleApps, query, favForBoosting)
-        val firstApp = results.firstOrNull() ?: return
-
-        onAppOpened(firstApp)
+        results.firstOrNull()?.let { matchedAppInfo ->
+            rawAppsMap.value[matchedAppInfo.packageName]?.let { onAppOpened(it) }
+        }
     }
 
-    fun onAppOpened(app: AppInfo) {
+    fun onAppOpened(app: LauncherItem.App) {
         viewModelScope.launch {
             launchCoordinator.requestLaunch(app)
         }
@@ -263,27 +251,39 @@ class HomeViewModel @Inject constructor(
         onBottomSheetDismissed()
     }
 
-    fun onAppLongPressed(app: AppInfo, profile: AppProfile = AppProfile.Standard) {
-        val isFavourite = favouriteApps.value.any { it.packageName == app.packageName }
-        val isCountdownRequired = countdownPackages.value.any { it == app.packageName }
+    fun onItemLongPressed(item: LauncherItem, profile: AppProfile = AppProfile.Standard) {
+        val isFavourite = activeProfileFavourites.value.any { fav ->
+            when (item) {
+                is LauncherItem.App -> fav is LauncherItem.App && fav.info.packageName == item.info.packageName
+                is LauncherItem.Shortcut -> fav is LauncherItem.Shortcut && fav.id == item.id
+            }
+        }
 
-        // Edit the blank sheet state asap.
-        _bottomSheetState.value = BottomSheetState.AppOptions(
-            SelectedApp(
-                app,
-                isFavourite,
-                isCountdownRequired,
-                profile
-            ),
-            shortcuts = emptyList<AppShortcut>()
-        )
+        when (item) {
+            is LauncherItem.App -> {
+                val app = item.info
+                _bottomSheetState.value = BottomSheetState.AppOptions(
+                    SelectedApp(item, isFavourite, item.showCountdown, profile),
+                    shortcuts = emptyList()
+                )
 
-        viewModelScope.launch {
-            val shortcuts = shortcutRepository.getShortcuts(app)
-            val currentState = _bottomSheetState.value
+                viewModelScope.launch {
+                    val appShortcuts = appShortcutRepository.getShortcuts(app)
+                    val currentState = _bottomSheetState.value
 
-            if (currentState is BottomSheetState.AppOptions && currentState.selectedApp.app.packageName == app.packageName) {
-                _bottomSheetState.value = currentState.copy(shortcuts = shortcuts)
+                    if (currentState is BottomSheetState.AppOptions &&
+                        currentState.selectedApp.app.info.packageName == app.packageName
+                    ) {
+                        _bottomSheetState.value = currentState.copy(shortcuts = appShortcuts)
+                    }
+                }
+            }
+
+            is LauncherItem.Shortcut -> {
+                _bottomSheetState.value = BottomSheetState.ShortcutOptions(
+                    shortcut = item,
+                    isFavourite = isFavourite
+                )
             }
         }
     }
@@ -310,24 +310,31 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun onToggleFavourite(packageName: String) {
+    fun onToggleFavourite(item: LauncherItem) {
         viewModelScope.launch {
-            if (favouritePackages.value.contains(packageName)) {
-                favouriteAppsRepository.removeApp(packageName)
-            } else {
-                favouriteAppsRepository.addApp(packageName)
+            val activeProfile = profileRepository.activeProfile.firstOrNull() ?: return@launch
+            val (itemId, itemType) = when (item) {
+                is LauncherItem.App -> item.info.packageName to FavouriteItemType.APP
+                is LauncherItem.Shortcut -> item.id to FavouriteItemType.SHORTCUT
             }
+            profileFavouriteRepository.toggle(
+                profileId = activeProfile.id,
+                itemId = itemId,
+                itemType = itemType
+            )
         }
         onBottomSheetDismissed()
     }
 
-    fun onToggleCountdown(packageName: String) {
+    fun onToggleCountdown(item: LauncherItem.App) {
         viewModelScope.launch {
-            if (countdownPackages.value.contains(packageName)) {
-                countdownRepository.removeApp(packageName)
-            } else {
-                countdownRepository.addApp(packageName)
-            }
+            val activeProfile = profileRepository.activeProfile.firstOrNull() ?: return@launch
+            profileRepository.updateShowCountdownForApp(
+                profileId = activeProfile.id,
+                packageName = item.info.packageName,
+                userHandleNumber = item.info.userHandleNumber,
+                show = !item.showCountdown
+            )
         }
         onBottomSheetDismissed()
     }
@@ -345,5 +352,19 @@ class HomeViewModel @Inject constructor(
             handleLaunchResult(result)
         }
         onBottomSheetDismissed()
+    }
+
+    fun onLaunchProfileShortcut(shortcut: LauncherItem.Shortcut) {
+        viewModelScope.launch {
+            val result = intentLauncher.launchProfileShortcut(shortcut)
+            handleLaunchResult(result)
+        }
+        onBottomSheetDismissed()
+    }
+
+    fun onDeleteShortcut(shortcut: LauncherItem.Shortcut) {
+        viewModelScope.launch {
+            shortcutRepository.delete(shortcut.id)
+        }
     }
 }

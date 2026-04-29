@@ -1,12 +1,10 @@
 package com.lumina.data.coordination
 
 import com.lumina.core.common.FeatureFlags
-import com.lumina.core.model.AppInfo
-import com.lumina.core.model.componentKey
+import com.lumina.core.model.LauncherItem
 import com.lumina.domain.coordination.AppLaunchCoordinator
 import com.lumina.domain.coordination.IntentLauncher
 import com.lumina.domain.coordination.LaunchState
-import com.lumina.domain.coordination.usecase.ObserveActiveProfileCountdownAppsUseCase
 import com.lumina.domain.countdown.CountdownAppsRepository
 import jakarta.inject.Inject
 import jakarta.inject.Singleton
@@ -18,33 +16,34 @@ import kotlinx.coroutines.flow.first
 class PlatformAppLaunchCoordinator @Inject constructor(
     private val intentLauncher: IntentLauncher,
     private val countdownRepository: CountdownAppsRepository,
-    private val observeCountdownApps: ObserveActiveProfileCountdownAppsUseCase
 ) : AppLaunchCoordinator{
     private val _launchState = MutableStateFlow<LaunchState>(LaunchState.Idle)
     override val launchState = _launchState.asStateFlow()
 
-    private var pendingApp: AppInfo? = null
+    private var pendingApp: LauncherItem.App? = null
 
-    override suspend fun requestLaunch(app: AppInfo) {
-        val needsCountdown = if (FeatureFlags.USE_ROOM_FOR_FAV_COUNTDOWN) {
-            observeCountdownApps().first().any {
-                it.info.componentKey == app.componentKey
+    override suspend fun requestLaunch(app: LauncherItem.App) {
+        if (FeatureFlags.USE_ROOM_FOR_FAV_COUNTDOWN) {
+            if (app.showCountdown) {
+                pendingApp = app
+                _launchState.value = LaunchState.RequiresCountdown(app)
+            } else {
+                intentLauncher.openApp(app.info)
             }
         } else {
             val currentPackages = countdownRepository.appPackages.first()
-            currentPackages.contains(app.packageName)
-        }
 
-        if (needsCountdown) {
-            pendingApp = app
-            _launchState.value = LaunchState.RequiresCountdown(app)
-        } else {
-            intentLauncher.openApp(app)
+            if (currentPackages.contains(app.info.packageName)) {
+                pendingApp = app
+                _launchState.value = LaunchState.RequiresCountdown(app)
+            } else {
+                intentLauncher.openApp(app.info)
+            }
         }
     }
 
     override suspend fun completeLaunch() {
-        pendingApp?.let { app -> intentLauncher.openApp(app) }
+        pendingApp?.let { app -> intentLauncher.openApp(app.info) }
         reset()
     }
 

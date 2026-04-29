@@ -11,6 +11,7 @@ data class ShortcutEntity(
     @PrimaryKey val id: String,
     val label: String,
     val type: ShortcutType,
+    val userHandleNumber: Long,
 
     val shortcutPackage: String?,
     val shortcutId: String?,

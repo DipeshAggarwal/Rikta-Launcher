@@ -19,6 +19,7 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
+import com.lumina.core.model.LauncherItem
 import com.lumina.core.ui.HapticUtils
 import com.lumina.core.ui.components.home.AppListItem
 import com.lumina.core.ui.components.home.Clock
@@ -114,16 +115,32 @@ fun HomeMain(
         if (readyState != null) {
             items(
                 readyState.favourites,
-                key = { "${it.packageName}_${it.componentClassName}_${it.userHandleNumber}" }
-            ) { app ->
+                key = { item ->
+                    when (item) {
+                        is LauncherItem.App ->
+                            "app_${item.info.packageName}_${item.info.componentClassName}_${item.info.userHandleNumber}"
+                        is LauncherItem.Shortcut ->
+                            "shortcut_${item.id}"
+                    }
+                }
+            ) { item ->
+                val displayName = when (item) {
+                    is LauncherItem.App -> item.info.displayName
+                    is LauncherItem.Shortcut -> item.label
+                }
                 AppListItem(
-                    appName = app.displayName,
+                    appName = displayName,
                     screenTime = null,
                     showScreenTime = false,
-                    onAppClick = { viewModel.onAppOpened(app) },
+                    onAppClick = {
+                        when (item) {
+                            is LauncherItem.App -> viewModel.onAppOpened(item)
+                            is LauncherItem.Shortcut -> viewModel.onLaunchProfileShortcut(item)
+                        }
+                    },
                     onAppLongClick = {
                         HapticUtils.performHapticFeedback(haptics)
-                        viewModel.onAppLongPressed(app)
+                        viewModel.onItemLongPressed(item)
                     },
                     alignment = homeSettings.homeAlignment.toAlignment()
                 )

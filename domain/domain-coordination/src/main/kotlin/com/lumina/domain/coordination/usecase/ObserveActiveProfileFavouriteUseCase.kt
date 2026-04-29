@@ -45,6 +45,7 @@ class ObserveActiveProfileFavouritesUseCase @Inject constructor(
                                         id = shortcut.id,
                                         label = shortcut.label,
                                         type = shortcut.type,
+                                        userHandleNumber = shortcut.userHandleNumber,
                                         shortcutPackage = shortcut.shortcutPackage,
                                         shortcutId = shortcut.shortcutId,
                                         url = shortcut.url,

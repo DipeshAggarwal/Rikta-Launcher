@@ -13,6 +13,8 @@ import com.lumina.core.model.AppBasicData
 import com.lumina.core.model.AppCategory
 import com.lumina.core.model.AppInfo
 import com.lumina.core.model.AppShortcut
+import com.lumina.core.model.LauncherItem
+import com.lumina.core.model.ShortcutType
 import com.lumina.domain.coordination.LaunchResult
 import io.mockk.clearAllMocks
 import io.mockk.every
@@ -159,5 +161,54 @@ class PlatformIntentLauncherTest {
                 testUserHandle
             )
         }
+    }
+
+    @Test
+    fun launchProfileShortcut_with_package_and_id_starts_shortcut() = runTest {
+        val databaseShortcut = LauncherItem.Shortcut(
+            id = "shortcut_1",
+            label = "Shortcut id",
+            type = ShortcutType.APP_SHORTCUT,
+            userHandleNumber = 0L,
+            shortcutPackage = "com.example.app",
+            shortcutId = "shortcut_id",
+            url = null,
+            targetPackage = null,
+            favouriteOrder = 2
+        )
+        val result = intentLauncher.launchProfileShortcut(databaseShortcut)
+
+        assertTrue(result is LaunchResult.Success)
+        verify {
+            launcherApps.startShortcut(
+                databaseShortcut.shortcutPackage!!,
+                databaseShortcut.shortcutId!!,
+                null,
+                null,
+                any()
+
+            )
+        }
+    }
+
+    @Test
+    fun launchProfileShortcut_with_url_starts_shortcut() = runTest {
+        val databaseShortcut = LauncherItem.Shortcut(
+            id = "shortcut_1",
+            label = "Shortcut id",
+            type = ShortcutType.APP_SHORTCUT,
+            userHandleNumber = 0L,
+            shortcutPackage = null,
+            shortcutId = null,
+            url = "https://example.com",
+            targetPackage = "com.example.app",
+            favouriteOrder = 2
+        )
+        val result = intentLauncher.launchProfileShortcut(databaseShortcut)
+        assertTrue(result is LaunchResult.Success)
+
+        val intentSlot = slot<Intent>()
+        verify { context.startActivity(capture(intentSlot)) }
+        assertEquals(databaseShortcut.url, intentSlot.captured.dataString)
     }
 }

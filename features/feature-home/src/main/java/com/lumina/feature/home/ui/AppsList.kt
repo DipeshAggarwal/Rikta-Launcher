@@ -77,16 +77,16 @@ fun AppsList(
 
             items(
                 readyState.apps,
-                key = { "${it.packageName}_${it.componentClassName}_${it.userHandleNumber}" }
+                key = { "${it.info.packageName}_${it.info.componentClassName}_${it.info.userHandleNumber}" }
             ) { app ->
                 AppListItem(
-                    appName = app.displayName,
+                    appName = app.info.displayName,
                     screenTime = null,
                     showScreenTime = false,
                     onAppClick = { viewModel.onAppOpened(app) },
                     onAppLongClick = {
                         haptics.performHapticFeedback(HapticFeedbackType.LongPress)
-                        viewModel.onAppLongPressed(app)
+                        viewModel.onItemLongPressed(app)
                     },
                     alignment = appsListSettings.appsListAlignment.toAlignment()
                 )

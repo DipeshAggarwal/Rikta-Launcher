@@ -12,4 +12,5 @@
     <string name="add_countdown">Require Countdown to Open</string>
     <string name="remove_countdown">Remove Countdown</string>
     <string name="app_info">App Info</string>
+    <string name="delete_shortcut">Delete Shortcut</string>
 </resources>
