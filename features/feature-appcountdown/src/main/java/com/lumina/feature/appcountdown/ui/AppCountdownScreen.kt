@@ -13,7 +13,7 @@ fun AppCountdownScreen(
     onBack: () -> Unit,
     viewModel: CountdownSettingsViewModel
 ) {
-    val installedApps by viewModel.installedApps.collectAsState(emptyList())
+    val installedApps by viewModel.activeProfileApps.collectAsState(emptyList())
     val countdownPackages by viewModel.countdownAppsSet.collectAsState()
 
     AppPickerScreen(
@@ -23,9 +23,9 @@ fun AppCountdownScreen(
         onBackClicked = onBack,
         onAppClicked = { app, selected ->
             if (selected) {
-                viewModel.removeCountdownApp(app.packageName)
+                viewModel.removeCountdownApp(app)
             } else {
-                viewModel.addCountdownApp(app.packageName)
+                viewModel.addCountdownApp(app)
             }
         }
     )

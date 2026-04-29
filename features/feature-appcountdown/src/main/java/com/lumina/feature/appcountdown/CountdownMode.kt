@@ -12,7 +12,7 @@ enum class CountdownMode(
 
     companion object {
         fun fromValue(value: Int): CountdownMode? {
-            return entries.find { it.value == value } ?: null
+            return entries.find { it.value == value }
         }
     }
 }

@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.res.stringResource
+import com.lumina.core.model.LauncherItem
 import com.lumina.feature.appfavourite.AppFavouriteViewModel
 import com.lumina.feature.appfavourite.R
 import com.lumina.feature.apppicker.AppPickerScreen
@@ -18,7 +19,7 @@ fun AppFavouriteScreen(
     viewModel: AppFavouriteViewModel
 ) {
     // Collect the full list of installed apps and the current favourite set.
-    val installedApps by viewModel.installedApps.collectAsState(emptyList())
+    val installedApps by viewModel.activeProfileApps.collectAsState(emptyList())
     val favouritePackages by viewModel.favouritePackages.collectAsState()
 
     AppPickerScreen(
@@ -31,10 +32,16 @@ fun AppFavouriteScreen(
         },
         onBackClicked = onBack,
         onAppClicked = { app, selected ->
+            val launcherItem = LauncherItem.App(
+                info = app,
+                showCountdown = false,
+                recommendedUsageMinutes = null,
+                favouriteOrder = null
+            )
             if (selected) {
-                viewModel.removeFavouriteApp(app.packageName)
+                viewModel.removeFavourite(launcherItem)
             } else {
-                viewModel.addFavouriteApp(app.packageName)
+                viewModel.addFavourite(launcherItem)
             }
         }
     )
