@@ -17,7 +17,10 @@ private const val VERSION = 1
             onDelete = ForeignKey.CASCADE
         )
     ],
-    indices = [Index(value = ["packageName", "userHandleNumber"])]
+    indices = [
+        Index("profileId"),
+        Index(value = ["packageName", "userHandleNumber"])
+    ]
 )
 
 data class ProfileAppCrossRef(

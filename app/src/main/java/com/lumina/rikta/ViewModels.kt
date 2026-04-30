@@ -35,6 +35,7 @@ import com.lumina.core.common.AppTheme
 import com.lumina.core.common.FlowDefaults.WhileSubscribedTimeoutMillis
 import com.lumina.core.common.TextUtils.UNACCENT_REGEX
 import com.lumina.domain.apps.HiddenAppsRepository
+import com.lumina.domain.coordination.usecase.InitialiseDefaultProfileUseCase
 import com.lumina.domain.settings.LayoutSettings
 import com.lumina.domain.settings.SettingsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -64,6 +65,7 @@ import kotlinx.coroutines.flow.map
 class HomeScreenModel @Inject constructor(
     @ApplicationContext private val context: Context,
     private val hiddenAppsRepository: HiddenAppsRepository,
+    private val initialiseDefaultProfileUseCase: InitialiseDefaultProfileUseCase,
     private val settingsRepository: SettingsRepository
 ): ViewModel() {
 
@@ -251,6 +253,7 @@ class HomeScreenModel @Inject constructor(
     init {
         loadApps()
         viewModelScope.launch {
+            initialiseDefaultProfileUseCase()
             snapshotFlow { searchText.value }
                 .collect{ searchQuery.value = it }
         }

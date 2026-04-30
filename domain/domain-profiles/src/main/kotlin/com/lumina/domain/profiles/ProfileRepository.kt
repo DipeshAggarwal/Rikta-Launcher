@@ -22,8 +22,11 @@ interface ProfileRepository {
     suspend fun deleteProfile(profileId: String)
 
     fun getAppsForProfile(profileId: String): Flow<List<AppOverrideState>>
+    suspend fun setAppsForProfile(profileId: String, apps: List<AppBasicData>)
     suspend fun addAppToProfile(profileId: String, packageName: String, userHandleNumber: Long)
+    suspend fun addAppsToProfile(profileId: String, apps: List<AppBasicData>)
     suspend fun removeAppFromProfile(profileId: String, packageName: String, userHandleNumber: Long)
+    suspend fun removeAppsFromProfile(profileId: String, apps: List<AppBasicData>)
     suspend fun removeAppFromAllProfiles(packageName: String, userHandleNumber: Long)
     suspend fun removeAllUninstalledApps(installedKeys: Set<String>)
 

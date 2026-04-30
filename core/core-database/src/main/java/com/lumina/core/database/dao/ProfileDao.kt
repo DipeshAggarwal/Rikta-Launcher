@@ -52,8 +52,14 @@ interface ProfileDao {
     @Query("SELECT * FROM profile_app_mapping WHERE profileId = :profileId")
     fun getAppsForProfile(profileId: String): Flow<List<ProfileAppCrossRef>>
 
+    @Query("SELECT * FROM profile_app_mapping WHERE profileId = :profileId")
+    fun getAppsForProfileSnapshot(profileId: String): List<ProfileAppCrossRef>
+
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertAppMapping(mapping: ProfileAppCrossRef)
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertAppMappings(mapping: List<ProfileAppCrossRef>)
 
     @Query("SELECT * FROM profile_app_mapping " +
             "WHERE profileId = :profileId " +
@@ -63,11 +69,14 @@ interface ProfileDao {
     suspend fun getAppMapping(profileId: String, packageName: String, userHandleNumber: Long): ProfileAppCrossRef?
 
     @Query("DELETE FROM profile_app_mapping " +
-        "WHERE profileId = :profileId " +
-        "AND packageName = :packageName " +
-        "AND userHandleNumber = :userHandleNumber "
+            "WHERE profileId = :profileId " +
+            "AND packageName = :packageName " +
+            "AND userHandleNumber = :userHandleNumber "
     )
     suspend fun deleteAppMapping(profileId: String, packageName: String, userHandleNumber: Long)
+
+    @Delete
+    suspend fun deleteAppMappings(mapping: List<ProfileAppCrossRef>)
 
     @Query("DELETE FROM profile_app_mapping " +
             "WHERE packageName = :packageName " +

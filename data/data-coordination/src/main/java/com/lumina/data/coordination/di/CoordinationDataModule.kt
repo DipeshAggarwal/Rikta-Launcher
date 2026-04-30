@@ -2,10 +2,12 @@ package com.lumina.data.coordination.di
 
 import com.lumina.data.coordination.PlatformAppLaunchCoordinator
 import com.lumina.data.coordination.PlatformAppShortcutRepository
+import com.lumina.data.coordination.PlatformDeviceUserProvider
 import com.lumina.data.coordination.PlatformIntentLauncher
 import com.lumina.data.coordination.PlatformStatusBarController
 import com.lumina.domain.apps.AppShortcutRepository
 import com.lumina.domain.coordination.AppLaunchCoordinator
+import com.lumina.domain.coordination.DeviceUserProvider
 import com.lumina.domain.coordination.IntentLauncher
 import com.lumina.domain.coordination.StatusBarController
 import dagger.Binds
@@ -39,4 +41,10 @@ abstract class CoordinationDataModule {
     abstract fun bindsAppLaunchCoordinator(
         platformAppLaunchCoordinator: PlatformAppLaunchCoordinator
     ): AppLaunchCoordinator
+
+    @Binds
+    @Singleton
+    abstract fun bindsDeviceUserProvider(
+        platformDeviceUserProvider: PlatformDeviceUserProvider
+    ): DeviceUserProvider
 }

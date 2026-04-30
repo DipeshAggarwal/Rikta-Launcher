@@ -1,5 +1,7 @@
 package com.lumina.data.profiles
 
+import androidx.room.withTransaction
+import com.lumina.core.database.LuminaDatabase
 import com.lumina.core.database.dao.ProfileDao
 import com.lumina.core.database.entity.NotificationWhitelistEntity
 import com.lumina.core.database.entity.ProfileAppCrossRef
@@ -9,6 +11,8 @@ import com.lumina.core.logging.Logger
 import com.lumina.core.model.AppBasicData
 import com.lumina.domain.profiles.ProfileRepository
 import com.lumina.core.model.AppOverrideState
+import com.lumina.core.model.componentKey
+import com.lumina.core.model.getAppKey
 import com.lumina.domain.profiles.model.LauncherProfile
 import com.lumina.domain.profiles.model.TriggerCondition
 import jakarta.inject.Inject
@@ -24,6 +28,7 @@ import kotlin.text.split
 private const val DAYS_DELIMITER = ","
 
 class RoomProfileRepository @Inject constructor(
+    private val database: LuminaDatabase,
     private val profileDao: ProfileDao,
     private val profileDataStore: ProfileDataStore,
     private val logger: Logger
@@ -209,6 +214,25 @@ class RoomProfileRepository @Inject constructor(
         }
     }
 
+    override suspend fun setAppsForProfile(
+        profileId: String,
+        apps: List<AppBasicData>
+    ) = database.withTransaction {
+        val currentMappings = profileDao.getAppsForProfileSnapshot(profileId)
+        val currentKeys = currentMappings.map { getAppKey(it.packageName, it.userHandleNumber) }.toSet()
+        val newApps = apps.map { it.componentKey }.toSet()
+
+        val appsToAdd = apps.filter { it.componentKey !in currentKeys }
+        val appsToRemove = currentMappings.filter { getAppKey(it.packageName, it.userHandleNumber) !in newApps }
+
+        if (appsToRemove.isNotEmpty()) {
+            profileDao.deleteAppMappings(appsToRemove)
+        }
+        if (appsToAdd.isNotEmpty()) {
+            addAppsToProfile(profileId, appsToAdd)
+        }
+    }
+
     override suspend fun addAppToProfile(
         profileId: String,
         packageName: String,
@@ -217,12 +241,32 @@ class RoomProfileRepository @Inject constructor(
         profileDao.insertAppMapping(ProfileAppCrossRef(profileId, packageName, userHandleNumber))
     }
 
+    override suspend fun addAppsToProfile(
+        profileId: String,
+        apps: List<AppBasicData>
+    ) {
+        val mappings = apps.map { app ->
+            ProfileAppCrossRef(profileId, app.packageName, app.userHandleNumber)
+        }
+        profileDao.insertAppMappings(mappings)
+    }
+
     override suspend fun removeAppFromProfile(
         profileId: String,
         packageName: String,
         userHandleNumber: Long
     ) {
         profileDao.deleteAppMapping(profileId, packageName, userHandleNumber)
+    }
+
+    override suspend fun removeAppsFromProfile(
+        profileId: String,
+        apps: List<AppBasicData>
+    ) {
+        val mappings = apps.map { app ->
+            ProfileAppCrossRef(profileId, app.packageName, app.userHandleNumber)
+        }
+        profileDao.deleteAppMappings(mappings)
     }
 
     override suspend fun removeAppFromAllProfiles(packageName: String, userHandleNumber: Long) {
@@ -246,7 +290,7 @@ class RoomProfileRepository @Inject constructor(
         packageName: String,
         userHandleNumber: Long,
         minutes: Int?
-    ) {
+    ) = database.withTransaction {
         profileDao.insertAppMapping(ProfileAppCrossRef(profileId, packageName, userHandleNumber))
         profileDao.updateAppUsageMinutes(profileId, packageName, userHandleNumber, minutes)
     }
@@ -264,7 +308,7 @@ class RoomProfileRepository @Inject constructor(
         packageName: String,
         userHandleNumber: Long,
         show: Boolean
-    ) {
+    ) = database.withTransaction {
         profileDao.insertAppMapping(ProfileAppCrossRef(profileId, packageName, userHandleNumber))
         profileDao.updateAppCountdown(profileId, packageName, userHandleNumber, show)
     }

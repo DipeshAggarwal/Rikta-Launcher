@@ -8,6 +8,7 @@ import com.lumina.core.model.AppProfile
 import com.lumina.core.model.AppShortcut
 import com.lumina.core.model.FavouriteItemType
 import com.lumina.core.model.LauncherItem
+import com.lumina.core.model.componentKey
 import com.lumina.domain.apps.AppShortcutRepository
 import com.lumina.domain.apps.HiddenAppsRepository
 import com.lumina.domain.search.AppSearchEngine
@@ -38,6 +39,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -314,9 +316,10 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             val activeProfile = profileRepository.activeProfile.firstOrNull() ?: return@launch
             val (itemId, itemType) = when (item) {
-                is LauncherItem.App -> item.info.packageName to FavouriteItemType.APP
+                is LauncherItem.App -> item.info.componentKey to FavouriteItemType.APP
                 is LauncherItem.Shortcut -> item.id to FavouriteItemType.SHORTCUT
             }
+
             profileFavouriteRepository.toggle(
                 profileId = activeProfile.id,
                 itemId = itemId,
