@@ -73,7 +73,7 @@ import androidx.navigation.compose.rememberNavController
 import com.lumina.rikta.BuildConfig
 import com.lumina.rikta.HomeScreenModel
 import com.lumina.rikta.R
-import com.lumina.feature.apppicker.AppPickerScreen
+import com.lumina.core.ui.screens.AppPickerScreen
 import com.lumina.rikta.ui.composables.SponsorBox
 import com.lumina.rikta.ui.composables.WeatherAppPicker
 import com.lumina.core.ui.theme.CardContainerColor

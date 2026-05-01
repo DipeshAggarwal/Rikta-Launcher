@@ -25,6 +25,4 @@ dependencies {
     implementation(project(":domain:domain-search"))
     implementation(project(":domain:domain-settings"))
     implementation(project(":domain:domain-shortcut"))
-
-    implementation(project(":features:feature-apppicker"))
 }

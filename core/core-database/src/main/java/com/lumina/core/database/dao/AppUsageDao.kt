@@ -7,7 +7,6 @@ import androidx.room.Query
 import com.lumina.core.database.entity.AppUsageSessionEntity
 import com.lumina.core.database.entity.ProfileSwitchLogEntity
 import com.lumina.core.database.models.AppSessionStatesRow
-import com.lumina.core.database.models.AppUsageCategoryRow
 import com.lumina.core.database.models.AppUsageHourlyRow
 import com.lumina.core.database.models.AppUsageStatsRow
 import kotlinx.coroutines.flow.Flow

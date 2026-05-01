@@ -1,7 +1,5 @@
 package com.lumina.domain.usage
 
-import com.lumina.core.model.AppBasicData
-import kotlinx.coroutines.flow.SharedFlow
 
 interface AppUsageTracker {
     fun onAppForegrounded(

@@ -1,7 +1,6 @@
 package com.lumina.feature.settings
 
 import androidx.annotation.StringRes
-import com.lumina.feature.settings.R
 
 enum class SpacerMode(
     @param:StringRes val labelRes: Int,

@@ -37,7 +37,7 @@ fun rememberCurrentTimeParts(twelveHourDisplay: Boolean): Triple<Int, Int, Boole
             timeParts = getCurrentTimeParts(twelveHourDisplay)
 
             val now = LocalTime.now()
-            // The nano second subtraction is to avoid drifting in extreme cases.
+            // The nanosecond subtraction is to avoid drifting in extreme cases.
             val millisUntilNextMinute = (60 - now.second) * 1000L - (now.nano / 1_000_000L)
 
             // Ensure it is never in negative.

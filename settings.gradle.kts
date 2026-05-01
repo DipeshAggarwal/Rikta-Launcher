@@ -78,7 +78,6 @@ include(":data:data-usage")
 
 // features module
 include(":features:feature-apphiding")
-include(":features:feature-apppicker")
 include(":features:feature-appfavourite")
 include(":features:feature-appcountdown")
 include(":features:feature-home")

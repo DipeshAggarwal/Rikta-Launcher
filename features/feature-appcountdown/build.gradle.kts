@@ -23,6 +23,4 @@ dependencies {
     implementation(project(":domain:domain-countdown"))
     implementation(project(":domain:domain-profiles"))
     implementation(project(":domain:domain-settings"))
-
-    implementation(project(":features:feature-apppicker"))
 }

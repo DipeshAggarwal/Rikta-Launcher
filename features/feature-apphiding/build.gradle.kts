@@ -18,6 +18,4 @@ dependencies {
 
     implementation(project(":domain:domain-apps"))
     implementation(project(":domain:domain-settings"))
-
-    implementation(project(":features:feature-apppicker"))
 }

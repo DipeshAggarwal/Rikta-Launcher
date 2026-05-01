@@ -23,6 +23,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.lumina.rikta.MainAppViewModel
@@ -68,7 +69,10 @@ fun calculateOveragePercentage(screenTime: Long): Int {
  */
 @Composable
 fun ScreenTimeDashboard(context: Context, mainAppModel: MainAppViewModel) {
-    val today = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+    val locale = LocalLocale.current.platformLocale
+    val today = remember(locale) {
+        SimpleDateFormat("yyyy-MM-dd", locale).format(Date())
+    }
 
     // Retrieves data in in a subroutine
     val todayUsage = remember { mutableLongStateOf(0L) }

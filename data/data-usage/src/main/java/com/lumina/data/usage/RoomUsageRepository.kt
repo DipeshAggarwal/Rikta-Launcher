@@ -5,12 +5,10 @@ import com.lumina.core.model.AppBasicData
 import com.lumina.domain.usage.UsageRepository
 import com.lumina.domain.usage.model.AppUsageHourlyBreakdown
 import com.lumina.domain.usage.model.AppUsageSummary
-import com.lumina.domain.usage.model.CategoryUsageSummary
 import com.lumina.domain.usage.model.UsageTimeRange
 import jakarta.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import java.util.Calendar
 
 class RoomUsageRepository @Inject constructor(
     private val appUsageDao: AppUsageDao

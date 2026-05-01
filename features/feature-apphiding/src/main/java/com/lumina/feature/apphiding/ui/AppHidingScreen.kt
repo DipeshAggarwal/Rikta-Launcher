@@ -6,7 +6,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.res.stringResource
 import com.lumina.feature.apphiding.R
 import com.lumina.feature.apphiding.AppHidingViewModel
-import com.lumina.feature.apppicker.AppPickerScreen
+import com.lumina.core.ui.screens.AppPickerScreen
 
 /**
  * Bulk selection screen for hiding apps.

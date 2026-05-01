@@ -75,6 +75,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.stringResource
@@ -254,8 +255,11 @@ fun Date(
     small: Boolean
 ) {
     val context = LocalContext.current
+    val locale = LocalLocale.current.platformLocale
 
-    val dateFormat = SimpleDateFormat("EEE d MMM", Locale.getDefault())
+    val dateFormat = remember(locale) {
+        SimpleDateFormat("EEE d MMM", locale)
+    }
 
     fun getCurrentDate(): String {
         return dateFormat.format(java.util.Date())

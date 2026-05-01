@@ -7,7 +7,7 @@ plugins {
     alias(libs.plugins.ksp)
 }
 
-val baseVersionCode = "0.3.0.0430"
+val baseVersionCode = "0.4.0.0501"
 
 android {
     namespace = "com.lumina.rikta"
@@ -143,7 +143,6 @@ dependencies {
     implementation(project(":domain:domain-usage"))
 
     implementation(project(":features:feature-apphiding"))
-    implementation(project(":features:feature-apppicker"))
     implementation(project(":features:feature-appfavourite"))
     implementation(project(":features:feature-appcountdown"))
     implementation(project(":features:feature-home"))

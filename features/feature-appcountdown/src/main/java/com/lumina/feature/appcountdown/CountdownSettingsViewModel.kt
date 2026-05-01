@@ -2,13 +2,10 @@ package com.lumina.feature.appcountdown
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.lumina.core.common.FlowDefaults.WhileSubscribedTimeoutMillis
 import com.lumina.core.model.AppInfo
 import com.lumina.core.model.componentKey
-import com.lumina.domain.apps.InstalledAppsRepository
 import com.lumina.domain.coordination.usecase.ObserveActiveProfileAppsUseCase
 import com.lumina.domain.coordination.usecase.ObserveActiveProfileCountdownAppsUseCase
-import com.lumina.domain.countdown.CountdownAppsRepository
 import com.lumina.domain.profiles.ProfileRepository
 import com.lumina.domain.settings.CountdownSettings
 import com.lumina.domain.settings.SettingsRepository
@@ -16,7 +13,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn

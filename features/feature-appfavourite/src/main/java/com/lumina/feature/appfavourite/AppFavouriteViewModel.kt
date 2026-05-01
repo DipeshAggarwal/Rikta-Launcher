@@ -2,6 +2,7 @@ package com.lumina.feature.appfavourite
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.lumina.core.logging.Logger
 import com.lumina.core.model.AppInfo
 import com.lumina.core.model.FavouriteItemType
 import com.lumina.core.model.LauncherItem
@@ -24,8 +25,11 @@ class AppFavouriteViewModel @Inject constructor(
     private val profileRepository: ProfileRepository,
     private val profileFavouriteRepository: ProfileFavouriteRepository,
     observeActiveProfileApps: ObserveActiveProfileAppsUseCase,
-    observeActiveProfileFavourites: ObserveActiveProfileFavouritesUseCase
+    observeActiveProfileFavourites: ObserveActiveProfileFavouritesUseCase,
+    private val logger: Logger
 ) : ViewModel() {
+    private val TAG = this::class.java.simpleName
+
     // .Eagerly is used so that startup happens at creation time.
     // This improves animation and loading experience.
     val activeProfileApps: StateFlow<List<AppInfo>> = observeActiveProfileApps()
@@ -47,34 +51,32 @@ class AppFavouriteViewModel @Inject constructor(
         }
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
-    fun addFavourite(item: LauncherItem) {
+    private fun toggleFavourite(itemId: String, itemType: FavouriteItemType) {
         viewModelScope.launch {
             val activeProfile = profileRepository.activeProfile.firstOrNull() ?: return@launch
-            val (itemId, itemType) = when (item) {
-                is LauncherItem.App -> item.info.packageName to FavouriteItemType.APP
-                is LauncherItem.Shortcut -> item.id to FavouriteItemType.SHORTCUT
-            }
             profileFavouriteRepository.toggle(
                 profileId = activeProfile.id,
                 itemId = itemId,
                 itemType = itemType
             )
         }
+
     }
 
-    fun removeFavourite(item: LauncherItem) {
-        viewModelScope.launch {
-            val activeProfile = profileRepository.activeProfile.firstOrNull() ?: return@launch
-            val (itemId, itemType) = when (item) {
-                is LauncherItem.App -> item.info.packageName to FavouriteItemType.APP
-                is LauncherItem.Shortcut -> item.id to FavouriteItemType.SHORTCUT
-            }
-            profileFavouriteRepository.toggle(
-                profileId = activeProfile.id,
-                itemId = itemId,
-                itemType = itemType
-            )
-        }
+    fun addFavouriteApp(app: AppInfo) {
+        toggleFavourite(app.componentKey, FavouriteItemType.APP)
+    }
+
+    fun removeFavouriteApp(app: AppInfo) {
+        toggleFavourite(app.componentKey, FavouriteItemType.APP)
+    }
+
+    fun addFavouriteShortcut(componentKey: String) {
+        toggleFavourite(componentKey, FavouriteItemType.SHORTCUT)
+    }
+
+    fun removeFavouriteShortcut(componentKey: String) {
+        toggleFavourite(componentKey, FavouriteItemType.SHORTCUT)
     }
 
     fun reorderFavouriteApps(fromIndex: Int, toIndex: Int) {
@@ -85,7 +87,7 @@ class AppFavouriteViewModel @Inject constructor(
             if (fromIndex in currentFavourites.indices && toIndex in currentFavourites.indices) {
                 val item = currentFavourites[fromIndex]
                 val (itemId, itemType) = when (item) {
-                    is LauncherItem.App -> item.info.packageName to FavouriteItemType.APP
+                    is LauncherItem.App -> item.info.componentKey to FavouriteItemType.APP
                     is LauncherItem.Shortcut -> item.id to FavouriteItemType.SHORTCUT
                 }
 

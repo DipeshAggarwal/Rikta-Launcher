@@ -1,7 +1,5 @@
 package com.lumina.feature.system.triggers
 
-import android.Manifest
-import androidx.annotation.RequiresPermission
 import com.lumina.core.android.di.ApplicationScope
 import com.lumina.core.logging.Logger
 import com.lumina.core.model.LogicalOperator
@@ -11,7 +9,6 @@ import com.lumina.domain.profiles.model.TriggerCondition
 import com.lumina.feature.system.triggers.monitor.BluetoothTriggerMonitor
 import com.lumina.feature.system.triggers.monitor.LocationTriggerMonitor
 import com.lumina.feature.system.triggers.monitor.TimeTriggerMonitor
-import com.lumina.feature.system.triggers.monitor.TimeTriggerScheduler
 import com.lumina.feature.system.triggers.monitor.WifiTriggerMonitor
 import jakarta.inject.Inject
 import jakarta.inject.Singleton

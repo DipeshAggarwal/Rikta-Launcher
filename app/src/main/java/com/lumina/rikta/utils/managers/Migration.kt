@@ -76,17 +76,6 @@ class Migration(private val context: Context) {
     }
 
     private fun deleteOldPrefsFile(name: String) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            context.deleteSharedPreferences(name)
-        } else {
-            // Manual deletion for older versions
-            try {
-                val dir = java.io.File(context.applicationInfo.dataDir, "shared_prefs")
-                val file = java.io.File(dir, "$name.xml")
-                if (file.exists()) file.delete()
-            } catch (e: Exception) {
-                Log.e(TAG, "Failed to delete old prefs file: $name", e)
-            }
-        }
+        context.deleteSharedPreferences(name)
     }
 }

@@ -72,7 +72,7 @@ import com.lumina.rikta.BuildConfig
 import com.lumina.rikta.HomeScreenModel
 import com.lumina.rikta.MainAppViewModel
 import com.lumina.rikta.R
-import com.lumina.feature.apppicker.AppPickerScreen
+import com.lumina.core.ui.screens.AppPickerScreen
 import com.lumina.core.ui.theme.BackgroundColor
 import com.lumina.core.ui.theme.CardContainerColor
 import com.lumina.core.ui.theme.primaryContentColor

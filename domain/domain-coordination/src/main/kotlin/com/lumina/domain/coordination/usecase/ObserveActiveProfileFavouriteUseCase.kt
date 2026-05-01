@@ -2,7 +2,6 @@ package com.lumina.domain.coordination.usecase
 
 import com.lumina.core.model.FavouriteItemType
 import com.lumina.core.model.LauncherItem
-import com.lumina.domain.apps.InstalledAppsRepository
 import com.lumina.domain.profiles.ProfileFavouriteRepository
 import com.lumina.domain.profiles.ProfileRepository
 import com.lumina.domain.shortcut.ShortcutRepository

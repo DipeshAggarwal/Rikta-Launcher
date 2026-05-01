@@ -1,4 +1,4 @@
-package com.lumina.feature.apppicker
+package com.lumina.core.ui.screens
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
@@ -39,6 +39,8 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.lumina.core.model.AppInfo
+import com.lumina.core.model.componentKey
+import com.lumina.core.ui.R
 import com.lumina.core.ui.theme.ContentColor
 import com.lumina.core.ui.components.settings.SettingsButton
 import com.lumina.core.ui.components.settings.SettingsComponentsDefaults.TEXT_WEIGHT
@@ -55,18 +57,18 @@ fun AppPickerScreen (
     title: String,
     onBackClicked: () -> Unit,
     onAppClicked: (app: AppInfo, selected: Boolean) -> Unit,
-    reorderable: Boolean = false,
     hideTitle: Boolean = false,
     hideBack: Boolean = false,
     titleColor: Color = ContentColor,
     topPadding: Boolean = true,
+    reorderable: Boolean = false,
     onAppMoved: (fromIndex: Int, toIndex: Int) -> Unit = { _, _ -> }
 ) {
     // A buffer. Only needed for smooth animation.
     val localOrderSelection = remember { mutableStateListOf<String>() }
     val lazyListState = rememberLazyListState()
 
-    var draggedPackageName by remember { mutableStateOf<String?>(null) }
+    var draggedComponentKey by remember { mutableStateOf<String?>(null) }
     var dragOffset by remember { mutableFloatStateOf(0f) }
     var measuredItemHeight by remember { mutableIntStateOf(0) }
 
@@ -84,11 +86,11 @@ fun AppPickerScreen (
     val combinedItems by remember(apps) {
         derivedStateOf {
             val items = mutableListOf<ListItem>()
-            val appsMap = apps.associateBy { it.packageName }
+            val appsMap = apps.associateBy { it.componentKey }
 
             // All favourite Apps
-            localOrderSelection.forEach { packageName ->
-                appsMap[packageName]?.let { items.add(ListItem.App(it, true)) }
+            localOrderSelection.forEach { componentKey ->
+                appsMap[componentKey]?.let { items.add(ListItem.App(it, true)) }
             }
 
             if (localOrderSelection.isNotEmpty())  items.add(ListItem.Spacer)
@@ -103,8 +105,8 @@ fun AppPickerScreen (
 
     val firstSelectedPackage by remember { derivedStateOf { localOrderSelection.firstOrNull() } }
     val lastSelectedPackage by remember { derivedStateOf { localOrderSelection.lastOrNull() } }
-    val firstUnselectedPackage by remember(apps) { derivedStateOf { apps.firstOrNull()?.packageName } }
-    val lastUnselectedPackage by remember(apps) { derivedStateOf { apps.lastOrNull()?.packageName } }
+    val firstUnselectedPackage by remember(apps) { derivedStateOf { apps.firstOrNull()?.componentKey } }
+    val lastUnselectedPackage by remember(apps) { derivedStateOf { apps.lastOrNull()?.componentKey } }
 
     LazyColumn(
         state = lazyListState,
@@ -128,7 +130,7 @@ fun AppPickerScreen (
             items = combinedItems,
             key = { item ->
                 when (item) {
-                    is ListItem.App -> "${if (item.selected) "selected" else "available"}_${item.app.packageName}"
+                    is ListItem.App -> "${if (item.selected) "selected" else "available"}_${item.app.componentKey}"
                     ListItem.Spacer -> "spacer"
                 }
             }
@@ -136,20 +138,20 @@ fun AppPickerScreen (
             when (item) {
                 is ListItem.App -> {
                     val isTopOfGroup = if (item.selected) {
-                        firstSelectedPackage == item.app.packageName
+                        firstSelectedPackage == item.app.componentKey
                     } else {
-                        firstUnselectedPackage == item.app.packageName
+                        firstUnselectedPackage == item.app.componentKey
                     }
 
                     val isBottomOfGroup = if (item.selected) {
-                        lastSelectedPackage == item.app.packageName
+                        lastSelectedPackage == item.app.componentKey
                     } else {
-                        lastUnselectedPackage == item.app.packageName
+                        lastUnselectedPackage == item.app.componentKey
                     }
 
                     if (item.selected && reorderable) {
-                        val isDragging = draggedPackageName == item.app.packageName
-                        val currentIndex = localOrderSelection.indexOf(item.app.packageName)
+                        val isDragging = draggedComponentKey == item.app.componentKey
+                        val currentIndex = localOrderSelection.indexOf(item.app.componentKey)
                         val maxDragUp = -currentIndex * measuredItemHeight.toFloat()
                         val maxDragDown = (localOrderSelection.size - 1 - currentIndex) * measuredItemHeight.toFloat()
 
@@ -185,18 +187,18 @@ fun AppPickerScreen (
                             Box(
                                 modifier = Modifier
                                     .padding(horizontal = DragHandlePadding)
-                                    .pointerInput(item.app.packageName) {
+                                    .pointerInput(item.app.componentKey) {
                                         detectVerticalDragGestures(
                                             onDragStart = {
-                                                draggedPackageName = item.app.packageName
+                                                draggedComponentKey = item.app.componentKey
                                                 dragOffset = 0f
                                             },
                                             onDragEnd = {
-                                                draggedPackageName = null
+                                                draggedComponentKey = null
                                                 dragOffset = 0f
                                             },
                                             onDragCancel = {
-                                                draggedPackageName = null
+                                                draggedComponentKey = null
                                                 dragOffset = 0f
                                             }
                                         ) { change, dragAmount ->
@@ -206,7 +208,7 @@ fun AppPickerScreen (
                                             val itemHeight = measuredItemHeight.toFloat()
                                             val threshold = itemHeight / 2
 
-                                            val currentPkg = draggedPackageName ?: return@detectVerticalDragGestures
+                                            val currentPkg = draggedComponentKey ?: return@detectVerticalDragGestures
 
                                             val fromIndex = localOrderSelection.indexOf(currentPkg)
                                             if (fromIndex == -1) return@detectVerticalDragGestures
@@ -244,7 +246,7 @@ fun AppPickerScreen (
                             },
                             isTopOfGroup = isTopOfGroup,
                             isBottomOfGroup = isBottomOfGroup,
-                            isDisabled = !item.selected && localOrderSelection.contains(item.app.packageName),
+                            isDisabled = !item.selected && localOrderSelection.contains(item.app.componentKey),
                             modifier = Modifier.animateItem()
                         )
                     }

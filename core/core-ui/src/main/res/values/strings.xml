@@ -87,4 +87,5 @@
     <string name="category_uncategorised">Uncategorised</string>
     <string name="category_custom">Custom</string>
 
+    <string name="drag_to_reorder">"Drag to reorder"</string>
 </resources>

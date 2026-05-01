@@ -2,7 +2,6 @@ package com.lumina.domain.usage
 
 import com.lumina.domain.usage.model.AppUsageHourlyBreakdown
 import com.lumina.domain.usage.model.AppUsageSummary
-import com.lumina.domain.usage.model.CategoryUsageSummary
 import com.lumina.domain.usage.model.UsageTimeRange
 import kotlinx.coroutines.flow.Flow
 

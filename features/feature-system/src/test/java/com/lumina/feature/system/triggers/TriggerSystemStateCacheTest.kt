@@ -1,6 +1,5 @@
 package com.lumina.feature.system.triggers
 
-import kotlinx.coroutines.flow.first
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull

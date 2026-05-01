@@ -29,36 +29,36 @@ data class ThemeSeed(
     val onPrimaryContainer get() = computeOnPrimaryContainer()
 
     fun computeBackground(): Color {
-        if (isAmoled) {
-            return palette.n1.tone(TonalToken.TONE_AMOLED_BG).toComposeColor()
+        return if (isAmoled) {
+            palette.n1.tone(TonalToken.TONE_AMOLED_BG).toComposeColor()
         } else if (isDark) {
-            return palette.n1.tone(TonalToken.TONE_DARK_BG).toComposeColor()
+            palette.n1.tone(TonalToken.TONE_DARK_BG).toComposeColor()
         } else {
-            return palette.n1.tone(TonalToken.TONE_LIGHT_BG).toComposeColor()
+            palette.n1.tone(TonalToken.TONE_LIGHT_BG).toComposeColor()
         }
     }
 
     fun computePrimary(): Color {
-        if (isDark) {
-            return palette.a1.tone(TonalToken.TONE_DARK_PRIMARY).toComposeColor()
+        return if (isDark) {
+            palette.a1.tone(TonalToken.TONE_DARK_PRIMARY).toComposeColor()
         } else {
-            return palette.a1.tone(TonalToken.TONE_LIGHT_PRIMARY).toComposeColor()
+            palette.a1.tone(TonalToken.TONE_LIGHT_PRIMARY).toComposeColor()
         }
     }
 
     fun computeOnPrimary(): Color {
-        if (isDark) {
-            return palette.a1.tone(TonalToken.TONE_DARK_ON_PRIMARY).toComposeColor()
+        return if (isDark) {
+            palette.a1.tone(TonalToken.TONE_DARK_ON_PRIMARY).toComposeColor()
         } else {
-            return palette.a1.tone(TonalToken.TONE_LIGHT_ON_PRIMARY).toComposeColor()
+            palette.a1.tone(TonalToken.TONE_LIGHT_ON_PRIMARY).toComposeColor()
         }
     }
 
     fun computeOnPrimaryContainer(): Color {
-        if (isDark) {
-            return palette.a1.tone(TonalToken.TONE_DARK_ON_PRIMARY_CONT).toComposeColor()
+        return if (isDark) {
+            palette.a1.tone(TonalToken.TONE_DARK_ON_PRIMARY_CONT).toComposeColor()
         } else {
-            return palette.a1.tone(TonalToken.TONE_LIGHT_ON_PRIMARY_CONT).toComposeColor()
+            palette.a1.tone(TonalToken.TONE_LIGHT_ON_PRIMARY_CONT).toComposeColor()
         }
     }
 }

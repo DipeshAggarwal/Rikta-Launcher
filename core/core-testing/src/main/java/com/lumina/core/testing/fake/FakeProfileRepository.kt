@@ -47,7 +47,7 @@ class FakeProfileRepository : ProfileRepository {
     }
 
     override fun getProfileById(profileId: String): Flow<LauncherProfile?> {
-        return profiles.map { it.find { it.id == profileId } }
+        return profiles.map { profile -> profile.find { it.id == profileId } }
     }
 
     override suspend fun isActivationKeyUnique(

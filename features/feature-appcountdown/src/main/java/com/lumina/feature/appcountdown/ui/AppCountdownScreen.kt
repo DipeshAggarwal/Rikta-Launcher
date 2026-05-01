@@ -6,7 +6,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.res.stringResource
 import com.lumina.feature.appcountdown.CountdownSettingsViewModel
 import com.lumina.feature.appcountdown.R
-import com.lumina.feature.apppicker.AppPickerScreen
+import com.lumina.core.ui.screens.AppPickerScreen
 
 @Composable
 fun AppCountdownScreen(

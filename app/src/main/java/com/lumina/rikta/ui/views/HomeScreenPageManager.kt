@@ -65,7 +65,7 @@ fun HomeScreenPageManager(
 
     val coroutineScope = rememberCoroutineScope()
 
-    // Control if the user can go back or not depending the page
+    // Control if the user can go back or not depending on the page
     BackHandler(enabled = true) {
         coroutineScope.launch {
             homeScreenModel.animatedGoToMainPage()

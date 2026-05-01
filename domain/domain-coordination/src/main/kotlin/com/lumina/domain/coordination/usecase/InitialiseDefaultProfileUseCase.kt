@@ -47,7 +47,7 @@ class InitialiseDefaultProfileUseCase @Inject constructor(
             )
 
             profileRepository.saveProfile(newDefaultProfile)
-            val allApps = installedAppsRepository.apps.first() { it.isNotEmpty() }
+            val allApps = installedAppsRepository.apps.first { it.isNotEmpty() }
             val defaultUserApps = allApps
                 .filter { it.userHandleNumber == defaultUserHandle }
                 .map { AppBasicData(it.packageName, it.userHandleNumber) }

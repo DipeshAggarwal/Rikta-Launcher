@@ -153,7 +153,9 @@ class LuminaAccessibilityService : AccessibilityService() {
                         usageEnforcementEngine.startMonitoring(
                             scope, packageName, getUserHandleNumber(), currentProfileId
                         ) {
-                            // stuff
+                            // TODO: Lockout screen with the ability for user to add minutes to their
+                            // app recommended usage time.
+                            performGlobalAction(GLOBAL_ACTION_HOME)
                         }
                     }
                 }

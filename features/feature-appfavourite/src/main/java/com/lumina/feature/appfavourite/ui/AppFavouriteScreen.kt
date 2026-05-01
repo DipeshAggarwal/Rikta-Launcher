@@ -4,10 +4,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.res.stringResource
-import com.lumina.core.model.LauncherItem
 import com.lumina.feature.appfavourite.AppFavouriteViewModel
 import com.lumina.feature.appfavourite.R
-import com.lumina.feature.apppicker.AppPickerScreen
+import com.lumina.core.ui.screens.AppPickerScreen
 
 /**
  * Bulk selection screen for favourites apps.
@@ -26,23 +25,17 @@ fun AppFavouriteScreen(
         apps = installedApps,
         preSelectedApps = favouritePackages,
         title = stringResource(R.string.manage_favourite_apps_title),
+        onBackClicked = onBack,
+        onAppClicked = { app, selected ->
+            if (selected) {
+                viewModel.removeFavouriteApp(app)
+            } else {
+                viewModel.addFavouriteApp(app)
+            }
+        },
         reorderable = true,
         onAppMoved = { fromIndex, toIndex ->
             viewModel.reorderFavouriteApps(fromIndex, toIndex)
         },
-        onBackClicked = onBack,
-        onAppClicked = { app, selected ->
-            val launcherItem = LauncherItem.App(
-                info = app,
-                showCountdown = false,
-                recommendedUsageMinutes = null,
-                favouriteOrder = null
-            )
-            if (selected) {
-                viewModel.removeFavourite(launcherItem)
-            } else {
-                viewModel.addFavourite(launcherItem)
-            }
-        }
     )
 }

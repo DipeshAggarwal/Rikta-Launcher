@@ -12,7 +12,7 @@ Feature requests can also be submitted via the GitHub Issues tab. Check first if
 
 ## Suggesting UI/UX Improvements
 
-Suggestions related to UI or UX improvements can also be submitted through Github Issues.
+Suggestions related to UI or UX improvements can also be submitted through GitHub Issues.
 
 ## Thank You
 
