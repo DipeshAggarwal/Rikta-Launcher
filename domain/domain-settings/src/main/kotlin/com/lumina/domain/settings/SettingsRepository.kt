@@ -8,6 +8,7 @@ interface SettingsRepository {
     val searchSettings: Flow<SearchSettings>
     val countdownSettings: Flow<CountdownSettings>
     val layoutSettings: Flow<LayoutSettings>
+    val allSettings: Flow<LauncherSettings>
 
     suspend fun updateHomeSettings(update: HomeSettings.() -> HomeSettings)
     suspend fun updateAppListSettings(update: AppListSettings.() -> AppListSettings)

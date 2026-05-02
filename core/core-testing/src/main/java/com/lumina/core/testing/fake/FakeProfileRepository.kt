@@ -58,7 +58,7 @@ class FakeProfileRepository : ProfileRepository {
     }
 
     override suspend fun findProfileByKey(key: String): LauncherProfile? {
-        return profiles.value.find { it.activationKey == key }
+        return profiles.value.find { it.settings.activationKey == key }
     }
 
     override suspend fun saveProfile(profile: LauncherProfile) {
@@ -77,16 +77,31 @@ class FakeProfileRepository : ProfileRepository {
         return MutableStateFlow(emptyList())
     }
 
+    override suspend fun setAppsForProfile(
+        profileId: String,
+        apps: List<AppBasicData>
+    ) { }
+
     override suspend fun addAppToProfile(
         profileId: String,
         packageName: String,
         userHandleNumber: Long
     ) { }
 
+    override suspend fun addAppsToProfile(
+        profileId: String,
+        apps: List<AppBasicData>
+    ) { }
+
     override suspend fun removeAppFromProfile(
         profileId: String,
         packageName: String,
         userHandleNumber: Long
+    ) { }
+
+    override suspend fun removeAppsFromProfile(
+        profileId: String,
+        apps: List<AppBasicData>
     ) { }
 
     override suspend fun removeAppFromAllProfiles(

@@ -23,7 +23,7 @@ class ProfileEnforcementManager @Inject constructor(
                 if (profile == null) return@onEach
 
                 logger.d(TAG, "Enforcing system settings for profile: ${profile.name}.")
-                if (profile.startDnd) {
+                if (profile.settings.startDnd) {
                     dndController.setDndEnabled(true)
                 } else {
                     dndController.setDndEnabled(false)

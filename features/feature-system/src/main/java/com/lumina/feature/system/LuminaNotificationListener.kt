@@ -36,7 +36,7 @@ class LuminaNotificationListener : NotificationListenerService() {
     private fun observeProfileRules(): Job {
         return repository.activeProfile
             .flatMapLatest { profile ->
-                isFilteringEnabled = profile?.filterNotification == true
+                isFilteringEnabled = profile?.settings?.filterNotification == true
 
                 if (isFilteringEnabled) {
                     if (profile != null) {

@@ -8,6 +8,8 @@ import com.lumina.domain.apps.InstalledAppsRepository
 import com.lumina.domain.coordination.DeviceUserProvider
 import com.lumina.domain.profiles.ProfileRepository
 import com.lumina.domain.profiles.model.LauncherProfile
+import com.lumina.domain.profiles.model.LauncherProfileOverrides
+import com.lumina.domain.profiles.model.LauncherProfileSettings
 import jakarta.inject.Inject
 import kotlinx.coroutines.flow.first
 
@@ -25,25 +27,29 @@ class InitialiseDefaultProfileUseCase @Inject constructor(
                 userHandleNumber = defaultUserHandle,
                 type = ProfileType.CUSTOM,
                 name = "Default",
-                strictMode = false,
-                priorityTriggerLaunch = false,
-                filterNotification = false,
-                blockProfileTriggerSwitching = false,
-                startDnd = false,
-                showAppList = true,
-                hideScreenTimeOnApps = false,
-                disableOnLock = false,
-                blockUnauthorisedApps = false,
-                overrideBackground = null,
-                overrideFont = null,
-                overrideShowClock = false,
-                overrideShowBigClock = false,
-                overrideShowDate = false,
-                overrideShowWeather = false,
-                overrideHideScreenTime = false,
-                entryAuthMethod = ProfileAuthMethod.NONE,
-                exitAuthMethod = ProfileAuthMethod.NONE,
-                activationKey = null
+                settings = LauncherProfileSettings(
+                    strictMode = false,
+                    priorityTriggerLaunch = false,
+                    filterNotification = false,
+                    blockProfileTriggerSwitching = false,
+                    startDnd = false,
+                    showAppList = true,
+                    hideScreenTimeOnApps = false,
+                    disableOnLock = false,
+                    blockUnauthorisedApps = false,
+                    entryAuthMethod = ProfileAuthMethod.NONE,
+                    exitAuthMethod = ProfileAuthMethod.NONE,
+                    activationKey = null
+                ),
+                overrides = LauncherProfileOverrides(
+                    background = null,
+                    font = null,
+                    showClock = false,
+                    showBigClock = false,
+                    showDate = false,
+                    showWeather = false,
+                    hideScreenTime = false,
+                ),
             )
 
             profileRepository.saveProfile(newDefaultProfile)

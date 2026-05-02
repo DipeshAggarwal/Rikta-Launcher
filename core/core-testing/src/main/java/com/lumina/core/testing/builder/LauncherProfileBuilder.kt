@@ -3,6 +3,8 @@ package com.lumina.core.testing.builder
 import com.lumina.core.model.ProfileAuthMethod
 import com.lumina.core.model.ProfileType
 import com.lumina.domain.profiles.model.LauncherProfile
+import com.lumina.domain.profiles.model.LauncherProfileOverrides
+import com.lumina.domain.profiles.model.LauncherProfileSettings
 
 object LauncherProfileBuilder {
     fun build(
@@ -34,24 +36,28 @@ object LauncherProfileBuilder {
         name = name,
         type = type,
         userHandleNumber = userHandleNumber,
-        blockProfileTriggerSwitching = blockProfileTriggerSwitching,
-        strictMode = strictMode,
-        priorityTriggerLaunch = priorityTriggerLaunch,
-        filterNotification = filterNotification,
-        startDnd = startDnd,
-        showAppList = showAppList,
-        hideScreenTimeOnApps = hideScreenTimeOnApps,
-        disableOnLock = disableOnLock,
-        blockUnauthorisedApps = blockUnauthorisedApps,
-        overrideBackground = overrideBackground,
-        overrideFont = overrideFont,
-        overrideShowClock = overrideShowClock,
-        overrideShowBigClock = overrideShowBigClock,
-        overrideShowDate = overrideShowDate,
-        overrideShowWeather = overrideShowWeather,
-        overrideHideScreenTime = overrideHideScreenTime,
-        entryAuthMethod = entryAuthMethod,
-        exitAuthMethod = exitAuthMethod,
-        activationKey = activationKey,
+        settings = LauncherProfileSettings(
+            blockProfileTriggerSwitching = blockProfileTriggerSwitching,
+            strictMode = strictMode,
+            priorityTriggerLaunch = priorityTriggerLaunch,
+            filterNotification = filterNotification,
+            startDnd = startDnd,
+            showAppList = showAppList,
+            hideScreenTimeOnApps = hideScreenTimeOnApps,
+            disableOnLock = disableOnLock,
+            blockUnauthorisedApps = blockUnauthorisedApps,
+            entryAuthMethod = entryAuthMethod,
+            exitAuthMethod = exitAuthMethod,
+            activationKey = activationKey
+        ),
+        overrides = LauncherProfileOverrides(
+            background = overrideBackground,
+            font = overrideFont,
+            showClock = overrideShowClock,
+            showBigClock = overrideShowBigClock,
+            showDate = overrideShowDate,
+            showWeather = overrideShowWeather,
+            hideScreenTime = overrideHideScreenTime
+        )
     )
 }

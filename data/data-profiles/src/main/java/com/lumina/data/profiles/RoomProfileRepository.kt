@@ -6,6 +6,8 @@ import com.lumina.core.database.dao.ProfileDao
 import com.lumina.core.database.entity.NotificationWhitelistEntity
 import com.lumina.core.database.entity.ProfileAppCrossRef
 import com.lumina.core.database.entity.ProfileEntity
+import com.lumina.core.database.entity.ProfileOverrides
+import com.lumina.core.database.entity.ProfileSettings
 import com.lumina.core.database.entity.ProfileTriggerEntity
 import com.lumina.core.logging.Logger
 import com.lumina.core.model.AppBasicData
@@ -14,6 +16,8 @@ import com.lumina.core.model.AppOverrideState
 import com.lumina.core.model.componentKey
 import com.lumina.core.model.getAppKey
 import com.lumina.domain.profiles.model.LauncherProfile
+import com.lumina.domain.profiles.model.LauncherProfileSettings
+import com.lumina.domain.profiles.model.LauncherProfileOverrides
 import com.lumina.domain.profiles.model.TriggerCondition
 import jakarta.inject.Inject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -45,25 +49,29 @@ class RoomProfileRepository @Inject constructor(
         userHandleNumber = userHandleNumber,
         type = type,
         name = name,
-        strictMode = strictMode,
-        priorityTriggerLaunch = priorityTriggerLaunch,
-        filterNotification = filterNotification,
-        blockProfileTriggerSwitching = blockProfileTriggerSwitching,
-        startDnd = startDnd,
-        showAppList = showAppList,
-        hideScreenTimeOnApps = hideScreenTimeOnApps,
-        disableOnLock = disableOnLock,
-        blockUnauthorisedApps = blockUnauthorisedApps,
-        overrideBackground = overrideBackground,
-        overrideFont = overrideFont,
-        overrideShowClock = overrideShowClock,
-        overrideShowBigClock = overrideShowBigClock,
-        overrideShowDate = overrideShowDate,
-        overrideShowWeather = overrideShowWeather,
-        overrideHideScreenTime = overrideHideScreenTime,
-        entryAuthMethod = entryAuthMethod,
-        exitAuthMethod = exitAuthMethod,
-        activationKey = activationKey,
+        settings = LauncherProfileSettings(
+            strictMode = settings.strictMode,
+            priorityTriggerLaunch = settings.priorityTriggerLaunch,
+            filterNotification = settings.filterNotification,
+            blockProfileTriggerSwitching = settings.blockProfileTriggerSwitching,
+            startDnd = settings.startDnd,
+            showAppList = settings.showAppList,
+            hideScreenTimeOnApps = settings.hideScreenTimeOnApps,
+            disableOnLock = settings.disableOnLock,
+            blockUnauthorisedApps = settings.blockUnauthorisedApps,
+            entryAuthMethod = settings.entryAuthMethod,
+            exitAuthMethod = settings.exitAuthMethod,
+            activationKey = settings.activationKey,
+        ),
+        overrides = LauncherProfileOverrides(
+            background = overrides.background,
+            font = overrides.font,
+            showClock = overrides.showClock,
+            showBigClock = overrides.showBigClock,
+            showDate = overrides.showDate,
+            showWeather = overrides.showWeather,
+            hideScreenTime = overrides.hideScreenTime,
+        )
     )
 
     private fun LauncherProfile.toEntity(hashedKey: String?) = ProfileEntity(
@@ -71,25 +79,29 @@ class RoomProfileRepository @Inject constructor(
         userHandleNumber = userHandleNumber,
         type = type,
         name = name,
-        strictMode = strictMode,
-        priorityTriggerLaunch = priorityTriggerLaunch,
-        filterNotification = filterNotification,
-        blockProfileTriggerSwitching = blockProfileTriggerSwitching,
-        startDnd = startDnd,
-        showAppList = showAppList,
-        hideScreenTimeOnApps = hideScreenTimeOnApps,
-        disableOnLock = disableOnLock,
-        blockUnauthorisedApps = blockUnauthorisedApps,
-        overrideBackground = overrideBackground,
-        overrideFont = overrideFont,
-        overrideShowClock = overrideShowClock,
-        overrideShowBigClock = overrideShowBigClock,
-        overrideShowDate = overrideShowDate,
-        overrideShowWeather = overrideShowWeather,
-        overrideHideScreenTime = overrideHideScreenTime,
-        entryAuthMethod = entryAuthMethod,
-        exitAuthMethod = exitAuthMethod,
-        activationKey = hashedKey,
+        settings = ProfileSettings(
+            strictMode = settings.strictMode,
+            priorityTriggerLaunch = settings.priorityTriggerLaunch,
+            filterNotification = settings.filterNotification,
+            blockProfileTriggerSwitching = settings.blockProfileTriggerSwitching,
+            startDnd = settings.startDnd,
+            showAppList = settings.showAppList,
+            hideScreenTimeOnApps = settings.hideScreenTimeOnApps,
+            disableOnLock = settings.disableOnLock,
+            blockUnauthorisedApps = settings.blockUnauthorisedApps,
+            entryAuthMethod = settings.entryAuthMethod,
+            exitAuthMethod = settings.exitAuthMethod,
+            activationKey = settings.activationKey,
+        ),
+        overrides = ProfileOverrides(
+            background = overrides.background,
+            font = overrides.font,
+            showClock = overrides.showClock,
+            showBigClock = overrides.showBigClock,
+            showDate = overrides.showDate,
+            showWeather = overrides.showWeather,
+            hideScreenTime = overrides.hideScreenTime,
+        )
     )
 
     private fun ProfileTriggerEntity.toDomain() = TriggerCondition(
@@ -168,7 +180,7 @@ class RoomProfileRepository @Inject constructor(
     }
 
     override suspend fun saveProfile(profile: LauncherProfile) {
-        val hashedKey = profile.activationKey?.hash()
+        val hashedKey = profile.settings.activationKey?.hash()
 
         if (hashedKey != null && profileDao.isKeyTaken(hashedKey, profile.id)) {
             logger.w(
@@ -182,7 +194,7 @@ class RoomProfileRepository @Inject constructor(
     }
 
     override suspend fun updateProfile(profile: LauncherProfile) {
-        val hashedKey = profile.activationKey?.hash()
+        val hashedKey = profile.settings.activationKey?.hash()
 
         if (hashedKey != null && profileDao.isKeyTaken(hashedKey, profile.id)) {
             logger.w(

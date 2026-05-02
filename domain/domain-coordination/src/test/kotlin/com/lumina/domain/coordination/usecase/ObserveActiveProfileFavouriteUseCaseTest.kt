@@ -40,6 +40,7 @@ class ObserveActiveProfileFavouriteUseCaseTest {
             id = "shortcut_1",
             label = "Shortcut 1",
             type = ShortcutType.APP_SHORTCUT,
+            userHandleNumber = 0L,
             shortcutPackage = "com.example.app",
             shortcutId = "shortcut_1",
             url = null,

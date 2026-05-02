@@ -1,5 +1,6 @@
 package com.lumina.core.database.entity
 
+import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
@@ -18,6 +19,17 @@ data class ProfileEntity(
 
     val type: ProfileType,
     val name: String,
+
+    @Embedded
+    val settings: ProfileSettings,
+
+    @Embedded(prefix = "override_")
+    val overrides: ProfileOverrides,
+
+    val version: Int = VERSION
+)
+
+data class ProfileSettings(
     val strictMode: Boolean,
 
     val priorityTriggerLaunch: Boolean = false,
@@ -32,19 +44,17 @@ data class ProfileEntity(
 
     val blockUnauthorisedApps: Boolean = false,
 
-    val overrideBackground: String? = null,
-    val overrideFont: String? = null,
-
-    val overrideShowClock: Boolean? = null,
-    val overrideShowBigClock: Boolean? = null,
-    val overrideShowDate: Boolean? = null,
-    val overrideShowWeather: Boolean? = null,
-
-    val overrideHideScreenTime: Boolean? = null,
-
     val entryAuthMethod: ProfileAuthMethod = ProfileAuthMethod.NONE,
     val exitAuthMethod: ProfileAuthMethod = ProfileAuthMethod.NONE,
-    val activationKey: String? = null,
+    val activationKey: String? = null
+)
 
-    val version: Int = VERSION
+data class ProfileOverrides(
+    val background: String? = null,
+    val font: String? = null,
+    val showClock: Boolean? = null,
+    val showBigClock: Boolean? = null,
+    val showDate: Boolean? = null,
+    val showWeather: Boolean? = null,
+    val hideScreenTime: Boolean? = null
 )

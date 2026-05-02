@@ -20,11 +20,16 @@ import com.lumina.domain.coordination.AppLaunchCoordinator
 import com.lumina.domain.coordination.IntentLauncher
 import com.lumina.domain.coordination.LaunchResult
 import com.lumina.domain.coordination.StatusBarController
+import com.lumina.domain.coordination.model.ResolvedThemeState
+import com.lumina.domain.coordination.model.ResolvedUIState
+import com.lumina.domain.coordination.usecase.GetActiveHomeConfigUseCase
 import com.lumina.domain.coordination.usecase.ObserveActiveProfileAppsMappingUseCase
 import com.lumina.domain.coordination.usecase.ObserveActiveProfileAppsUseCase
 import com.lumina.domain.coordination.usecase.ObserveActiveProfileFavouritesUseCase
 import com.lumina.domain.profiles.ProfileFavouriteRepository
 import com.lumina.domain.profiles.ProfileRepository
+import com.lumina.domain.settings.CountdownSettings
+import com.lumina.domain.settings.LayoutSettings
 import com.lumina.domain.shortcut.ShortcutRepository
 import com.lumina.feature.home.model.BottomSheetState
 import com.lumina.feature.home.model.HomeUiState
@@ -52,7 +57,8 @@ class HomeViewModel @Inject constructor(
     observeAppMapping: ObserveActiveProfileAppsMappingUseCase,
     observeActiveProfileApps: ObserveActiveProfileAppsUseCase,
     observeActiveProfileFavourites: ObserveActiveProfileFavouritesUseCase,
-    settingsRepository: SettingsRepository,
+    getActiveHomeConfig: GetActiveHomeConfigUseCase,
+//    settingsRepository: SettingsRepository,
     private val appSearchEngine: AppSearchEngine,
     private val intentLauncher: IntentLauncher,
     private val launchCoordinator: AppLaunchCoordinator,
@@ -92,25 +98,15 @@ class HomeViewModel @Inject constructor(
     private val rawAppsMap: StateFlow<Map<String, LauncherItem.App>> = observeAppMapping()
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap())
 
-    val homeSettings: StateFlow<HomeSettings> = settingsRepository.homeSettings
+    val resolvedUiState: StateFlow<ResolvedUIState> = getActiveHomeConfig()
         .stateIn(
             viewModelScope,
             SharingStarted.Eagerly,
-            HomeSettings()
-        )
-
-    val appListSettings: StateFlow<AppListSettings> = settingsRepository.appListSettings
-        .stateIn(
-            viewModelScope,
-            SharingStarted.Eagerly,
-            AppListSettings()
-        )
-
-    val searchSettings: StateFlow<SearchSettings> = settingsRepository.searchSettings
-        .stateIn(
-            viewModelScope,
-            SharingStarted.Eagerly,
-            SearchSettings()
+            ResolvedUIState(
+                HomeSettings(), AppListSettings(),
+                SearchSettings(), CountdownSettings(),
+                LayoutSettings(), ResolvedThemeState(null, null)
+            )
         )
 
     // For future ref: Combine can only take a maximum of five Flows.
@@ -119,10 +115,12 @@ class HomeViewModel @Inject constructor(
         activeProfileApps,
         activeProfileFavourites,
         searchQuery,
-        searchSettings,
+        resolvedUiState,
         rawAppsMap
-    ) { apps, favItems, query, searchPrefs, rawApps ->
+    ) { apps, favItems, query, resolvedState, rawApps ->
+        val searchPrefs = resolvedState.search
         val isSearching = query.isNotBlank()
+
         val favForBoosting = if (searchPrefs.favouriteBoostInSearch) {
             favItems.mapNotNull {
                 when (it) {
@@ -190,7 +188,7 @@ class HomeViewModel @Inject constructor(
         searchQuery.value = query
         if (query.isBlank()) return
 
-        val searchPrefs = searchSettings.value
+        val searchPrefs = resolvedUiState.value.search
         if (!searchPrefs.autoOpenOnSearch) return
 
         val visibleApps = getVisibleAppsForSearch(searchPrefs, activeProfileApps.value)
@@ -215,8 +213,9 @@ class HomeViewModel @Inject constructor(
         val query = searchQuery.value
         if (query.isBlank()) return
 
-        val searchPrefs = searchSettings.value
+        val searchPrefs = resolvedUiState.value.search
         val visibleApps = getVisibleAppsForSearch(searchPrefs, activeProfileApps.value)
+
         val favForBoosting = if (searchPrefs.favouriteBoostInSearch) {
             activeProfileFavourites.value.map {
                 (it as LauncherItem.App).info.packageName

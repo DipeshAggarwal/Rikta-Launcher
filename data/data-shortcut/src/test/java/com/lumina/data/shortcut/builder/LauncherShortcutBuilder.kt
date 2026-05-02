@@ -12,6 +12,7 @@ object LauncherShortcutBuilder {
         id = id,
         label = label,
         type = type,
+        userHandleNumber = 0L,
         shortcutPackage = null,
         shortcutId = null,
         url = null,

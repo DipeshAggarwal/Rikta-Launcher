@@ -9,6 +9,12 @@ data class LauncherProfile(
 
     val type: ProfileType,
     val name: String,
+
+    val settings: LauncherProfileSettings,
+    val overrides: LauncherProfileOverrides
+)
+
+data class LauncherProfileSettings(
     val strictMode: Boolean,
 
     val priorityTriggerLaunch: Boolean,
@@ -23,17 +29,17 @@ data class LauncherProfile(
 
     val blockUnauthorisedApps: Boolean,
 
-    val overrideBackground: String?,
-    val overrideFont: String?,
-
-    val overrideShowClock: Boolean?,
-    val overrideShowBigClock: Boolean?,
-    val overrideShowDate: Boolean?,
-    val overrideShowWeather: Boolean?,
-
-    val overrideHideScreenTime: Boolean?,
-
     val entryAuthMethod: ProfileAuthMethod,
     val exitAuthMethod: ProfileAuthMethod,
-    val activationKey: String?,
+    val activationKey: String?
+)
+
+data class LauncherProfileOverrides(
+    val background: String?,
+    val font: String?,
+    val showClock: Boolean?,
+    val showBigClock: Boolean?,
+    val showDate: Boolean?,
+    val showWeather: Boolean?,
+    val hideScreenTime: Boolean?
 )

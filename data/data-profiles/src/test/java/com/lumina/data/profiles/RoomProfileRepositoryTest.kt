@@ -1,5 +1,6 @@
 package com.lumina.data.profiles
 
+import com.lumina.core.database.LuminaDatabase
 import com.lumina.core.database.dao.ProfileDao
 import com.lumina.core.database.entity.NotificationWhitelistEntity
 import com.lumina.core.database.entity.ProfileAppCrossRef
@@ -39,6 +40,7 @@ class FakeProfileDataStore : ProfileDataStore {
 }
 
 class RoomProfileRepositoryTest {
+    private lateinit var database: LuminaDatabase
     private lateinit var profileDao: ProfileDao
     private lateinit var fakeProfileDataStore: FakeProfileDataStore
     private lateinit var roomProfileRepository: RoomProfileRepository
@@ -51,10 +53,11 @@ class RoomProfileRepositoryTest {
 
     @Before
     fun setup() {
+        database = mockk(relaxed = true)
         profileDao = mockk(relaxed = true)
         fakeProfileDataStore = FakeProfileDataStore()
         logger = mockk(relaxed = true)
-        roomProfileRepository = RoomProfileRepository(profileDao, fakeProfileDataStore, logger)
+        roomProfileRepository = RoomProfileRepository(database, profileDao, fakeProfileDataStore, logger)
     }
 
     @Test

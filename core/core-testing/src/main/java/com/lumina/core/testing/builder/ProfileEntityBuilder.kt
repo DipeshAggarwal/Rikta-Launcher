@@ -1,8 +1,12 @@
 package com.lumina.core.testing.builder
 
 import com.lumina.core.database.entity.ProfileEntity
+import com.lumina.core.database.entity.ProfileOverrides
+import com.lumina.core.database.entity.ProfileSettings
 import com.lumina.core.model.ProfileAuthMethod
 import com.lumina.core.model.ProfileType
+import com.lumina.domain.profiles.model.LauncherProfileOverrides
+import com.lumina.domain.profiles.model.LauncherProfileSettings
 
 object ProfileEntityBuilder {
     fun build(
@@ -34,24 +38,28 @@ object ProfileEntityBuilder {
         userHandleNumber = userHandleNumber,
         type = type,
         name = name,
-        strictMode = strictMode,
-        priorityTriggerLaunch = priorityTriggerLaunch,
-        filterNotification = filterNotification,
-        blockProfileTriggerSwitching = blockProfileTriggerSwitching,
-        startDnd = startDnd,
-        showAppList = showAppList,
-        hideScreenTimeOnApps = hideScreenTimeOnApps,
-        disableOnLock = disableOnLock,
-        blockUnauthorisedApps = blockUnauthorisedApps,
-        overrideBackground = overrideBackground,
-        overrideFont = overrideFont,
-        overrideShowClock = overrideShowClock,
-        overrideShowBigClock = overrideShowBigClock,
-        overrideShowDate = overrideShowDate,
-        overrideShowWeather = overrideShowWeather,
-        overrideHideScreenTime = overrideHideScreenTime,
-        entryAuthMethod = entryAuthMethod,
-        exitAuthMethod = exitAuthMethod,
-        activationKey = activationKey,
+        settings = ProfileSettings(
+            blockProfileTriggerSwitching = blockProfileTriggerSwitching,
+            strictMode = strictMode,
+            priorityTriggerLaunch = priorityTriggerLaunch,
+            filterNotification = filterNotification,
+            startDnd = startDnd,
+            showAppList = showAppList,
+            hideScreenTimeOnApps = hideScreenTimeOnApps,
+            disableOnLock = disableOnLock,
+            blockUnauthorisedApps = blockUnauthorisedApps,
+            entryAuthMethod = entryAuthMethod,
+            exitAuthMethod = exitAuthMethod,
+            activationKey = activationKey
+        ),
+        overrides = ProfileOverrides(
+            background = overrideBackground,
+            font = overrideFont,
+            showClock = overrideShowClock,
+            showBigClock = overrideShowBigClock,
+            showDate = overrideShowDate,
+            showWeather = overrideShowWeather,
+            hideScreenTime = overrideHideScreenTime
+        )
     )
 }

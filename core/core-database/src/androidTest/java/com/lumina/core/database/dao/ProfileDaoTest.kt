@@ -93,7 +93,7 @@ class ProfileDaoTest {
         val result = profileDao.getProfileById(profileOld.id).first()
         assertNotNull(result)
         assertEquals(profileNew.name, result!!.name)
-        assertTrue(result.startDnd)
+        assertTrue(result.settings.startDnd)
     }
 
     @Test

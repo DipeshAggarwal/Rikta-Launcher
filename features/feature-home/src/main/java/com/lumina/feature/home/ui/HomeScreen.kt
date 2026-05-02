@@ -27,9 +27,10 @@ fun HomeScreen(
     onNavigateToSettings: () -> Unit
 ) {
     val uiState by viewModel.homeUiState.collectAsStateWithLifecycle()
-    val homeSettings by viewModel.homeSettings.collectAsStateWithLifecycle()
+    val resolvedUiState by viewModel.resolvedUiState.collectAsStateWithLifecycle()
     val bottomSheetState by viewModel.bottomSheetState.collectAsStateWithLifecycle()
 
+    val homeSettings = resolvedUiState.home
     val screenTimePageVisible = homeSettings.showScreenTimePage
     val homeMainScrollState = rememberLazyListState()
     val appsListScrollState = rememberLazyListState()

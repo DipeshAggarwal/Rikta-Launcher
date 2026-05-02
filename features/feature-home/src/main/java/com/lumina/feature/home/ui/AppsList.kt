@@ -39,9 +39,10 @@ fun AppsList(
 ) {
     val haptics = LocalHapticFeedback.current
     val uiState by viewModel.homeUiState.collectAsStateWithLifecycle()
-    val appsListSettings by viewModel.appListSettings.collectAsStateWithLifecycle()
+    val resolvedUiState by viewModel.resolvedUiState.collectAsStateWithLifecycle()
     val isSearchExpanded by viewModel.isSearchExpanded.collectAsStateWithLifecycle()
 
+    val appsListSettings = resolvedUiState.appList
     val readyState = uiState as? HomeUiState.Ready ?: return
 
     Box(
