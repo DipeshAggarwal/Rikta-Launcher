@@ -1,9 +1,11 @@
 package com.lumina.feature.system.triggers
 
 import com.lumina.core.android.di.ApplicationScope
+import com.lumina.core.common.time.TimeProvider
 import com.lumina.core.logging.Logger
 import com.lumina.core.model.LogicalOperator
 import com.lumina.core.model.ProfileTriggerType
+import com.lumina.core.model.SystemProfileIds
 import com.lumina.domain.profiles.ProfileRepository
 import com.lumina.domain.profiles.model.TriggerCondition
 import com.lumina.feature.system.triggers.monitor.BluetoothTriggerMonitor
@@ -13,7 +15,10 @@ import com.lumina.feature.system.triggers.monitor.WifiTriggerMonitor
 import jakarta.inject.Inject
 import jakarta.inject.Singleton
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.conflate
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
@@ -28,11 +33,17 @@ class TriggerEvaluationEngine @Inject constructor(
     private val bluetoothTriggerMonitor: BluetoothTriggerMonitor,
     private val timeTriggerMonitor: TimeTriggerMonitor,
     private val locationTriggerMonitor: LocationTriggerMonitor,
+    private val timeProvider: TimeProvider,
     private val logger: Logger
 ) {
     private val TAG = this::class.java.simpleName
     private var collectionJob: Job? = null
 
+    private var lastProfiledSwitchedAt: Long? = null
+    private var noProfileMatchedTimestamp = 0L
+    private val firstMatchTimestamps = mutableMapOf<String, Long>()
+
+    @OptIn(FlowPreview::class)
     fun start() {
         if (collectionJob?.isActive == true) return
 
@@ -41,7 +52,10 @@ class TriggerEvaluationEngine @Inject constructor(
                 triggerSystemStateCache.currentSsid.map { Unit },
                 triggerSystemStateCache.connectedDevices.map { Unit },
                 triggerSystemStateCache.activeGeofenceIds.map { Unit }
-            ).collect { evaluateTriggers() }
+            )
+                .conflate()
+                .debounce(TriggersConstant.TRIGGER_DEBOUNCE_MS)
+                .collect { evaluateTriggers() }
         }
     }
 
@@ -54,20 +68,64 @@ class TriggerEvaluationEngine @Inject constructor(
         val activeProfile = profileRepository.activeProfile.first()
         if (activeProfile?.settings?.blockProfileTriggerSwitching == true) return
 
+        val now = timeProvider.now()
+        val lastSwitchTime = lastProfiledSwitchedAt
+        if (lastSwitchTime != null && now - lastSwitchTime < TriggersConstant.PROFILE_SWITCH_COOLDOWN_MS) return
+
         val profiles = profileRepository.getAllProfiles().first()
             .sortedByDescending { it.settings.priorityTriggerLaunch }
 
+        var matchedProfileId: String? = null
+        var anyProfileMatching = false
+
         for (profile in profiles) {
+            if (profile.id == activeProfile?.id) continue
+
             val triggers = profileRepository.getProfileTriggers(profile.id).first()
             if (triggers.isEmpty()) continue
 
-            if (evaluateSequence(triggers)) {
-                logger.d(TAG, "Triggers matched for profile: ${profile.name}")
-                profileRepository.setActiveProfile(profile.id)
+            val matches = evaluateSequence(triggers)
+            if (!matches) {
+                firstMatchTimestamps.remove(profile.id)
+                continue
+            }
 
-                return
+            // Only switch to the profile if the triggers have met for asked amount of time.
+            val firstMatchTime = firstMatchTimestamps.getOrPut(profile.id) { now }
+            anyProfileMatching = true
+            noProfileMatchedTimestamp = 0L
+
+            val isStable = (now - firstMatchTime) >= TriggersConstant.TRIGGER_MATCHES_FOR_BEFORE_EXECUTING_MS
+            if (!isStable) continue
+
+            matchedProfileId = profile.id
+            break
+        }
+
+        val targetProfileId = matchedProfileId ?: run {
+            if (anyProfileMatching) return@run activeProfile?.id
+            if (noProfileMatchedTimestamp == 0L) noProfileMatchedTimestamp = now
+
+            val canResetToDefault = now -  noProfileMatchedTimestamp >= TriggersConstant.RESET_TO_DEFAULT_PROFILE_AFTER_MS
+            if (canResetToDefault) {
+                noProfileMatchedTimestamp = 0L
+                SystemProfileIds.DEFAULT
+            } else {
+                activeProfile?.id
             }
         }
+
+        if (targetProfileId == activeProfile?.id) return
+        if (targetProfileId == null) return
+
+        logger.d(TAG, "Triggers matched for profile: $targetProfileId")
+        profileRepository.setActiveProfile(targetProfileId)
+
+        lastProfiledSwitchedAt = now
+        noProfileMatchedTimestamp = 0L
+        firstMatchTimestamps.clear()
+
+        return
     }
 
     private fun evaluateSequence(triggers: List<TriggerCondition>): Boolean {

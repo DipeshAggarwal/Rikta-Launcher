@@ -2,8 +2,10 @@ package com.lumina.feature.system.triggers
 
 import com.lumina.core.logging.Logger
 import com.lumina.core.model.LogicalOperator
+import com.lumina.core.model.SystemProfileIds
 import com.lumina.core.testing.builder.LauncherProfileBuilder
 import com.lumina.core.testing.fake.FakeProfileRepository
+import com.lumina.core.testing.fake.FakeTimeProvider
 import com.lumina.feature.system.triggers.builder.TriggerConditionBuilder
 import com.lumina.feature.system.triggers.monitor.BluetoothTriggerMonitor
 import com.lumina.feature.system.triggers.monitor.LocationTriggerMonitor
@@ -28,6 +30,7 @@ class TriggerEvaluationEngineTest {
     private lateinit var timeTriggerMonitor: TimeTriggerMonitor
     private lateinit var locationTriggerMonitor: LocationTriggerMonitor
     private lateinit var timeTriggerScheduler: TimeTriggerScheduler
+    private lateinit var fakeTimeProvider: FakeTimeProvider
     private lateinit var logger: Logger
 
     private val testDispatcher = StandardTestDispatcher()
@@ -51,6 +54,12 @@ class TriggerEvaluationEngineTest {
         priorityTriggerLaunch = true
     )
 
+    private suspend fun evaluateUntilStable() {
+        triggerEvaluationEngine.evaluateTriggers()
+        fakeTimeProvider.advanceBy(TriggersConstant.RESET_TO_DEFAULT_PROFILE_AFTER_MS)
+        triggerEvaluationEngine.evaluateTriggers()
+    }
+
     @Before
     fun setup() {
         fakeProfileRepository = FakeProfileRepository()
@@ -60,6 +69,7 @@ class TriggerEvaluationEngineTest {
         timeTriggerMonitor = mockk(relaxed = true)
         locationTriggerMonitor = mockk(relaxed = true)
         timeTriggerScheduler = mockk(relaxed = true)
+        fakeTimeProvider = FakeTimeProvider(initialTime = 0L)
 
         triggerEvaluationEngine = TriggerEvaluationEngine(
             scope = testScope,
@@ -69,6 +79,7 @@ class TriggerEvaluationEngineTest {
             bluetoothTriggerMonitor = bluetoothTriggerMonitor,
             timeTriggerMonitor = timeTriggerMonitor,
             locationTriggerMonitor = locationTriggerMonitor,
+            timeProvider = fakeTimeProvider,
             logger = mockk(relaxed = true)
         )
     }
@@ -81,7 +92,7 @@ class TriggerEvaluationEngineTest {
         fakeProfileRepository.setTriggersForProfile(profileOne.id, trigger)
         every { wifiTriggerMonitor.evaluate(trigger) } returns true
 
-        triggerEvaluationEngine.evaluateTriggers()
+        evaluateUntilStable()
         assert(fakeProfileRepository.setActiveProfileCalls.contains(profileOne.id))
     }
 
@@ -93,7 +104,7 @@ class TriggerEvaluationEngineTest {
         fakeProfileRepository.setTriggersForProfile(profileOne.id, trigger)
         every { wifiTriggerMonitor.evaluate(trigger) } returns false
 
-        triggerEvaluationEngine.evaluateTriggers()
+        evaluateUntilStable()
         assert(fakeProfileRepository.setActiveProfileCalls.isEmpty())
     }
 
@@ -105,7 +116,7 @@ class TriggerEvaluationEngineTest {
         fakeProfileRepository.setTriggersForProfile(profileOne.id, trigger)
         every { bluetoothTriggerMonitor.evaluate(trigger) } returns true
 
-        triggerEvaluationEngine.evaluateTriggers()
+        evaluateUntilStable()
         assert(fakeProfileRepository.setActiveProfileCalls.contains(profileOne.id))
     }
 
@@ -117,7 +128,7 @@ class TriggerEvaluationEngineTest {
         fakeProfileRepository.setTriggersForProfile(profileOne.id, trigger)
         every { bluetoothTriggerMonitor.evaluate(trigger) } returns false
 
-        triggerEvaluationEngine.evaluateTriggers()
+        evaluateUntilStable()
         assert(fakeProfileRepository.setActiveProfileCalls.isEmpty())
     }
 
@@ -129,7 +140,7 @@ class TriggerEvaluationEngineTest {
         fakeProfileRepository.setTriggersForProfile(profileOne.id, trigger)
         every { locationTriggerMonitor.evaluate(trigger) } returns true
 
-        triggerEvaluationEngine.evaluateTriggers()
+        evaluateUntilStable()
         assert(fakeProfileRepository.setActiveProfileCalls.contains(profileOne.id))
     }
 
@@ -141,7 +152,7 @@ class TriggerEvaluationEngineTest {
         fakeProfileRepository.setTriggersForProfile(profileOne.id, trigger)
         every { locationTriggerMonitor.evaluate(trigger) } returns false
 
-        triggerEvaluationEngine.evaluateTriggers()
+        evaluateUntilStable()
         assert(fakeProfileRepository.setActiveProfileCalls.isEmpty())
     }
 
@@ -150,7 +161,7 @@ class TriggerEvaluationEngineTest {
         fakeProfileRepository.setProfiles(profileOne)
         fakeProfileRepository.setTriggersForProfile(profileOne.id)
 
-        triggerEvaluationEngine.evaluateTriggers()
+        evaluateUntilStable()
         assert(fakeProfileRepository.setActiveProfileCalls.isEmpty())
     }
 
@@ -158,7 +169,7 @@ class TriggerEvaluationEngineTest {
     fun `no switch when no profiles are added`() = runTest {
         fakeProfileRepository.setProfiles()
 
-        triggerEvaluationEngine.evaluateTriggers()
+        evaluateUntilStable()
         assert(fakeProfileRepository.setActiveProfileCalls.isEmpty())
     }
 
@@ -173,7 +184,7 @@ class TriggerEvaluationEngineTest {
         every { wifiTriggerMonitor.evaluate(triggerOne) } returns true
         every { bluetoothTriggerMonitor.evaluate(triggerTwo) } returns true
 
-        triggerEvaluationEngine.evaluateTriggers()
+        evaluateUntilStable()
         assert(fakeProfileRepository.setActiveProfileCalls.contains(profileOne.id))
     }
 
@@ -188,7 +199,7 @@ class TriggerEvaluationEngineTest {
         every { wifiTriggerMonitor.evaluate(triggerOne) } returns true
         every { bluetoothTriggerMonitor.evaluate(triggerTwo) } returns false
 
-        triggerEvaluationEngine.evaluateTriggers()
+        evaluateUntilStable()
         assert(fakeProfileRepository.setActiveProfileCalls.isEmpty())
     }
 
@@ -203,7 +214,7 @@ class TriggerEvaluationEngineTest {
         every { wifiTriggerMonitor.evaluate(triggerOne) } returns false
         every { bluetoothTriggerMonitor.evaluate(triggerTwo) } returns true
 
-        triggerEvaluationEngine.evaluateTriggers()
+        evaluateUntilStable()
         assert(fakeProfileRepository.setActiveProfileCalls.isEmpty())
     }
 
@@ -218,7 +229,7 @@ class TriggerEvaluationEngineTest {
         every { wifiTriggerMonitor.evaluate(triggerOne) } returns false
         every { bluetoothTriggerMonitor.evaluate(triggerTwo) } returns false
 
-        triggerEvaluationEngine.evaluateTriggers()
+        evaluateUntilStable()
         assert(fakeProfileRepository.setActiveProfileCalls.isEmpty())
     }
 
@@ -233,7 +244,7 @@ class TriggerEvaluationEngineTest {
         every { wifiTriggerMonitor.evaluate(triggerOne) } returns true
         every { bluetoothTriggerMonitor.evaluate(triggerTwo) } returns false
 
-        triggerEvaluationEngine.evaluateTriggers()
+        evaluateUntilStable()
         assert(fakeProfileRepository.setActiveProfileCalls.contains(profileOne.id))
     }
 
@@ -248,7 +259,7 @@ class TriggerEvaluationEngineTest {
         every { wifiTriggerMonitor.evaluate(triggerOne) } returns false
         every { bluetoothTriggerMonitor.evaluate(triggerTwo) } returns true
 
-        triggerEvaluationEngine.evaluateTriggers()
+        evaluateUntilStable()
         assert(fakeProfileRepository.setActiveProfileCalls.contains(profileOne.id))
     }
 
@@ -263,7 +274,7 @@ class TriggerEvaluationEngineTest {
         every { wifiTriggerMonitor.evaluate(triggerOne) } returns false
         every { bluetoothTriggerMonitor.evaluate(triggerTwo) } returns false
 
-        triggerEvaluationEngine.evaluateTriggers()
+        evaluateUntilStable()
         assert(fakeProfileRepository.setActiveProfileCalls.isEmpty())
     }
 
@@ -278,7 +289,7 @@ class TriggerEvaluationEngineTest {
         every { wifiTriggerMonitor.evaluate(triggerOne) } returns true
         every { bluetoothTriggerMonitor.evaluate(triggerTwo) } returns false
 
-        triggerEvaluationEngine.evaluateTriggers()
+        evaluateUntilStable()
         assert(fakeProfileRepository.setActiveProfileCalls.contains(profileOne.id))
     }
 
@@ -293,7 +304,7 @@ class TriggerEvaluationEngineTest {
         every { wifiTriggerMonitor.evaluate(triggerOne) } returns true
         every { bluetoothTriggerMonitor.evaluate(triggerTwo) } returns true
 
-        triggerEvaluationEngine.evaluateTriggers()
+        evaluateUntilStable()
         assert(fakeProfileRepository.setActiveProfileCalls.isEmpty())
     }
 
@@ -306,7 +317,7 @@ class TriggerEvaluationEngineTest {
         fakeProfileRepository.setTriggersForProfile(profileOne.id, triggerOne, triggerTwo)
 
         every { wifiTriggerMonitor.evaluate(triggerOne) } returns true
-        triggerEvaluationEngine.evaluateTriggers()
+        evaluateUntilStable()
 
         assert(fakeProfileRepository.setActiveProfileCalls.contains(profileOne.id))
         verify(exactly = 0) { bluetoothTriggerMonitor.evaluate(any()) }
@@ -323,7 +334,7 @@ class TriggerEvaluationEngineTest {
         every { wifiTriggerMonitor.evaluate(triggerOne) } returns false
         every { bluetoothTriggerMonitor.evaluate(triggerTwo) } returns true
 
-        triggerEvaluationEngine.evaluateTriggers()
+        evaluateUntilStable()
         assert(fakeProfileRepository.setActiveProfileCalls.contains(profileOne.id))
     }
 
@@ -339,8 +350,27 @@ class TriggerEvaluationEngineTest {
         every { wifiTriggerMonitor.evaluate(normalTrigger) } returns true
         every { wifiTriggerMonitor.evaluate(priorityTrigger) } returns true
 
-        triggerEvaluationEngine.evaluateTriggers()
+        evaluateUntilStable()
         assert(fakeProfileRepository.setActiveProfileCalls.first() == profileThree.id)
+    }
+
+    @Test
+    fun `blockProfileTriggerSwitching prevents profile switching`() = runTest {
+        val trigger = TriggerConditionBuilder.wifi()
+        val blockingProfile = LauncherProfileBuilder.build(
+            id = "profile_blocking",
+            name = "You shall not Pass!",
+            blockProfileTriggerSwitching = true
+        )
+
+        fakeProfileRepository.setProfiles(blockingProfile, profileOne)
+        fakeProfileRepository.setActiveProfile(blockingProfile.id)
+        fakeProfileRepository.setTriggersForProfile(profileOne.id, trigger)
+        every { wifiTriggerMonitor.evaluate(trigger) } returns true
+
+        evaluateUntilStable()
+        assert(fakeProfileRepository.setActiveProfileCalls.size == 1)
+        assert(fakeProfileRepository.setActiveProfileCalls.last() == blockingProfile.id)
     }
 
     @Test
@@ -355,7 +385,7 @@ class TriggerEvaluationEngineTest {
         every { wifiTriggerMonitor.evaluate(triggerOne) } returns true
         every { wifiTriggerMonitor.evaluate(triggerTwo) } returns true
 
-        triggerEvaluationEngine.evaluateTriggers()
+        evaluateUntilStable()
         assert(fakeProfileRepository.setActiveProfileCalls.size == 1)
     }
 
@@ -367,7 +397,101 @@ class TriggerEvaluationEngineTest {
         fakeProfileRepository.setTriggersForProfile(profileOne.id, trigger)
         every { wifiTriggerMonitor.evaluate(trigger) } returns false
 
+        evaluateUntilStable()
+        assert(fakeProfileRepository.setActiveProfileCalls.isEmpty())
+    }
+
+    @Test
+    fun `no profile switch happens until it is stable`() = runTest {
+        val trigger = TriggerConditionBuilder.wifi()
+
+        fakeProfileRepository.setProfiles(profileOne)
+        fakeProfileRepository.setTriggersForProfile(profileOne.id, trigger)
+        every { wifiTriggerMonitor.evaluate(trigger) } returns true
+
         triggerEvaluationEngine.evaluateTriggers()
         assert(fakeProfileRepository.setActiveProfileCalls.isEmpty())
+
+        evaluateUntilStable()
+        assert(fakeProfileRepository.setActiveProfileCalls.contains(profileOne.id))
+    }
+
+    @Test
+    fun `resets to default profile after no match for given time`() = runTest {
+        val trigger = TriggerConditionBuilder.wifi()
+
+        fakeProfileRepository.setProfiles(profileOne)
+        fakeProfileRepository.setTriggersForProfile(profileOne.id, trigger)
+        every { wifiTriggerMonitor.evaluate(trigger) } returns false
+
+        triggerEvaluationEngine.evaluateTriggers()
+        assert(fakeProfileRepository.setActiveProfileCalls.isEmpty())
+
+        // Advance past cooldown - sets noProfileMatchedTimestamp.
+        fakeTimeProvider.advanceBy(TriggersConstant.PROFILE_SWITCH_COOLDOWN_MS)
+        triggerEvaluationEngine.evaluateTriggers()
+        assert(fakeProfileRepository.setActiveProfileCalls.isEmpty())
+
+        // Advance past Reset window and the third evaluates, executes perfectly.
+        fakeTimeProvider.advanceBy(TriggersConstant.RESET_TO_DEFAULT_PROFILE_AFTER_MS)
+        triggerEvaluationEngine.evaluateTriggers()
+        assert(fakeProfileRepository.setActiveProfileCalls.contains(SystemProfileIds.DEFAULT))
+    }
+
+    @Test
+    fun `does not reset to default if a profile matches mid cooldown for default profile`() = runTest {
+        val trigger = TriggerConditionBuilder.wifi()
+
+        fakeProfileRepository.setProfiles(profileOne)
+        fakeProfileRepository.setTriggersForProfile(profileOne.id, trigger)
+        every { wifiTriggerMonitor.evaluate(trigger) } returns false
+
+        // Set noProfileMatchedTimestamp.
+        fakeTimeProvider.advanceBy(TriggersConstant.PROFILE_SWITCH_COOLDOWN_MS)
+        triggerEvaluationEngine.evaluateTriggers()
+        assert(fakeProfileRepository.setActiveProfileCalls.isEmpty())
+
+        // Match profile trigger. Set noProfileMatchedTimestamp = 0.
+        every { wifiTriggerMonitor.evaluate(trigger) } returns true
+        fakeTimeProvider.advanceBy(TriggersConstant.RESET_TO_DEFAULT_PROFILE_AFTER_MS)
+        triggerEvaluationEngine.evaluateTriggers()
+
+        // Advance past the reset window.
+        fakeTimeProvider.advanceBy(TriggersConstant.TRIGGER_MATCHES_FOR_BEFORE_EXECUTING_MS)
+        triggerEvaluationEngine.evaluateTriggers()
+        assert(fakeProfileRepository.setActiveProfileCalls.contains(profileOne.id))
+    }
+
+    @Test
+    fun `profile can only switch after cooldown time has passed`() = runTest {
+        val triggerOne = TriggerConditionBuilder.wifi(wifiSsid = "RiktaWifi")
+        val triggerTwo = TriggerConditionBuilder.wifi(wifiSsid = "HomeWifi")
+
+        fakeProfileRepository.setProfiles(profileOne, profileTwo)
+        fakeProfileRepository.setTriggersForProfile(profileOne.id, triggerOne)
+        fakeProfileRepository.setTriggersForProfile(profileTwo.id, triggerTwo)
+
+        every { wifiTriggerMonitor.evaluate(triggerOne) } returns true
+        every { wifiTriggerMonitor.evaluate(triggerTwo) } returns false
+
+        evaluateUntilStable()
+        assert(fakeProfileRepository.setActiveProfileCalls.contains(profileOne.id))
+
+        every { wifiTriggerMonitor.evaluate(triggerOne) } returns false
+        every { wifiTriggerMonitor.evaluate(triggerTwo) } returns true
+
+        // In cooldown. firstMatchTimestamp is not set.
+        fakeTimeProvider.advanceBy(TriggersConstant.PROFILE_SWITCH_COOLDOWN_MS - 1)
+        triggerEvaluationEngine.evaluateTriggers()
+        assert(fakeProfileRepository.setActiveProfileCalls.contains(profileOne.id))
+
+        // Still in cooldown. Set firstMatchTimestamp.
+        fakeTimeProvider.advanceBy(2)
+        triggerEvaluationEngine.evaluateTriggers()
+
+        // Cooldown ends. Profile switches.
+        fakeTimeProvider.advanceBy(TriggersConstant.TRIGGER_MATCHES_FOR_BEFORE_EXECUTING_MS)
+        triggerEvaluationEngine.evaluateTriggers()
+        assert(fakeProfileRepository.setActiveProfileCalls.contains(profileTwo.id))
     }
 }
