@@ -310,7 +310,7 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun onToggleFavourite(item: LauncherItem) {
+    fun onToggleFavourite(item: LauncherItem, dismissSheet: Boolean = true) {
         viewModelScope.launch {
             val activeProfile = profileRepository.activeProfile.firstOrNull() ?: return@launch
             val (itemId, itemType) = when (item) {
@@ -323,8 +323,18 @@ class HomeViewModel @Inject constructor(
                 itemId = itemId,
                 itemType = itemType
             )
+
+            val currentState = _bottomSheetState.value
+            if (currentState is BottomSheetState.AppOptions) {
+                val currentApp = currentState.selectedApp
+                if (currentApp.app.info.componentKey == itemId) {
+                    _bottomSheetState.value = currentState.copy(
+                        selectedApp = currentApp.copy(isFavourite = !currentApp.isFavourite)
+                    )
+                }
+            }
         }
-        onBottomSheetDismissed()
+        if (dismissSheet) onBottomSheetDismissed()
     }
 
     fun onToggleCountdown(item: LauncherItem.App) {

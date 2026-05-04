@@ -5,12 +5,21 @@
 
     <!-- Bottom Sheet -->
     <string name="all_apps">All Apps</string>
-    <string name="uninstall">Uninstall</string>
-    <string name="hide">Hide</string>
     <string name="add_to_fav">Add To Favourites</string>
     <string name="rem_from_fav">Remove From Favourites</string>
+    <string name="app_info">App Info</string>
+    <string name="uninstall">Uninstall</string>
+    <string name="delete_shortcut">Delete Shortcut</string>
+
+    <string name="organise_app">Organise App</string>
+    <string name="organise_app_header">Organise: %1$s</string>
+    <string name="rename_app">Rename App</string>
+    <string name="change_category">Change Category</string>
+    <string name="add_to_profile">Add to Profile</string>
+
+    <string name="wellbeing">Digital Wellbeing</string>
+    <string name="wellbeing_header">D. Wellbeing: %1$s</string>
     <string name="add_countdown">Require Countdown to Open</string>
     <string name="remove_countdown">Remove Countdown</string>
-    <string name="app_info">App Info</string>
-    <string name="delete_shortcut">Delete Shortcut</string>
+    <string name="hide">Hide App</string>
 </resources>
