@@ -1,6 +1,7 @@
 plugins {
     id("convention.android.library")
     id("convention.hilt")
+    id("convention.room")
     id("convention.test.android")
 }
 

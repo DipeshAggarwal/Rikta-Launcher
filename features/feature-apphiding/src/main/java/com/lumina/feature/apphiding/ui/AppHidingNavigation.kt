@@ -8,7 +8,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
-import com.lumina.core.ui.Motion.SCREEN_TRANSITION_DURATION
+import com.lumina.core.ui.Motion.SCREEN_TRANSITION_MS
 import com.lumina.feature.apphiding.AppHidingViewModel
 
 const val HIDDEN_APPS_MANAGEMENT_ROUTE  = "manage_hidden_apps"
@@ -19,8 +19,8 @@ fun NavGraphBuilder.appHidingNavigation(
 ) {
     composable(
         route = HIDDEN_APPS_MANAGEMENT_ROUTE,
-        enterTransition = { fadeIn(tween(SCREEN_TRANSITION_DURATION)) },
-        exitTransition = { fadeOut(tween(SCREEN_TRANSITION_DURATION)) }
+        enterTransition = { fadeIn(tween(SCREEN_TRANSITION_MS)) },
+        exitTransition = { fadeOut(tween(SCREEN_TRANSITION_MS)) }
     ) { navBackStackEntry ->
         val viewModel: AppHidingViewModel = hiltViewModel(navBackStackEntry)
 
@@ -33,8 +33,8 @@ fun NavGraphBuilder.appHidingNavigation(
 
     composable(
         APP_HIDING_APP_PICKER_ROUTE,
-        enterTransition = { fadeIn(tween(SCREEN_TRANSITION_DURATION)) },
-        exitTransition = { fadeOut(tween(SCREEN_TRANSITION_DURATION)) }
+        enterTransition = { fadeIn(tween(SCREEN_TRANSITION_MS)) },
+        exitTransition = { fadeOut(tween(SCREEN_TRANSITION_MS)) }
     ) { navBackStackEntry ->
         // remember is needed so that reference remains consistent across recompositions
         // Also, `getBackStackEntry` is an expensive operation and doesn't change.

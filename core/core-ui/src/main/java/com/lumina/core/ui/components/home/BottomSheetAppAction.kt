@@ -1,5 +1,6 @@
 package com.lumina.core.ui.components.home
 
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
 
 /**
@@ -10,4 +11,8 @@ data class BottomSheetAppAction(
     val onClick: () -> Unit,
     val icon: ImageVector? = null,
     val trailingIcon: ImageVector? = null,
+
+    val isExpanded: Boolean = false,
+    val isDimmed: Boolean = false,
+    val expandedContent: (@Composable () -> Unit)? = null,
 )

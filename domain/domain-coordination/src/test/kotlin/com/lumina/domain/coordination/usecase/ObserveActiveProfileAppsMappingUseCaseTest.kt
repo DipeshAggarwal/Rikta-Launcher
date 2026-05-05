@@ -3,7 +3,7 @@ package com.lumina.domain.coordination.usecase
 import com.lumina.core.model.AppBasicData
 import com.lumina.core.model.AppCategory
 import com.lumina.core.model.AppInfo
-import com.lumina.core.model.AppOverrideState
+import com.lumina.core.model.ProfileAppConfig
 import com.lumina.core.model.componentKey
 import com.lumina.domain.apps.InstalledAppsRepository
 import com.lumina.domain.profiles.ProfileRepository
@@ -42,7 +42,7 @@ class ObserveActiveProfileAppsMappingUseCaseTest {
         every { installedAppsRepository.appsMap } returns MutableStateFlow(appInfoMap)
 
         val override = listOf(
-            AppOverrideState(
+            ProfileAppConfig(
                 appBasicData = appBasicData,
                 showCountdown = false,
                 recommendedUsageMinutes = 0

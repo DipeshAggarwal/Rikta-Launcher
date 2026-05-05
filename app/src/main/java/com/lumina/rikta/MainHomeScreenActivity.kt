@@ -40,7 +40,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.lumina.core.common.FeatureFlags
-import com.lumina.core.ui.Motion.SCREEN_TRANSITION_DURATION
+import com.lumina.core.ui.Motion.SCREEN_TRANSITION_MS
 import com.lumina.core.ui.theme.BackgroundColor
 import com.lumina.domain.coordination.AppLaunchCoordinator
 import com.lumina.domain.coordination.LaunchState
@@ -402,8 +402,8 @@ class MainHomeScreenActivity : ComponentActivity() {
 
             AnimatedVisibility(
                 visible = isCountdownVisible,
-                enter = fadeIn(tween(SCREEN_TRANSITION_DURATION)),
-                exit = fadeOut(tween(SCREEN_TRANSITION_DURATION))
+                enter = fadeIn(tween(SCREEN_TRANSITION_MS)),
+                exit = fadeOut(tween(SCREEN_TRANSITION_MS))
             ) {
                 CountdownScreen(
                     isVisible = isCountdownVisible,

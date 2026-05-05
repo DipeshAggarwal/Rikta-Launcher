@@ -79,13 +79,13 @@ fun SettingsButton(
             isSelected -> CardContainerColor.copy(alpha = SettingsButtonDefaults.SELECTED_ALPHA)
             else -> CardContainerColor
         },
-        animationSpec = tween(durationMillis = Motion.SCREEN_TRANSITION_DURATION),
+        animationSpec = tween(durationMillis = Motion.SCREEN_TRANSITION_MS),
         label = "containerColor"
     )
 
     val animatedContentColor by animateColorAsState(
         targetValue = if (!isDisabled) ContentColor else ContentColorDisabled,
-        animationSpec = tween(durationMillis = Motion.SCREEN_TRANSITION_DURATION),
+        animationSpec = tween(durationMillis = Motion.SCREEN_TRANSITION_MS),
         label = "contentColor"
     )
 

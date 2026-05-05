@@ -41,7 +41,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lumina.core.ui.HapticUtils
-import com.lumina.core.ui.Motion.SCREEN_TRANSITION_DURATION
+import com.lumina.core.ui.Motion.SCREEN_TRANSITION_MS
 import com.lumina.core.ui.theme.CardContainerColor
 import com.lumina.core.ui.theme.ContentColor
 import com.lumina.feature.appcountdown.CountdownUiState
@@ -140,8 +140,8 @@ fun CountdownScreen(
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     AnimatedVisibility(
                         visible = running.showNumber,
-                        enter = fadeIn(tween(SCREEN_TRANSITION_DURATION)),
-                        exit = fadeOut(tween(SCREEN_TRANSITION_DURATION))
+                        enter = fadeIn(tween(SCREEN_TRANSITION_MS)),
+                        exit = fadeOut(tween(SCREEN_TRANSITION_MS))
                     ) {
                         Text(
                             text = running.currentStep.toString(),

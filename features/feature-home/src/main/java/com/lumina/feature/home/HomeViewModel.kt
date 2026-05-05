@@ -2,20 +2,21 @@ package com.lumina.feature.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.lumina.core.common.FlowDefaults.WhileSubscribedTimeoutMs
 import com.lumina.core.logging.Logger
+import com.lumina.core.model.AppCategory
 import com.lumina.core.model.AppInfo
-import com.lumina.core.model.AppProfile
 import com.lumina.core.model.AppShortcut
 import com.lumina.core.model.FavouriteItemType
 import com.lumina.core.model.LauncherItem
 import com.lumina.core.model.componentKey
+import com.lumina.domain.apps.AppOverrideRepository
 import com.lumina.domain.apps.AppShortcutRepository
 import com.lumina.domain.apps.HiddenAppsRepository
 import com.lumina.domain.search.AppSearchEngine
 import com.lumina.domain.settings.AppListSettings
 import com.lumina.domain.settings.HomeSettings
 import com.lumina.domain.settings.SearchSettings
-import com.lumina.domain.settings.SettingsRepository
 import com.lumina.domain.coordination.AppLaunchCoordinator
 import com.lumina.domain.coordination.IntentLauncher
 import com.lumina.domain.coordination.LaunchResult
@@ -23,9 +24,11 @@ import com.lumina.domain.coordination.StatusBarController
 import com.lumina.domain.coordination.model.ResolvedThemeState
 import com.lumina.domain.coordination.model.ResolvedUIState
 import com.lumina.domain.coordination.usecase.GetActiveHomeConfigUseCase
+import com.lumina.domain.coordination.usecase.GetAssignedProfilesForAppUseCase
 import com.lumina.domain.coordination.usecase.ObserveActiveProfileAppsMappingUseCase
 import com.lumina.domain.coordination.usecase.ObserveActiveProfileAppsUseCase
 import com.lumina.domain.coordination.usecase.ObserveActiveProfileFavouritesUseCase
+import com.lumina.domain.coordination.usecase.ObserveAllProfileUseCase
 import com.lumina.domain.profiles.ProfileFavouriteRepository
 import com.lumina.domain.profiles.ProfileRepository
 import com.lumina.domain.settings.CountdownSettings
@@ -37,6 +40,7 @@ import com.lumina.feature.home.model.SelectedApp
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -44,7 +48,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -53,12 +59,14 @@ class HomeViewModel @Inject constructor(
     private val hiddenAppsRepository: HiddenAppsRepository,
     private val profileRepository: ProfileRepository,
     private val profileFavouriteRepository: ProfileFavouriteRepository,
+    private val appOverrideRepository: AppOverrideRepository,
     private val shortcutRepository: ShortcutRepository,
     observeAppMapping: ObserveActiveProfileAppsMappingUseCase,
     observeActiveProfileApps: ObserveActiveProfileAppsUseCase,
     observeActiveProfileFavourites: ObserveActiveProfileFavouritesUseCase,
+    observeAllProfiles: ObserveAllProfileUseCase,
     getActiveHomeConfig: GetActiveHomeConfigUseCase,
-//    settingsRepository: SettingsRepository,
+    private val getAssignedProfilesForApp: GetAssignedProfilesForAppUseCase,
     private val appSearchEngine: AppSearchEngine,
     private val intentLauncher: IntentLauncher,
     private val launchCoordinator: AppLaunchCoordinator,
@@ -97,6 +105,9 @@ class HomeViewModel @Inject constructor(
 
     private val rawAppsMap: StateFlow<Map<String, LauncherItem.App>> = observeAppMapping()
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap())
+
+    val availableProfiles: StateFlow<List<Pair<String, String>>> = observeAllProfiles()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(WhileSubscribedTimeoutMs), emptyList())
 
     val resolvedUiState: StateFlow<ResolvedUIState> = getActiveHomeConfig()
         .stateIn(
@@ -193,8 +204,8 @@ class HomeViewModel @Inject constructor(
 
         val visibleApps = getVisibleAppsForSearch(searchPrefs, activeProfileApps.value)
         val favForBoosting = if (searchPrefs.favouriteBoostInSearch) {
-            activeProfileFavourites.value.map {
-                (it as LauncherItem.App).info.packageName
+            activeProfileFavourites.value.mapNotNull {
+                (it as? LauncherItem.App)?.info?.packageName
             }.toSet()
         } else emptySet()
 
@@ -217,8 +228,8 @@ class HomeViewModel @Inject constructor(
         val visibleApps = getVisibleAppsForSearch(searchPrefs, activeProfileApps.value)
 
         val favForBoosting = if (searchPrefs.favouriteBoostInSearch) {
-            activeProfileFavourites.value.map {
-                (it as LauncherItem.App).info.packageName
+            activeProfileFavourites.value.mapNotNull {
+                (it as? LauncherItem.App)?.info?.packageName
             }.toSet()
         } else emptySet()
 
@@ -226,6 +237,10 @@ class HomeViewModel @Inject constructor(
         results.firstOrNull()?.let { matchedAppInfo ->
             rawAppsMap.value[matchedAppInfo.packageName]?.let { onAppOpened(it) }
         }
+    }
+
+    fun observeApp(componentKey: String): Flow<LauncherItem.App?> {
+        return rawAppsMap.map { it[componentKey] }
     }
 
     fun onAppOpened(app: LauncherItem.App) {
@@ -251,7 +266,7 @@ class HomeViewModel @Inject constructor(
         onBottomSheetDismissed()
     }
 
-    fun onItemLongPressed(item: LauncherItem, profile: AppProfile = AppProfile.Standard) {
+    fun onItemLongPressed(item: LauncherItem) {
         val isFavourite = activeProfileFavourites.value.any { fav ->
             when (item) {
                 is LauncherItem.App -> fav is LauncherItem.App && fav.info.packageName == item.info.packageName
@@ -263,18 +278,30 @@ class HomeViewModel @Inject constructor(
             is LauncherItem.App -> {
                 val app = item.info
                 _bottomSheetState.value = BottomSheetState.AppOptions(
-                    SelectedApp(item, isFavourite, item.showCountdown, profile),
+                    SelectedApp(
+                        app = item,
+                        isFavourite = isFavourite,
+                        isCountdownRequired = item.showCountdown,
+                        profileIds = emptySet()
+                    ),
                     shortcuts = emptyList()
                 )
 
                 viewModelScope.launch {
+                    val assignedProfileIds = getAssignedProfilesForApp(
+                        item.info.packageName,
+                        item.info.userHandleNumber
+                    ).first()
                     val appShortcuts = appShortcutRepository.getShortcuts(app)
                     val currentState = _bottomSheetState.value
 
                     if (currentState is BottomSheetState.AppOptions &&
                         currentState.selectedApp.app.info.packageName == app.packageName
                     ) {
-                        _bottomSheetState.value = currentState.copy(shortcuts = appShortcuts)
+                        _bottomSheetState.value = currentState.copy(
+                            selectedApp = currentState.selectedApp.copy(profileIds = assignedProfileIds),
+                            shortcuts = appShortcuts
+                        )
                     }
                 }
             }
@@ -377,5 +404,56 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             shortcutRepository.delete(shortcut.id)
         }
+    }
+
+    fun onRenameApp(app: AppInfo, newDisplayName: String, dismissSheet: Boolean = false) {
+        viewModelScope.launch {
+            val sanitisedName = newDisplayName.trim()
+            if (sanitisedName.isNotBlank() && sanitisedName != app.displayName) {
+                appOverrideRepository.setDisplayName(
+                    packageName = app.packageName,
+                    userHandleNumber = app.userHandleNumber,
+                    displayName = sanitisedName
+                )
+            }
+        }
+        if (dismissSheet) onBottomSheetDismissed()
+    }
+
+    fun onChangeCategory(app: AppInfo, newCategory: AppCategory, dismissSheet: Boolean = false) {
+        viewModelScope.launch {
+            if (newCategory != app.category) {
+                appOverrideRepository.setCategory(
+                    packageName = app.packageName,
+                    userHandleNumber = app.userHandleNumber,
+                    category = newCategory,
+                    customCategoryName = null
+                )
+            }
+        }
+        if (dismissSheet) onBottomSheetDismissed()
+    }
+
+    fun onUpdateAppProfile(app: AppInfo, selectedProfileIds: Set<String>, dismissSheet: Boolean = false) {
+        viewModelScope.launch {
+            val allProfiles = availableProfiles.first()
+
+            allProfiles.forEach { (profileId, _) ->
+                if (selectedProfileIds.contains(profileId)) {
+                    profileRepository.addAppToProfile(
+                        profileId = profileId,
+                        packageName = app.packageName,
+                        userHandleNumber = app.userHandleNumber
+                    )
+                } else {
+                    profileRepository.removeAppFromProfile(
+                        profileId = profileId,
+                        packageName = app.packageName,
+                        userHandleNumber = app.userHandleNumber
+                    )
+                }
+            }
+        }
+        if (dismissSheet) onBottomSheetDismissed()
     }
 }

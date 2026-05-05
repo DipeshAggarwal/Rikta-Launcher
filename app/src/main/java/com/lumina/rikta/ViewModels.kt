@@ -32,7 +32,7 @@ import com.lumina.rikta.utils.managers.getUsageForApp
 import com.lumina.rikta.utils.weatherProxy
 import com.lumina.core.common.AppDefaults.DEFAULT_THEME
 import com.lumina.core.common.AppTheme
-import com.lumina.core.common.FlowDefaults.WhileSubscribedTimeoutMillis
+import com.lumina.core.common.FlowDefaults.WhileSubscribedTimeoutMs
 import com.lumina.core.common.TextUtils.UNACCENT_REGEX
 import com.lumina.domain.apps.HiddenAppsRepository
 import com.lumina.domain.coordination.usecase.InitialiseDefaultProfileUseCase
@@ -119,14 +119,14 @@ class HomeScreenModel @Inject constructor(
     val hiddenApps = hiddenAppsRepository.appPackages
         .stateIn(
             viewModelScope,
-            SharingStarted.WhileSubscribed(WhileSubscribedTimeoutMillis),
+            SharingStarted.WhileSubscribed(WhileSubscribedTimeoutMs),
             emptySet()
         )
     val showHiddenAppsInSearch: StateFlow<Boolean> = settingsRepository.searchSettings
         .map { it.showHiddenAppsInSearch }
         .stateIn(
             viewModelScope,
-            SharingStarted.WhileSubscribed(WhileSubscribedTimeoutMillis),
+            SharingStarted.WhileSubscribed(WhileSubscribedTimeoutMs),
             false
         )
 

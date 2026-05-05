@@ -1,7 +1,7 @@
 package com.lumina.domain.profiles
 
 import com.lumina.core.model.AppBasicData
-import com.lumina.core.model.AppOverrideState
+import com.lumina.core.model.ProfileAppConfig
 import com.lumina.domain.profiles.model.LauncherProfile
 import com.lumina.domain.profiles.model.TriggerCondition
 import kotlinx.coroutines.flow.Flow
@@ -21,8 +21,9 @@ interface ProfileRepository {
     suspend fun updateProfile(profile: LauncherProfile)
     suspend fun deleteProfile(profileId: String)
 
-    fun getAppsForProfile(profileId: String): Flow<List<AppOverrideState>>
-    suspend fun setAppsForProfile(profileId: String, apps: List<AppBasicData>)
+    fun getAppsForProfile(profileId: String): Flow<List<ProfileAppConfig>>
+    fun getProfileIdsForApp(packageName: String, userHandleNumber: Long): Flow<Set<String>>
+    suspend fun setAppsForProfile(profileId: String, apps: Set<AppBasicData>)
     suspend fun addAppToProfile(profileId: String, packageName: String, userHandleNumber: Long)
     suspend fun addAppsToProfile(profileId: String, apps: List<AppBasicData>)
     suspend fun removeAppFromProfile(profileId: String, packageName: String, userHandleNumber: Long)

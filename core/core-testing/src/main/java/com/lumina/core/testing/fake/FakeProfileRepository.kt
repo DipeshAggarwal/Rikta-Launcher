@@ -2,7 +2,7 @@ package com.lumina.core.testing.fake
 
 import com.lumina.core.model.AppBasicData
 import com.lumina.domain.profiles.ProfileRepository
-import com.lumina.core.model.AppOverrideState
+import com.lumina.core.model.ProfileAppConfig
 import com.lumina.domain.profiles.model.LauncherProfile
 import com.lumina.domain.profiles.model.TriggerCondition
 import kotlinx.coroutines.flow.Flow
@@ -73,7 +73,7 @@ class FakeProfileRepository : ProfileRepository {
         profiles.value = profiles.value.filter { it.id != profileId }
     }
 
-    override fun getAppsForProfile(profileId: String): Flow<List<AppOverrideState>> {
+    override fun getAppsForProfile(profileId: String): Flow<List<ProfileAppConfig>> {
         return MutableStateFlow(emptyList())
     }
 

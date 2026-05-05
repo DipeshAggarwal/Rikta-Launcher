@@ -3,7 +3,7 @@ package com.lumina.feature.apphiding
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.lumina.core.common.FlowDefaults.WhileSubscribedTimeoutMillis
+import com.lumina.core.common.FlowDefaults.WhileSubscribedTimeoutMs
 import com.lumina.core.model.AppInfo
 import com.lumina.domain.apps.HiddenAppsRepository
 import com.lumina.domain.apps.InstalledAppsRepository
@@ -45,21 +45,21 @@ class AppHidingViewModel @Inject constructor(
         installed.partition { it.packageName in hiddenSet }
     }.stateIn(
         viewModelScope,
-        SharingStarted.WhileSubscribed(WhileSubscribedTimeoutMillis),
+        SharingStarted.WhileSubscribed(WhileSubscribedTimeoutMs),
         Pair(emptyList(), emptyList())
     )
 
     val hiddenApps: StateFlow<List<AppInfo>> = groupApps.map { it.first }
         .stateIn(
             viewModelScope,
-            SharingStarted.WhileSubscribed(WhileSubscribedTimeoutMillis),
+            SharingStarted.WhileSubscribed(WhileSubscribedTimeoutMs),
             emptyList()
         )
 
     val nonHiddenApps: StateFlow<List<AppInfo>> = groupApps.map { it.second }
         .stateIn(
             viewModelScope,
-            SharingStarted.WhileSubscribed(WhileSubscribedTimeoutMillis),
+            SharingStarted.WhileSubscribed(WhileSubscribedTimeoutMs),
             emptyList()
         )
 

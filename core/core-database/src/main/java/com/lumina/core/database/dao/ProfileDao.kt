@@ -55,6 +55,11 @@ interface ProfileDao {
     @Query("SELECT * FROM profile_app_mapping WHERE profileId = :profileId")
     fun getAppsForProfileSnapshot(profileId: String): List<ProfileAppCrossRef>
 
+    @Query("SELECT profileId FROM profile_app_mapping " +
+            "WHERE packageName = :packageName AND userHandleNumber = :userHandleNumber"
+    )
+    fun getProfileIdsForApp(packageName: String, userHandleNumber: Long): Flow<List<String>>
+
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertAppMapping(mapping: ProfileAppCrossRef)
 

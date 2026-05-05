@@ -1,6 +1,8 @@
 package com.lumina.data.apps.di
 
+import com.lumina.data.apps.RoomAppOverrideRepository
 import com.lumina.data.apps.installed.PackageManagerInstalledAppsRepository
+import com.lumina.domain.apps.AppOverrideRepository
 import com.lumina.domain.apps.InstalledAppsRepository
 import dagger.Binds
 import dagger.Module
@@ -21,4 +23,10 @@ abstract class InstalledAppsDataModule {
     abstract fun bindInstalledAppsRepository(
         installedAppsRepository: PackageManagerInstalledAppsRepository
     ): InstalledAppsRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindAppOverrideRepository(
+        appOverrideRepository: RoomAppOverrideRepository
+    ): AppOverrideRepository
 }

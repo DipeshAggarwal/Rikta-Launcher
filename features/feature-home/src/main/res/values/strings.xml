@@ -17,6 +17,18 @@
     <string name="change_category">Change Category</string>
     <string name="add_to_profile">Add to Profile</string>
 
+    <string name="app_name_label">App Name</string>
+    <string name="char_counter">%1$d / %2$d</string>
+    <string name="clear_name">Clear App Name</string>
+    <string name="reset_label">Reset App Name</string>
+    <string name="save_label">Save App Name</string>
+    <string name="category_selected_label">Selected Category</string>
+    <string name="category_save_label">Apply Category</string>
+    <string name="profile_field_placeholder">Search Profiles…</string>
+    <string name="profile_selected_label">Selected Profile</string>
+    <string name="profile_save_label">Apply Changes</string>
+    <string name="profile_create_new_label">+ Create new Profile</string>
+
     <string name="wellbeing">Digital Wellbeing</string>
     <string name="wellbeing_header">D. Wellbeing: %1$s</string>
     <string name="add_countdown">Require Countdown to Open</string>

@@ -8,7 +8,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
-import com.lumina.core.ui.Motion.SCREEN_TRANSITION_DURATION
+import com.lumina.core.ui.Motion.SCREEN_TRANSITION_MS
 import com.lumina.feature.appcountdown.CountdownSettingsViewModel
 
 const val APPS_COUNTDOWN_MANAGEMENT_ROUTE  = "countdown_apps_manage"
@@ -20,8 +20,8 @@ fun NavGraphBuilder.appCountdownNavigation(
 ) {
     composable(
         route = APPS_COUNTDOWN_MANAGEMENT_ROUTE,
-        enterTransition = { fadeIn(tween(SCREEN_TRANSITION_DURATION)) },
-        exitTransition = { fadeOut(tween(SCREEN_TRANSITION_DURATION)) }
+        enterTransition = { fadeIn(tween(SCREEN_TRANSITION_MS)) },
+        exitTransition = { fadeOut(tween(SCREEN_TRANSITION_MS)) }
     ) { navBackStackEntry ->
         val viewModel: CountdownSettingsViewModel = hiltViewModel(navBackStackEntry)
 
@@ -35,8 +35,8 @@ fun NavGraphBuilder.appCountdownNavigation(
 
     composable(
         APPS_COUNTDOWN_SETTINGS_ROUTE,
-        enterTransition = { fadeIn(tween(SCREEN_TRANSITION_DURATION)) },
-        exitTransition = { fadeOut(tween(SCREEN_TRANSITION_DURATION)) }
+        enterTransition = { fadeIn(tween(SCREEN_TRANSITION_MS)) },
+        exitTransition = { fadeOut(tween(SCREEN_TRANSITION_MS)) }
     ) { navBackStackEntry ->
         // remember is needed so that reference remains consistent across recompositions
         // Also, `getBackStackEntry` is an expensive operation and doesn't change.
@@ -56,8 +56,8 @@ fun NavGraphBuilder.appCountdownNavigation(
 
     composable(
         APP_COUNTDOWN_APP_PICKER_ROUTE,
-        enterTransition = { fadeIn(tween(SCREEN_TRANSITION_DURATION)) },
-        exitTransition = { fadeOut(tween(SCREEN_TRANSITION_DURATION)) }
+        enterTransition = { fadeIn(tween(SCREEN_TRANSITION_MS)) },
+        exitTransition = { fadeOut(tween(SCREEN_TRANSITION_MS)) }
     ) { navBackStackEntry ->
         val parentEntry = remember(navBackStackEntry) {
             navController.getBackStackEntry(APPS_COUNTDOWN_MANAGEMENT_ROUTE)

@@ -8,11 +8,11 @@ import android.os.UserHandle
 import android.os.UserManager
 import com.lumina.core.common.IoDispatcher
 import com.lumina.core.android.di.ApplicationScope
-import com.lumina.core.database.dao.AppOverrideDao
 import com.lumina.core.logging.Logger
 import com.lumina.core.model.AppCategory
 import com.lumina.core.model.AppInfo
 import com.lumina.core.model.componentKey
+import com.lumina.domain.apps.AppOverrideRepository
 import com.lumina.domain.apps.InstalledAppsRepository
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.withContext
@@ -40,7 +40,7 @@ class PackageManagerInstalledAppsRepository @Inject constructor(
     @param:ApplicationScope private val scope: CoroutineScope,
     @param:IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val installedAppsMonitor: InstalledAppsMonitor,
-    private val appOverrideDao: AppOverrideDao,
+    private val appOverrideRepository: AppOverrideRepository,
     private val launcherApps: LauncherApps,
     private val userManager: UserManager,
     private val logger: Logger
@@ -63,7 +63,7 @@ class PackageManagerInstalledAppsRepository @Inject constructor(
      * Re-queries the system whenever [installedAppsMonitor] emits a change.
      */
     override val apps: StateFlow<List<AppInfo>> = combine(
-        _systemApps, appOverrideDao.getAll()
+        _systemApps, appOverrideRepository.getAll()
     ) { systemApps, appOverrides ->
         val overrideMap = appOverrides.associateBy { "${it.packageName}::${it.userHandleNumber}" }
 
@@ -184,7 +184,7 @@ class PackageManagerInstalledAppsRepository @Inject constructor(
                 currentAppsList.removeAll { it.packageName == event.packageName && it.userHandleNumber == serial }
 
                 _systemApps.value = currentAppsList
-                appOverrideDao.delete(event.packageName, serial)
+                appOverrideRepository.clear(event.packageName, serial)
             }
 
             is AppChangeEvent.PackagesAvailable -> {
@@ -202,7 +202,7 @@ class PackageManagerInstalledAppsRepository @Inject constructor(
                 val serial = userManager.getSerialNumberForUser(event.userHandle)
                 event.packageNames.forEach { packageName ->
                     currentAppsList.removeAll { it.packageName == packageName && it.userHandleNumber == serial }
-                    appOverrideDao.delete(packageName, serial)
+                    appOverrideRepository.clear(packageName, serial)
                 }
                 _systemApps.value = currentAppsList
             }

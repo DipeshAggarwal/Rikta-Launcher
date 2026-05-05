@@ -12,7 +12,7 @@ import com.lumina.core.database.entity.ProfileTriggerEntity
 import com.lumina.core.logging.Logger
 import com.lumina.core.model.AppBasicData
 import com.lumina.domain.profiles.ProfileRepository
-import com.lumina.core.model.AppOverrideState
+import com.lumina.core.model.ProfileAppConfig
 import com.lumina.core.model.componentKey
 import com.lumina.core.model.getAppKey
 import com.lumina.domain.profiles.model.LauncherProfile
@@ -214,10 +214,10 @@ class RoomProfileRepository @Inject constructor(
     // ------------------------------------------------
     // Profile Specific Apps
 
-    override fun getAppsForProfile(profileId: String): Flow<List<AppOverrideState>> {
+    override fun getAppsForProfile(profileId: String): Flow<List<ProfileAppConfig>> {
         return profileDao.getAppsForProfile(profileId).map { apps ->
             apps.map { app ->
-                AppOverrideState(
+                ProfileAppConfig(
                     appBasicData = AppBasicData(app.packageName, app.userHandleNumber),
                     showCountdown = app.showCountdown,
                     recommendedUsageMinutes = app.recommendedUsageMinutes,
@@ -226,9 +226,16 @@ class RoomProfileRepository @Inject constructor(
         }
     }
 
+    override fun getProfileIdsForApp(
+        packageName: String,
+        userHandleNumber: Long
+    ): Flow<Set<String>> {
+        return profileDao.getProfileIdsForApp(packageName, userHandleNumber).map { it.toSet() }
+    }
+
     override suspend fun setAppsForProfile(
         profileId: String,
-        apps: List<AppBasicData>
+        apps: Set<AppBasicData>
     ) = database.withTransaction {
         val currentMappings = profileDao.getAppsForProfileSnapshot(profileId)
         val currentKeys = currentMappings.map { getAppKey(it.packageName, it.userHandleNumber) }.toSet()
