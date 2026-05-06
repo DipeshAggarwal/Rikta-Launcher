@@ -11,15 +11,18 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.Search
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -39,6 +42,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.lumina.core.ui.Motion
 import com.lumina.core.ui.ThemeDimensions
+import com.lumina.core.ui.components.home.CompactTextField
+import com.lumina.core.ui.systemProfileDisplayName
 import com.lumina.core.ui.theme.ContentColor
 import com.lumina.feature.home.R
 
@@ -57,25 +62,21 @@ fun AddAppToProfile(
     var searchQuery by remember { mutableStateOf("") }
     var selectedProfileIds by remember { mutableStateOf(initialSelectedProfileIds) }
 
-    val filteredProfileIds = remember(searchQuery, selectedProfileIds) {
+    val filteredProfileIds = remember(searchQuery, availableProfiles) {
         if (searchQuery.isBlank()) availableProfiles
         else availableProfiles.filter { it.second.contains(searchQuery, ignoreCase = true) }
     }
 
     Column(modifier = Modifier.fillMaxWidth()) {
-        TextField(
+        CompactTextField(
             value = searchQuery,
             onValueChange = { searchQuery = it },
-            placeholder = { Text(
-                stringResource(R.string.profile_field_placeholder),
-                color = ContentColor.copy(alpha = AddAppToProfileDefaults.PLACEHOLDER_TEXT_ALPHA)
-            )},
+            placeholder = stringResource(R.string.profile_field_placeholder),
+            textStyle = MaterialTheme.typography.bodySmall,
             leadingIcon = { Icon(imageVector = Icons.Outlined.Search, contentDescription = null) },
             singleLine = true,
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = ThemeDimensions.VerticalContentPadding)
-                .clip(RoundedCornerShape(ThemeDimensions.DefaultCornerRadius)),
+                .fillMaxWidth(),
             colors = TextFieldDefaults.colors(
                 focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
                 unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
@@ -83,6 +84,7 @@ fun AddAppToProfile(
                 unfocusedIndicatorColor = Color.Transparent,
             )
         )
+        Spacer(modifier = Modifier.height(AddAppToProfileDefaults.SpaceBetweenColumnItems))
 
         Column(
             modifier = Modifier
@@ -124,7 +126,7 @@ fun AddAppToProfile(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(text = name, style = MaterialTheme.typography.bodySmall)
+                        Text(text = systemProfileDisplayName(name), style = MaterialTheme.typography.bodySmall)
 
                         Icon(
                             imageVector = Icons.Outlined.Check,
@@ -143,22 +145,22 @@ fun AddAppToProfile(
             color = MaterialTheme.colorScheme.surfaceVariant
         )
 
-        TextButton(
-            modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-                .padding(top = ThemeDimensions.InLineButtonTopPadding),
-            onClick = { onSave(selectedProfileIds) }
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.End,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(stringResource(R.string.profile_save_label), color = ContentColor)
-        }
+            OutlinedButton(onClick = { onCreateNewProfile() }) {
+                Text(stringResource(R.string.profile_create_new_label), color = ContentColor)
+            }
 
-        TextButton(
-            modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-                .padding(top = ThemeDimensions.InLineButtonTopPadding),
-            onClick = onCreateNewProfile
-        ) {
-            Text(stringResource(R.string.profile_create_new_label), color = ContentColor)
+            Spacer(modifier = Modifier.width(ThemeDimensions.InLineButtonSpacerWidth))
+            FilledTonalButton(
+                onClick = { onSave(selectedProfileIds) },
+                shape = MaterialTheme.shapes.medium
+            ) {
+                Text(stringResource(R.string.profile_save_label), color = ContentColor)
+            }
         }
     }
 }

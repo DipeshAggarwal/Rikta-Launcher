@@ -43,6 +43,7 @@ class ObserveActiveProfileAppsUseCaseTest {
                     appHiddenData.packageName,
                     componentClassName = "Main",
                     userHandleNumber = appHiddenData.userHandleNumber,
+                    originalName = "Hidden",
                     displayName = "Hidden",
                     category = AppCategory.ENTERTAINMENT
                 ),
@@ -55,6 +56,7 @@ class ObserveActiveProfileAppsUseCaseTest {
                     appVisibleData.packageName,
                     componentClassName = "Main",
                     userHandleNumber = appVisibleData.userHandleNumber,
+                    originalName = "Visible",
                     displayName = "Visible",
                     category = AppCategory.ENTERTAINMENT
                 ),

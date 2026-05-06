@@ -28,6 +28,7 @@ class ObserveActiveProfileCountdownAppsUseCaseTest {
                     appOneData.packageName,
                     componentClassName = "Main",
                     userHandleNumber = appOneData.userHandleNumber,
+                    originalName = "One",
                     displayName = "One",
                     category = AppCategory.ENTERTAINMENT
                 ),
@@ -40,6 +41,7 @@ class ObserveActiveProfileCountdownAppsUseCaseTest {
                     appTwoData.packageName,
                     componentClassName = "Main",
                     userHandleNumber = appTwoData.userHandleNumber,
+                    originalName = "Two",
                     displayName = "Two",
                     category = AppCategory.ENTERTAINMENT
                 ),

@@ -5,6 +5,7 @@ import com.lumina.core.model.ProfileType
 import com.lumina.domain.profiles.model.LauncherProfile
 import com.lumina.domain.profiles.model.LauncherProfileOverrides
 import com.lumina.domain.profiles.model.LauncherProfileSettings
+import kotlin.Boolean
 
 object LauncherProfileBuilder {
     fun build(
@@ -12,15 +13,20 @@ object LauncherProfileBuilder {
         name: String = "Test Profile",
         type: ProfileType = ProfileType.CUSTOM,
         userHandleNumber: Long = 0L,
-        blockProfileTriggerSwitching: Boolean = false,
         strictMode: Boolean = false,
+        isAdmin: Boolean = false,
+        blockProfileTriggerSwitching: Boolean = false,
         priorityTriggerLaunch: Boolean = false,
         filterNotification: Boolean = false,
+        allowAppRename: Boolean = false,
+        allowProfileManagement: Boolean = false,
+        allowAppCategoryChange: Boolean = false,
         startDnd: Boolean = false,
         showAppList: Boolean = true,
         hideScreenTimeOnApps: Boolean = false,
         disableOnLock: Boolean = false,
         blockUnauthorisedApps: Boolean = false,
+        overrideTheme: String? = null,
         overrideBackground: String? = null,
         overrideFont: String? = null,
         overrideShowClock: Boolean? = null,
@@ -37,10 +43,14 @@ object LauncherProfileBuilder {
         type = type,
         userHandleNumber = userHandleNumber,
         settings = LauncherProfileSettings(
-            blockProfileTriggerSwitching = blockProfileTriggerSwitching,
             strictMode = strictMode,
+            isAdmin = isAdmin,
+            blockProfileTriggerSwitching = blockProfileTriggerSwitching,
             priorityTriggerLaunch = priorityTriggerLaunch,
             filterNotification = filterNotification,
+            allowAppRename = allowAppRename,
+            allowProfileManagement = allowProfileManagement,
+            allowAppCategoryChange = allowAppCategoryChange,
             startDnd = startDnd,
             showAppList = showAppList,
             hideScreenTimeOnApps = hideScreenTimeOnApps,
@@ -51,6 +61,7 @@ object LauncherProfileBuilder {
             activationKey = activationKey
         ),
         overrides = LauncherProfileOverrides(
+            theme = overrideTheme,
             background = overrideBackground,
             font = overrideFont,
             showClock = overrideShowClock,

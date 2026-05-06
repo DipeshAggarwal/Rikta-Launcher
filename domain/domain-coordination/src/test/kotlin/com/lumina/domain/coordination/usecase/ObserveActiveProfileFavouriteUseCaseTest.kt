@@ -56,6 +56,7 @@ class ObserveActiveProfileFavouriteUseCaseTest {
                     appBasicData.packageName,
                     componentClassName = "Main",
                     userHandleNumber = appBasicData.userHandleNumber,
+                    originalName = "One",
                     displayName = "One",
                     category = AppCategory.ENTERTAINMENT
                 ),

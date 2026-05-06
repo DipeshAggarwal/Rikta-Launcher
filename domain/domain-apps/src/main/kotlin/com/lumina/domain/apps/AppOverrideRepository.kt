@@ -11,8 +11,8 @@ interface AppOverrideRepository {
     suspend fun setCategory(
         packageName: String,
         userHandleNumber: Long,
-        category: AppCategory,
+        category: AppCategory?,
         customCategoryName: String?
     )
-    suspend fun clear(packageName: String, userHandleNumber: Long)
+    suspend fun delete(packageName: String, userHandleNumber: Long)
 }

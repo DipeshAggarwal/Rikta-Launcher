@@ -51,9 +51,13 @@ class RoomProfileRepository @Inject constructor(
         name = name,
         settings = LauncherProfileSettings(
             strictMode = settings.strictMode,
+            isAdmin = settings.isAdmin,
             priorityTriggerLaunch = settings.priorityTriggerLaunch,
             filterNotification = settings.filterNotification,
             blockProfileTriggerSwitching = settings.blockProfileTriggerSwitching,
+            allowAppRename = settings.allowAppRename,
+            allowProfileManagement = settings.allowProfileManagement,
+            allowAppCategoryChange = settings.allowAppCategoryChange,
             startDnd = settings.startDnd,
             showAppList = settings.showAppList,
             hideScreenTimeOnApps = settings.hideScreenTimeOnApps,
@@ -64,6 +68,7 @@ class RoomProfileRepository @Inject constructor(
             activationKey = settings.activationKey,
         ),
         overrides = LauncherProfileOverrides(
+            theme = overrides.theme,
             background = overrides.background,
             font = overrides.font,
             showClock = overrides.showClock,
@@ -81,9 +86,13 @@ class RoomProfileRepository @Inject constructor(
         name = name,
         settings = ProfileSettings(
             strictMode = settings.strictMode,
+            isAdmin = settings.isAdmin,
             priorityTriggerLaunch = settings.priorityTriggerLaunch,
             filterNotification = settings.filterNotification,
             blockProfileTriggerSwitching = settings.blockProfileTriggerSwitching,
+            allowAppRename = settings.allowAppRename,
+            allowProfileManagement = settings.allowProfileManagement,
+            allowAppCategoryChange = settings.allowAppCategoryChange,
             startDnd = settings.startDnd,
             showAppList = settings.showAppList,
             hideScreenTimeOnApps = settings.hideScreenTimeOnApps,
@@ -94,6 +103,7 @@ class RoomProfileRepository @Inject constructor(
             activationKey = settings.activationKey,
         ),
         overrides = ProfileOverrides(
+            theme = overrides.theme,
             background = overrides.background,
             font = overrides.font,
             showClock = overrides.showClock,

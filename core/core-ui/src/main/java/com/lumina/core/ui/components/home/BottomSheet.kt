@@ -47,6 +47,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lumina.core.ui.R
 import com.lumina.core.ui.ThemeDimensions
+import com.lumina.core.ui.ThemeTextDefaults
 import com.lumina.core.ui.components.settings.SettingsComponentsDefaults
 import com.lumina.core.ui.theme.ContentColor
 
@@ -166,7 +167,7 @@ fun BottomSheet(
                                 Surface(
                                     onClick = { action.onClick() },
                                     modifier = Modifier
-                                        .weight(SettingsComponentsDefaults.TEXT_WEIGHT)
+                                        .weight(ThemeTextDefaults.TEXT_WEIGHT)
                                         .size(BottomSheetDefaults.QuickSurfaceSize),
                                     shape = RoundedCornerShape(ThemeDimensions.DefaultCornerRadius),
                                     color = MaterialTheme.colorScheme.surfaceVariant,
@@ -233,8 +234,11 @@ private fun ActionItem(action: BottomSheetAppAction) {
             modifier = Modifier
                 .fillMaxWidth()
                 .then(
-                    if (!action.isDimmed) Modifier.combinedClickable(onClick = action.onClick)
-                        else Modifier
+                    when {
+                        !action.isDimmed -> Modifier.combinedClickable(onClick = action.onClick)
+                        action.onDimmedClicked != null -> Modifier.clickable { action.onDimmedClicked() }
+                        else -> Modifier
+                    }
                 )
                 .padding(vertical = BottomSheetDefaults.ActionVerticalPadding),
             horizontalArrangement = Arrangement.SpaceBetween,

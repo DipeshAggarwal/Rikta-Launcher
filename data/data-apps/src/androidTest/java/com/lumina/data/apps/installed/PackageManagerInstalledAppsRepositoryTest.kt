@@ -8,10 +8,10 @@ import android.content.pm.LauncherApps
 import android.os.UserHandle
 import android.os.UserManager
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.lumina.core.database.dao.AppOverrideDao
-import com.lumina.core.database.entity.AppOverrideEntity
 import com.lumina.core.logging.Logger
 import com.lumina.core.model.AppCategory
+import com.lumina.core.model.AppOverride
+import com.lumina.domain.apps.AppOverrideRepository
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
@@ -36,7 +36,7 @@ import org.junit.runner.RunWith
 class PackageManagerInstalledAppsRepositoryTest {
     private lateinit var context: Context
     private lateinit var installedAppsMonitor: InstalledAppsMonitor
-    private lateinit var appOverrideDao: AppOverrideDao
+    private lateinit var appOverrideRepository: AppOverrideRepository
     private lateinit var launcherApps: LauncherApps
     private lateinit var userManager: UserManager
     private lateinit var logger: Logger
@@ -47,7 +47,7 @@ class PackageManagerInstalledAppsRepositoryTest {
     private val testScope = TestScope(testDispatcher)
 
     private val monitorFlow = MutableSharedFlow<AppChangeEvent>()
-    private val overrideFlow = MutableStateFlow<List<AppOverrideEntity>>(emptyList())
+    private val overrideFlow = MutableStateFlow<List<AppOverride>>(emptyList())
 
     private val testUserHandle: UserHandle = mockk(relaxed = true)
     private val testUserId = 0L
@@ -59,7 +59,7 @@ class PackageManagerInstalledAppsRepositoryTest {
 
         context = mockk(relaxed = true)
         installedAppsMonitor = mockk(relaxed = true)
-        appOverrideDao = mockk(relaxed = true)
+        appOverrideRepository = mockk(relaxed = true)
         launcherApps = mockk(relaxed = true)
         userManager = mockk(relaxed = true)
         logger = mockk(relaxed = true)
@@ -70,7 +70,7 @@ class PackageManagerInstalledAppsRepositoryTest {
         every { userManager.getSerialNumberForUser(testUserHandle) } returns testUserId
 
         every { installedAppsMonitor.appChanges() } returns monitorFlow
-        every { appOverrideDao.getAll() } returns overrideFlow
+        every { appOverrideRepository.getAll() } returns overrideFlow
     }
 
     fun testSystemApp(
@@ -101,7 +101,7 @@ class PackageManagerInstalledAppsRepositoryTest {
 
         pmInstalledAppsRepository = PackageManagerInstalledAppsRepository(
             context, testScope.backgroundScope, testDispatcher, installedAppsMonitor,
-            appOverrideDao, launcherApps, userManager, logger
+            appOverrideRepository, launcherApps, userManager, logger
         )
         monitorFlow.emit(AppChangeEvent.Initial)
         advanceUntilIdle()
@@ -120,10 +120,10 @@ class PackageManagerInstalledAppsRepositoryTest {
 
         pmInstalledAppsRepository = PackageManagerInstalledAppsRepository(
             context, testScope.backgroundScope, testDispatcher, installedAppsMonitor,
-            appOverrideDao, launcherApps, userManager, logger
+            appOverrideRepository, launcherApps, userManager, logger
         )
 
-        val overrideData = AppOverrideEntity(
+        val overrideData = AppOverride(
             packageName = "com.example.one",
             userHandleNumber = testUserId,
             customDisplayName = "Custom App",
@@ -151,7 +151,7 @@ class PackageManagerInstalledAppsRepositoryTest {
 
         pmInstalledAppsRepository = PackageManagerInstalledAppsRepository(
             context, testScope.backgroundScope, testDispatcher, installedAppsMonitor,
-            appOverrideDao, launcherApps, userManager, logger
+            appOverrideRepository, launcherApps, userManager, logger
         )
 
         monitorFlow.emit(AppChangeEvent.PackageAdded("com.example.one", testUserHandle))
@@ -169,7 +169,7 @@ class PackageManagerInstalledAppsRepositoryTest {
 
         pmInstalledAppsRepository = PackageManagerInstalledAppsRepository(
             context, testScope.backgroundScope, testDispatcher, installedAppsMonitor,
-            appOverrideDao, launcherApps, userManager, logger
+            appOverrideRepository, launcherApps, userManager, logger
         )
 
         monitorFlow.emit(AppChangeEvent.Initial)
@@ -180,7 +180,7 @@ class PackageManagerInstalledAppsRepositoryTest {
         advanceUntilIdle()
 
         assertTrue(pmInstalledAppsRepository.apps.value.isEmpty())
-        coVerify(exactly = 1) { appOverrideDao.delete("com.example.one", testUserId) }
+        coVerify(exactly = 1) { appOverrideRepository.delete("com.example.one", testUserId) }
     }
 
     @Test
@@ -190,7 +190,7 @@ class PackageManagerInstalledAppsRepositoryTest {
 
         pmInstalledAppsRepository = PackageManagerInstalledAppsRepository(
             context, testScope.backgroundScope, testDispatcher, installedAppsMonitor,
-            appOverrideDao, launcherApps, userManager, logger
+            appOverrideRepository, launcherApps, userManager, logger
         )
         advanceUntilIdle()
 
@@ -206,7 +206,7 @@ class PackageManagerInstalledAppsRepositoryTest {
 
         pmInstalledAppsRepository = PackageManagerInstalledAppsRepository(
             context, testScope.backgroundScope, testDispatcher, installedAppsMonitor,
-            appOverrideDao, launcherApps, userManager, logger
+            appOverrideRepository, launcherApps, userManager, logger
         )
         monitorFlow.emit(AppChangeEvent.Initial)
         advanceUntilIdle()

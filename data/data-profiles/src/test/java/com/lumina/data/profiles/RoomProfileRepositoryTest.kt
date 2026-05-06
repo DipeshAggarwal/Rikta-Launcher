@@ -100,6 +100,30 @@ class RoomProfileRepositoryTest {
     }
 
     @Test
+    fun `getAllProfiles returns entities mapped to LauncherProfile`() = runTest {
+        val profile = ProfileEntityBuilder.build(id = "profile_test", name = "Test Profile")
+        coEvery { profileDao.getAllProfiles() } returns flowOf(listOf(profile))
+
+        val result = roomProfileRepository.getAllProfiles().first()
+        assertEquals(1, result.size)
+        assertEquals(profile.id, result.first().id)
+        assertEquals(profile.name, result.first().name)
+    }
+
+    @Test
+    fun `getProfileById returns entity mapped to LauncherProfile or null`() = runTest {
+        val profile = ProfileEntityBuilder.build(id = "profile_test", name = "Test Profile")
+        coEvery { profileDao.getProfileById(profile.id) } returns flowOf(profile)
+
+        val result = roomProfileRepository.getProfileById(profile.id).first()
+        assertEquals(profile.id, result!!.id)
+
+        coEvery { profileDao.getProfileById(profile.id) } returns flowOf(null)
+        val nullResult = roomProfileRepository.getProfileById(profile.id).first()
+        assertNull(nullResult)
+    }
+
+    @Test
     fun `saveProfile throws error when activation key already taken by another profile`() = runTest {
         val profile = LauncherProfileBuilder.build(id = "profile_test", activationKey = "abc123")
         coEvery { profileDao.isKeyTaken(any(), profile.id) } returns true
@@ -197,6 +221,35 @@ class RoomProfileRepositoryTest {
 
         roomProfileRepository.saveProfile(profile)
         coVerify(exactly = 1) { profileDao.saveProfile(any()) }
+    }
+
+    @Test
+    fun `getAppsForProfile returns entities mapped to ProfileAppConfig`() = runTest {
+        val crossRef = ProfileAppCrossRef(
+            profileId = "profile_test",
+            packageName = "com.example.app",
+            userHandleNumber = 0L,
+            showCountdown = true,
+            recommendedUsageMinutes = 15,
+        )
+        every { profileDao.getAppsForProfile(crossRef.profileId) } returns flowOf(listOf(crossRef))
+
+        val result = roomProfileRepository.getAppsForProfile(crossRef.profileId).first()
+        assertEquals(1, result.size)
+        assertEquals(crossRef.packageName, result.first().appBasicData.packageName)
+        assertEquals(crossRef.userHandleNumber, result.first().appBasicData.userHandleNumber)
+    }
+
+    @Test
+    fun `getProfileIdsForApp returns a set of profile ids for provided app`() = runTest {
+        every {
+            profileDao.getProfileIdsForApp("com.example.app", 0L)
+        } returns flowOf(listOf("profile_1", "profile_2"))
+
+        val result = roomProfileRepository.getProfileIdsForApp("com.example.app", 0L).first()
+        assertEquals(2, result.size)
+        assertTrue(result.contains("profile_1"))
+        assertTrue(result.contains("profile_2"))
     }
 
     @Test

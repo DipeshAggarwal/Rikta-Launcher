@@ -20,8 +20,9 @@ class InitialiseDefaultProfileUseCase @Inject constructor(
 ) {
     suspend operator fun invoke() {
         val defaultProfile = profileRepository.getProfileById(SystemProfileIds.DEFAULT).first()
+        val defaultUserHandle = deviceUserProvider.getCurrentUserSerialNumber()
+
         if (defaultProfile == null) {
-            val defaultUserHandle = deviceUserProvider.getCurrentUserSerialNumber()
             val newDefaultProfile = LauncherProfile(
                 id = SystemProfileIds.DEFAULT,
                 userHandleNumber = defaultUserHandle,
@@ -29,9 +30,13 @@ class InitialiseDefaultProfileUseCase @Inject constructor(
                 name = "Default",
                 settings = LauncherProfileSettings(
                     strictMode = false,
+                    isAdmin = true,
                     priorityTriggerLaunch = false,
                     filterNotification = false,
                     blockProfileTriggerSwitching = false,
+                    allowAppRename = true,
+                    allowProfileManagement = true,
+                    allowAppCategoryChange = true,
                     startDnd = false,
                     showAppList = true,
                     hideScreenTimeOnApps = false,
@@ -42,12 +47,13 @@ class InitialiseDefaultProfileUseCase @Inject constructor(
                     activationKey = null
                 ),
                 overrides = LauncherProfileOverrides(
+                    theme = null,
                     background = null,
                     font = null,
-                    showClock = false,
-                    showBigClock = false,
-                    showDate = false,
-                    showWeather = false,
+                    showClock = true,
+                    showBigClock = true,
+                    showDate = true,
+                    showWeather = true,
                     hideScreenTime = false,
                 ),
             )
@@ -63,6 +69,86 @@ class InitialiseDefaultProfileUseCase @Inject constructor(
             }
 
             profileRepository.setActiveProfile(SystemProfileIds.DEFAULT)
+            setSecondaryProfiles()
         }
     }
+
+    private suspend fun setSecondaryProfiles() {
+        val defaultUserHandle = deviceUserProvider.getCurrentUserSerialNumber()
+        val defaultSettings = LauncherProfileSettings(
+            strictMode = false,
+            isAdmin = false,
+            priorityTriggerLaunch = false,
+            filterNotification = true,
+            blockProfileTriggerSwitching = false,
+            allowAppRename = false,
+            allowProfileManagement = false,
+            allowAppCategoryChange = false,
+            startDnd = false,
+            showAppList = true,
+            hideScreenTimeOnApps = false,
+            disableOnLock = false,
+            blockUnauthorisedApps = false,
+            entryAuthMethod = ProfileAuthMethod.NONE,
+            exitAuthMethod = ProfileAuthMethod.NONE,
+            activationKey = null
+        )
+        val defaultOverrides = LauncherProfileOverrides(
+            theme = null,
+            background = null,
+            font = null,
+            showClock = true,
+            showBigClock = true,
+            showDate = true,
+            showWeather = true,
+            hideScreenTime = false,
+        )
+
+        val existingIds = profileRepository.getAllProfiles().first().map { it.id }.toSet()
+        SystemProfileIds.AUTO_CREATE.forEach { id ->
+            if (id !in existingIds) {
+                val settings = when (id) {
+                    SystemProfileIds.GUEST -> defaultSettings.copy(
+                        strictMode = true,
+                        blockProfileTriggerSwitching = true,
+                        blockUnauthorisedApps = true,
+                    )
+                    SystemProfileIds.FOCUS -> defaultSettings.copy(
+                        strictMode = true,
+                        blockProfileTriggerSwitching = true,
+                        showAppList = false,
+                        blockUnauthorisedApps = true,
+                    )
+                    else -> defaultSettings
+                }
+                val profile = buildProfile(
+                    id = id,
+                    userHandleNumber = defaultUserHandle,
+                    type = if (id == SystemProfileIds.GUEST) ProfileType.LAUNCHER_GUEST
+                    else ProfileType.LAUNCHER_DEFAULT,
+                    name = id,
+                    settings = settings,
+                    overrides = defaultOverrides
+                )
+                profileRepository.saveProfile(profile)
+            }
+
+        }
+    }
+
+    private fun buildProfile(
+        id: String,
+        userHandleNumber: Long,
+        type: ProfileType,
+        name: String,
+        settings: LauncherProfileSettings,
+        overrides: LauncherProfileOverrides
+    ) = LauncherProfile(
+        id = id,
+        userHandleNumber = userHandleNumber,
+        type = type,
+        name = name,
+        settings = settings,
+        overrides = overrides
+    )
 }

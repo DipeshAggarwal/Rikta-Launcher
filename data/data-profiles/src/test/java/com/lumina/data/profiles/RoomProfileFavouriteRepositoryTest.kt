@@ -2,8 +2,13 @@ package com.lumina.data.profiles
 
 import com.lumina.core.database.dao.ProfileFavouriteDao
 import com.lumina.core.logging.Logger
+import com.lumina.core.testing.builder.ProfileFavouriteEntityBuilder
 import io.mockk.coVerify
+import io.mockk.every
 import io.mockk.mockk
+import junit.framework.TestCase.assertEquals
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
@@ -22,6 +27,16 @@ class RoomProfileFavouriteRepositoryTest {
         profileFavouriteDao = mockk(relaxed = true)
         logger = mockk(relaxed = true)
         roomProfileFavouriteRepository = RoomProfileFavouriteRepository(profileFavouriteDao, logger)
+    }
+
+    @Test
+    fun `getAll returns entities mapped to FavouriteItem`() = runTest {
+        val entity = ProfileFavouriteEntityBuilder.build(profileId = profileId, itemId = itemId)
+        every { profileFavouriteDao.getAll(profileId) } returns flowOf(listOf(entity))
+
+        val result = roomProfileFavouriteRepository.getAll(profileId).first()
+        assertEquals(1, result.size)
+        assertEquals(itemId, result.first().itemId)
     }
 
     @Test

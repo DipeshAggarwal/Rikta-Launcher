@@ -35,6 +35,7 @@ class ObserveActiveProfileAppsMappingUseCaseTest {
                 packageName = appBasicData.packageName,
                 userHandleNumber = appBasicData.userHandleNumber,
                 componentClassName = "Main",
+                originalName = "Example",
                 displayName = "Example",
                 category = AppCategory.ENTERTAINMENT,
             )

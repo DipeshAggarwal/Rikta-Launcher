@@ -1,5 +1,6 @@
 package com.lumina.domain.coordination.usecase
 
+import com.lumina.core.common.AppDefaults
 import com.lumina.domain.profiles.ProfileRepository
 import com.lumina.domain.profiles.model.LauncherProfile
 import com.lumina.domain.profiles.model.LauncherProfileOverrides
@@ -54,13 +55,14 @@ class GetActiveHomeConfigUseCaseTest {
     @Test
     fun `returns profile overrides if present`() = runTest {
         val profileOverrides = LauncherProfileOverrides(
-            background = "bg",
+            theme = AppDefaults.DEFAULT_THEME,
+            background ="bg",
             font = "font",
             showClock = false,
             showBigClock = false,
             showDate = false,
             showWeather = false,
-            hideScreenTime = false
+            hideScreenTime = false,
         )
         every { settingsRepository.allSettings } returns MutableStateFlow(defaultSettings)
         every { profileRepository.activeProfile } returns MutableStateFlow(mockk<LauncherProfile> {

@@ -68,7 +68,7 @@ class RoomAppOverrideRepository @Inject constructor(
     override suspend fun setCategory(
         packageName: String,
         userHandleNumber: Long,
-        category: AppCategory,
+        category: AppCategory?,
         customCategoryName: String?
     ) = database.withTransaction {
         val existing = appOverrideDao.get(packageName, userHandleNumber)
@@ -87,7 +87,7 @@ class RoomAppOverrideRepository @Inject constructor(
         }
     }
 
-    override suspend fun clear(packageName: String, userHandleNumber: Long) {
+    override suspend fun delete(packageName: String, userHandleNumber: Long) {
         appOverrideDao.delete(packageName, userHandleNumber)
     }
 

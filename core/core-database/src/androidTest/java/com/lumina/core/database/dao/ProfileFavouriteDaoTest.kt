@@ -66,6 +66,27 @@ class ProfileFavouriteDaoTest {
     }
 
     @Test
+    fun delete_removes_specified_favourites() = runTest {
+        val entity = ProfileFavouriteEntityBuilder.build(profileId)
+        profileFavouriteDao.save(entity)
+
+        profileFavouriteDao.delete(profileId, entity.itemId)
+        val result = profileFavouriteDao.get(profileId, entity.itemId)
+        assertNull(result)
+    }
+
+    @Test
+    fun update_changes_favourite_order_for_provided_item() = runTest {
+        val entity = ProfileFavouriteEntityBuilder.build(profileId)
+        profileFavouriteDao.save(entity)
+
+        profileFavouriteDao.update(profileId, entity.itemId, 512)
+        val result = profileFavouriteDao.get(profileId, entity.itemId)
+        assertNotNull(result)
+        assertEquals(512, result!!.favouriteOrder)
+    }
+
+    @Test
     fun toggle_inserts_new_item_if_it_does_not_exist() = runTest {
         val entity = ProfileFavouriteEntityBuilder.build(profileId)
         profileFavouriteDao.toggle(profileId, entity.itemId, entity.itemType, gap)

@@ -87,5 +87,12 @@
     <string name="category_uncategorised">Uncategorised</string>
     <string name="category_custom">Custom</string>
 
+    <!-- System Profile ID -->
+    <string name="launcher_default">Default</string>
+    <string name="launcher_focus">Focus</string>
+    <string name="launcher_guest">Guest</string>
+    <string name="system_work">Work</string>
+    <string name="system_private">Private</string>
+
     <string name="drag_to_reorder">"Drag to reorder"</string>
 </resources>

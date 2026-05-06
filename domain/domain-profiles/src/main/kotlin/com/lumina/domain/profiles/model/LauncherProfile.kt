@@ -16,9 +16,14 @@ data class LauncherProfile(
 
 data class LauncherProfileSettings(
     val strictMode: Boolean,
+    val isAdmin: Boolean,
 
     val priorityTriggerLaunch: Boolean,
     val filterNotification: Boolean,
+
+    val allowAppRename: Boolean,
+    val allowProfileManagement: Boolean,
+    val allowAppCategoryChange: Boolean,
 
     val blockProfileTriggerSwitching: Boolean,
 
@@ -35,6 +40,7 @@ data class LauncherProfileSettings(
 )
 
 data class LauncherProfileOverrides(
+    val theme: String?,
     val background: String?,
     val font: String?,
     val showClock: Boolean?,

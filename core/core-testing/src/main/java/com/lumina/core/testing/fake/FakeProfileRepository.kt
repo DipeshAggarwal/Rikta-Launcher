@@ -77,9 +77,16 @@ class FakeProfileRepository : ProfileRepository {
         return MutableStateFlow(emptyList())
     }
 
+    override fun getProfileIdsForApp(
+        packageName: String,
+        userHandleNumber: Long
+    ): Flow<Set<String>> {
+        return MutableStateFlow(emptySet())
+    }
+
     override suspend fun setAppsForProfile(
         profileId: String,
-        apps: List<AppBasicData>
+        apps: Set<AppBasicData>
     ) { }
 
     override suspend fun addAppToProfile(

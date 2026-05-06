@@ -20,14 +20,15 @@
     <string name="app_name_label">App Name</string>
     <string name="char_counter">%1$d / %2$d</string>
     <string name="clear_name">Clear App Name</string>
-    <string name="reset_label">Reset App Name</string>
-    <string name="save_label">Save App Name</string>
+    <string name="rename_reset_label">Reset App Name</string>
+    <string name="rename_save_label">Save App Name</string>
     <string name="category_selected_label">Selected Category</string>
+    <string name="category_reset_label">Reset Category</string>
     <string name="category_save_label">Apply Category</string>
     <string name="profile_field_placeholder">Search Profiles…</string>
     <string name="profile_selected_label">Selected Profile</string>
     <string name="profile_save_label">Apply Changes</string>
-    <string name="profile_create_new_label">+ Create new Profile</string>
+    <string name="profile_create_new_label">+ Create Profile</string>
 
     <string name="wellbeing">Digital Wellbeing</string>
     <string name="wellbeing_header">D. Wellbeing: %1$s</string>

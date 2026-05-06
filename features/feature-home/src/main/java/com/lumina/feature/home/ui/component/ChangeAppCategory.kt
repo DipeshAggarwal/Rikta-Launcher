@@ -6,14 +6,17 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Check
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -34,12 +37,14 @@ import com.lumina.core.model.AppCategory
 import com.lumina.core.ui.Motion
 import com.lumina.core.ui.ThemeDimensions
 import com.lumina.core.ui.theme.ContentColor
+import com.lumina.core.ui.toDisplayString
 import com.lumina.feature.home.R
 
 @Composable
 fun ChangeAppCategory(
     currentCategory: AppCategory,
-    onSave: (AppCategory) -> Unit
+    onSave: (AppCategory) -> Unit,
+    onReset: () -> Unit
 ) {
     var selectedCategory by remember { mutableStateOf(currentCategory) }
 
@@ -52,7 +57,7 @@ fun ChangeAppCategory(
         ) {
             AppCategory.entries.forEach { category ->
                 val isSelectedCategory = selectedCategory == category
-                val categoryName = category.name.lowercase().replaceFirstChar { it.uppercase() }
+                val categoryName = category.toDisplayString()
 
                 val checkAlpha by animateFloatAsState(
                     targetValue = if (isSelectedCategory) 1f else 0f,
@@ -94,13 +99,22 @@ fun ChangeAppCategory(
             }
         }
 
-        TextButton(
-            modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-                .padding(top = ThemeDimensions.InLineButtonTopPadding),
-            onClick = { onSave(selectedCategory) }
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.End,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(stringResource(R.string.category_save_label), color = ContentColor)
+            TextButton(onClick = { onReset() }) {
+                Text(stringResource(R.string.category_reset_label), color = ContentColor)
+            }
+
+            Spacer(modifier = Modifier.width(ThemeDimensions.InLineButtonSpacerWidth))
+            FilledTonalButton(
+                onClick = { onSave(selectedCategory) },
+                shape = MaterialTheme.shapes.medium
+            ) {
+                Text(stringResource(R.string.category_save_label), color = ContentColor)
+            }
         }
     }
 }

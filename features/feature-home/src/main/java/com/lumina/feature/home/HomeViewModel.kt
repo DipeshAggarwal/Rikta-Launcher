@@ -420,7 +420,17 @@ class HomeViewModel @Inject constructor(
         if (dismissSheet) onBottomSheetDismissed()
     }
 
-    fun onChangeCategory(app: AppInfo, newCategory: AppCategory, dismissSheet: Boolean = false) {
+    fun onResetNameApp(app: AppInfo, dismissSheet: Boolean = false) {
+        viewModelScope.launch {
+            appOverrideRepository.setDisplayName(
+                packageName = app.packageName,
+                userHandleNumber = app.userHandleNumber,
+                displayName = null
+            )
+        }
+    }
+
+    fun onChangeCategory(app: AppInfo, newCategory: AppCategory?, dismissSheet: Boolean = false) {
         viewModelScope.launch {
             if (newCategory != app.category) {
                 appOverrideRepository.setCategory(
@@ -432,6 +442,17 @@ class HomeViewModel @Inject constructor(
             }
         }
         if (dismissSheet) onBottomSheetDismissed()
+    }
+
+    fun onResetCategory(app: AppInfo, dismissSheet: Boolean = false) {
+        viewModelScope.launch {
+            appOverrideRepository.setCategory(
+                packageName = app.packageName,
+                userHandleNumber = app.userHandleNumber,
+                category = null,
+                customCategoryName = null
+            )
+        }
     }
 
     fun onUpdateAppProfile(app: AppInfo, selectedProfileIds: Set<String>, dismissSheet: Boolean = false) {

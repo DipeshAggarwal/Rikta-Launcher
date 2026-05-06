@@ -187,6 +187,41 @@ class ProfileDaoTest {
     }
 
     @Test
+    fun getProfileIdsForApp_returns_profiles_for_app() = runTest {
+        val profileOne = ProfileEntityBuilder.build(id = "profile_test_1")
+        val profileTwo = ProfileEntityBuilder.build(id = "profile_test_2")
+        val profileThree = ProfileEntityBuilder.build(id = "profile_test_3")
+
+        val mappingOne = ProfileAppCrossRef(profileOne.id, "com.example.app", 0L)
+        val mappingTwo = ProfileAppCrossRef(profileThree.id, "com.example.app", 0L)
+
+        profileDao.saveProfile(profileOne)
+        profileDao.saveProfile(profileTwo)
+        profileDao.saveProfile(profileThree)
+
+        profileDao.insertAppMapping(mappingOne)
+        profileDao.insertAppMapping(mappingTwo)
+
+        val result = profileDao.getProfileIdsForApp(mappingTwo.packageName, mappingTwo.userHandleNumber).first()
+        assertEquals(2, result.size)
+        assertTrue(result.contains(profileOne.id))
+        assertTrue(result.contains(profileThree.id))
+    }
+
+    @Test
+    fun insertAppMappings_inserts_multiple_items_at_once() = runTest {
+        val profile = ProfileEntityBuilder.build(id = "profile_test_1")
+        profileDao.saveProfile(profile)
+
+        val mappingOne = ProfileAppCrossRef(profile.id, "com.example.app.one", 0L)
+        val mappingTwo = ProfileAppCrossRef(profile.id, "com.example.app.two", 0L)
+        profileDao.insertAppMappings(listOf(mappingOne, mappingTwo))
+
+        val result = profileDao.getAppsForProfile(profile.id).first()
+        assertEquals(2, result.size)
+    }
+
+    @Test
     fun insertAppMapping_is_returned_by_getAppsForProfile() = runTest {
         val profile = ProfileEntityBuilder.build(id = "profile_test_1")
         val mapping = ProfileAppCrossRef(profile.id, "com.example.app", 0L)
@@ -197,6 +232,22 @@ class ProfileDaoTest {
         val result = profileDao.getAppsForProfile(profile.id).first()
         assertEquals(1, result.size)
         assertEquals(mapping.packageName, result.first().packageName)
+    }
+
+    @Test
+    fun getAppMapping_returns_right_entity_or_null() = runTest {
+        val profile = ProfileEntityBuilder.build(id = "profile_test_1")
+        profileDao.saveProfile(profile)
+
+        val mapping = ProfileAppCrossRef(profile.id, "com.example.app", 0L)
+        profileDao.insertAppMapping(mapping)
+
+        val foundResult = profileDao.getAppMapping(profile.id, mapping.packageName, mapping.userHandleNumber)
+        assertNotNull(foundResult)
+        assertEquals(mapping.packageName, foundResult!!.packageName)
+
+        val notFoundResult = profileDao.getAppMapping(profile.id, mapping.packageName, 1L)
+        assertNull(notFoundResult)
     }
 
     @Test

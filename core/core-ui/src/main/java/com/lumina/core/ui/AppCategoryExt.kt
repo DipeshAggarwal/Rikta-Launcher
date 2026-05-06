@@ -1,24 +1,28 @@
 package com.lumina.core.ui
 
-import android.content.Context
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
 import com.lumina.core.model.AppCategory
 
-fun AppCategory.toDisplayString(context: Context): String = when(this) {
-    AppCategory.GAME -> context.getString(R.string.category_game)
-    AppCategory.SOCIAL -> context.getString(R.string.category_social)
-    AppCategory.WORK_SOCIAL -> context.getString(R.string.category_work_social)
-    AppCategory.PRODUCTIVITY -> context.getString(R.string.category_productivity)
-    AppCategory.ENTERTAINMENT -> context.getString(R.string.category_entertainment)
-    AppCategory.COMMUNICATION -> context.getString(R.string.category_communication)
-    AppCategory.WORK_COMMUNICATION -> context.getString(R.string.category_work_communication)
-    AppCategory.TOOLS -> context.getString(R.string.category_tools)
-    AppCategory.HEALTH -> context.getString(R.string.category_health)
-    AppCategory.FITNESS -> context.getString(R.string.category_fitness)
-    AppCategory.FINANCE -> context.getString(R.string.category_finance)
-    AppCategory.NEWS -> context.getString(R.string.category_news)
-    AppCategory.EDUCATION -> context.getString(R.string.category_education)
-    AppCategory.SHOPPING -> context.getString(R.string.category_shopping)
-    AppCategory.TRAVEL -> context.getString(R.string.category_travel)
-    AppCategory.UNCATEGORISED -> context.getString(R.string.category_uncategorised)
-    AppCategory.CUSTOM -> context.getString(R.string.category_custom)
-}
+@Composable
+fun AppCategory.toDisplayString(): String = stringResource(
+    when(this) {
+        AppCategory.GAME -> R.string.category_game
+        AppCategory.SOCIAL -> R.string.category_social
+        AppCategory.WORK_SOCIAL -> R.string.category_work_social
+        AppCategory.PRODUCTIVITY -> R.string.category_productivity
+        AppCategory.ENTERTAINMENT -> R.string.category_entertainment
+        AppCategory.COMMUNICATION -> R.string.category_communication
+        AppCategory.WORK_COMMUNICATION -> R.string.category_work_communication
+        AppCategory.TOOLS -> R.string.category_tools
+        AppCategory.HEALTH -> R.string.category_health
+        AppCategory.FITNESS -> R.string.category_fitness
+        AppCategory.FINANCE -> R.string.category_finance
+        AppCategory.NEWS -> R.string.category_news
+        AppCategory.EDUCATION -> R.string.category_education
+        AppCategory.SHOPPING -> R.string.category_shopping
+        AppCategory.TRAVEL -> R.string.category_travel
+        AppCategory.UNCATEGORISED -> R.string.category_uncategorised
+        AppCategory.CUSTOM -> R.string.category_custom
+    }
+)

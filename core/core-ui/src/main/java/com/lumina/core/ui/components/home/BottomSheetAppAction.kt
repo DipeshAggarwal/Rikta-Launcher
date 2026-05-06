@@ -14,5 +14,6 @@ data class BottomSheetAppAction(
 
     val isExpanded: Boolean = false,
     val isDimmed: Boolean = false,
+    val onDimmedClicked: (() -> Unit)? = null,
     val expandedContent: (@Composable () -> Unit)? = null,
 )

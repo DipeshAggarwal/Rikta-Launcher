@@ -31,9 +31,14 @@ data class ProfileEntity(
 
 data class ProfileSettings(
     val strictMode: Boolean,
+    val isAdmin: Boolean,
 
     val priorityTriggerLaunch: Boolean = false,
     val filterNotification: Boolean = false,
+
+    val allowAppRename: Boolean = false,
+    val allowProfileManagement: Boolean = false,
+    val allowAppCategoryChange: Boolean = false,
 
     val blockProfileTriggerSwitching: Boolean  = false,
 
@@ -50,6 +55,7 @@ data class ProfileSettings(
 )
 
 data class ProfileOverrides(
+    val theme: String? = null,
     val background: String? = null,
     val font: String? = null,
     val showClock: Boolean? = null,

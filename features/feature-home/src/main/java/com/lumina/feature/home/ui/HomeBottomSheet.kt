@@ -134,11 +134,17 @@ fun HomeBottomSheet(
                                 },
                                 isExpanded = activeInLineScreen == ExpandedOrganiseScreen.RENAME,
                                 isDimmed = isAnyScreenExpanded && activeInLineScreen != ExpandedOrganiseScreen.RENAME,
+                                onDimmedClicked = { activeInLineScreen = ExpandedOrganiseScreen.NONE },
                                 expandedContent = {
                                     RenameApp(
                                         initialText = appInfo.displayName,
+                                        originalText = appInfo.originalName,
                                         onSave = { newName ->
                                             viewModel.onRenameApp(appInfo, newName)
+                                            activeInLineScreen = ExpandedOrganiseScreen.NONE
+                                        },
+                                        onReset = {
+                                            viewModel.onResetNameApp(appInfo)
                                             activeInLineScreen = ExpandedOrganiseScreen.NONE
                                         }
                                     )
@@ -154,10 +160,16 @@ fun HomeBottomSheet(
                                 },
                                 isExpanded = activeInLineScreen == ExpandedOrganiseScreen.CATEGORY,
                                 isDimmed = isAnyScreenExpanded && activeInLineScreen != ExpandedOrganiseScreen.CATEGORY,
+                                onDimmedClicked = { activeInLineScreen = ExpandedOrganiseScreen.NONE },
                                 expandedContent = {
                                     ChangeAppCategory(
                                         currentCategory = appInfo.category,
                                         onSave = { newCategory ->
+                                            viewModel.onChangeCategory(appInfo, newCategory)
+                                            activeInLineScreen = ExpandedOrganiseScreen.NONE
+                                        },
+                                        onReset = {
+                                            viewModel.onResetCategory(appInfo)
                                             activeInLineScreen = ExpandedOrganiseScreen.NONE
                                         }
                                     )
@@ -173,6 +185,7 @@ fun HomeBottomSheet(
                                 },
                                 isExpanded = activeInLineScreen == ExpandedOrganiseScreen.PROFILE,
                                 isDimmed = isAnyScreenExpanded && activeInLineScreen != ExpandedOrganiseScreen.PROFILE,
+                                onDimmedClicked = { activeInLineScreen = ExpandedOrganiseScreen.NONE },
                                 expandedContent = {
                                     val availableProfiles by viewModel.availableProfiles.collectAsStateWithLifecycle()
                                     val currentSelectedProfileIds = state.selectedApp.profileIds

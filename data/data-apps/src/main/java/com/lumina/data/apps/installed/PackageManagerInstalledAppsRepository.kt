@@ -32,7 +32,6 @@ import kotlin.collections.emptyList
 
 /**
  * Android implementation of [InstalledAppsRepository] using [PackageManager].
- * Uses a local cache to avoid expensive IPC calls to the system on every refresh.
  */
 @Singleton
 class PackageManagerInstalledAppsRepository @Inject constructor(
@@ -73,6 +72,7 @@ class PackageManagerInstalledAppsRepository @Inject constructor(
 
             if (overrideData != null) {
                 systemApp.copy(
+                    originalName = systemApp.displayName,
                     displayName = overrideData.customDisplayName ?: systemApp.displayName,
                     category = overrideCategory ?: systemApp.category,
                     customCategoryName = overrideData.customCategoryName
@@ -115,6 +115,7 @@ class PackageManagerInstalledAppsRepository @Inject constructor(
                             packageName = info.applicationInfo.packageName,
                             componentClassName = info.componentName.className,
                             userHandleNumber = userManager.getSerialNumberForUser(profile),
+                            originalName = info.label.toString(),
                             displayName = info.label.toString(),
                             category = mapCategory(info.applicationInfo.category)
                         )
@@ -139,6 +140,7 @@ class PackageManagerInstalledAppsRepository @Inject constructor(
                         packageName = info.applicationInfo.packageName,
                         componentClassName = info.componentName.className,
                         userHandleNumber = userManager.getSerialNumberForUser(userHandle),
+                        originalName = info.label.toString(),
                         displayName = info.label.toString(),
                         category = mapCategory(info.applicationInfo.category)
                     )
@@ -184,7 +186,7 @@ class PackageManagerInstalledAppsRepository @Inject constructor(
                 currentAppsList.removeAll { it.packageName == event.packageName && it.userHandleNumber == serial }
 
                 _systemApps.value = currentAppsList
-                appOverrideRepository.clear(event.packageName, serial)
+                appOverrideRepository.delete(event.packageName, serial)
             }
 
             is AppChangeEvent.PackagesAvailable -> {
@@ -202,7 +204,7 @@ class PackageManagerInstalledAppsRepository @Inject constructor(
                 val serial = userManager.getSerialNumberForUser(event.userHandle)
                 event.packageNames.forEach { packageName ->
                     currentAppsList.removeAll { it.packageName == packageName && it.userHandleNumber == serial }
-                    appOverrideRepository.clear(packageName, serial)
+                    appOverrideRepository.delete(packageName, serial)
                 }
                 _systemApps.value = currentAppsList
             }

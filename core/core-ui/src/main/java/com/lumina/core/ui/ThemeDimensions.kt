@@ -8,6 +8,7 @@ object ThemeDimensions {
     val RowVerticalPadding = 8.dp
     val RowHorizontalPadding = 8.dp
     val DividerBottomPadding = 8.dp
-    val VerticalContentPadding = 12.dp
-    val InLineButtonTopPadding = 12.dp
+    val InLineButtonSpacerWidth = 8.dp
+    val CompactTextFieldHeight = 48.dp
+    val CompactTextFieldContentHorizontalPadding = 16.dp
 }
