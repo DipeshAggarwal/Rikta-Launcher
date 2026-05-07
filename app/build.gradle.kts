@@ -7,7 +7,7 @@ plugins {
     alias(libs.plugins.ksp)
 }
 
-val baseVersionCode = "0.4.0.0506"
+val baseVersionCode = "0.4.0.0507"
 
 android {
     namespace = "com.lumina.rikta"
@@ -217,9 +217,9 @@ java {
     }
 }
 
-tasks.register("testClasses") {
-    group = "verification"
-    description = "Test classes for all variants."
-    dependsOn(
-        tasks.matching { it.name.startsWith("compile") && it.name.endsWith("UnitTestSources") }
-    )}
+//tasks.register("testClasses") {
+//    group = "verification"
+//    description = "Test classes for all variants."
+//    dependsOn(
+//        tasks.matching { it.name.startsWith("compile") && it.name.endsWith("UnitTestSources") }
+//    )}

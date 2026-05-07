@@ -16,8 +16,8 @@ class RoomAppOverrideRepository @Inject constructor(
     private val database: LuminaDatabase,
     private val appOverrideDao: AppOverrideDao
 ) : AppOverrideRepository {
-    override fun getAll(): Flow<List<AppOverride>> {
-        return appOverrideDao.getAll().map { apps ->
+    override val allOverrides: Flow<List<AppOverride>>
+        get() = appOverrideDao.getAll().map { apps ->
             apps.map { overrideData ->
                 AppOverride(
                     packageName = overrideData.packageName,
@@ -28,7 +28,6 @@ class RoomAppOverrideRepository @Inject constructor(
                 )
             }
         }
-    }
 
     override suspend fun get(
         packageName: String,

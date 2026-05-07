@@ -62,7 +62,7 @@ class PackageManagerInstalledAppsRepository @Inject constructor(
      * Re-queries the system whenever [installedAppsMonitor] emits a change.
      */
     override val apps: StateFlow<List<AppInfo>> = combine(
-        _systemApps, appOverrideRepository.getAll()
+        _systemApps, appOverrideRepository.allOverrides
     ) { systemApps, appOverrides ->
         val overrideMap = appOverrides.associateBy { "${it.packageName}::${it.userHandleNumber}" }
 

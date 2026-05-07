@@ -70,7 +70,7 @@ class PackageManagerInstalledAppsRepositoryTest {
         every { userManager.getSerialNumberForUser(testUserHandle) } returns testUserId
 
         every { installedAppsMonitor.appChanges() } returns monitorFlow
-        every { appOverrideRepository.getAll() } returns overrideFlow
+        every { appOverrideRepository.allOverrides } returns overrideFlow
     }
 
     fun testSystemApp(
