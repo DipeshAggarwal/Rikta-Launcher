@@ -153,7 +153,7 @@ interface ProfileDao {
 
     @Transaction
     suspend fun insertTriggerWithOrder(trigger: ProfileTriggerEntity) {
-        val count = getTriggerCount(trigger.profileId)
+        val count = getNextSequenceOrder(trigger.profileId)
         insertTrigger(trigger.copy(sequenceOrder = count))
     }
 
@@ -165,6 +165,11 @@ interface ProfileDao {
 
     @Query("SELECT COUNT(*) FROM profile_triggers WHERE profileId = :profileId")
     suspend fun getTriggerCount(profileId: String): Int
+
+    @Query("SELECT COALESCE(MAX(sequenceOrder + 1), 0) " +
+            "FROM profile_triggers WHERE profileId = :profileId"
+    )
+    suspend fun getNextSequenceOrder(profileId: String): Int
 
     // ------------------------------------------------
     // Profile Notification Control

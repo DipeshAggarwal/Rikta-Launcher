@@ -9,7 +9,7 @@ import com.lumina.core.model.AppOverride
 import com.lumina.domain.apps.AppOverrideRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import javax.inject.Inject
+import jakarta.inject.Inject
 import kotlin.collections.map
 
 class RoomAppOverrideRepository @Inject constructor(

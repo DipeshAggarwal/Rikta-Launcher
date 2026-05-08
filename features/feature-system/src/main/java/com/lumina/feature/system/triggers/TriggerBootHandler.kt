@@ -1,7 +1,5 @@
 package com.lumina.feature.system.triggers
 
-import android.Manifest
-import androidx.annotation.RequiresPermission
 import com.lumina.core.android.di.ApplicationScope
 import com.lumina.core.common.BootHandler
 import com.lumina.core.logging.Logger
@@ -21,7 +19,6 @@ class TriggerBootHandler @Inject constructor(
 ) : BootHandler {
     private val TAG = this::class.java.simpleName
 
-    @RequiresPermission(Manifest.permission.ACCESS_FINE_LOCATION)
     override fun onBoot(rebootTime: Long) {
         logger.d(TAG, "Restore triggers after boot.")
 

@@ -1,13 +1,12 @@
 package com.lumina.feature.system.triggers.monitor
 
-import android.Manifest
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import androidx.annotation.RequiresPermission
 import com.google.android.gms.location.Geofence
 import com.google.android.gms.location.GeofencingRequest
 import com.google.android.gms.location.LocationServices
+import com.lumina.core.android.PlatformCapabilityChecker
 import com.lumina.core.logging.Logger
 import com.lumina.core.model.ProfileTriggerType
 import com.lumina.domain.profiles.ProfileRepository
@@ -27,13 +26,20 @@ class LocationTriggerMonitor @Inject constructor(
     @param:ApplicationContext private val context: Context,
     private val triggerSystemStateCache: TriggerSystemStateCache,
     private val profileRepository: ProfileRepository,
+    private val capabilityChecker: PlatformCapabilityChecker,
     private val logger: Logger
 ) : TriggerMonitor {
     private val TAG = this::class.java.simpleName
     private val geofencingClient = LocationServices.getGeofencingClient(context)
 
-    @RequiresPermission(Manifest.permission.ACCESS_FINE_LOCATION)
+    // This Suppress is very intentional here as PlatformCapabilityChecker should handle all permission.
+    @Suppress("MissingPermission")
     suspend fun registerGeofences() {
+        if (!capabilityChecker.canMonitorLocationTriggers()) {
+            logger.d(TAG, "Skipping Geofence registration because of missing permission.")
+            return
+        }
+
         val profiles = profileRepository.getAllProfiles().first()
         val geofences = mutableListOf<Geofence>()
 

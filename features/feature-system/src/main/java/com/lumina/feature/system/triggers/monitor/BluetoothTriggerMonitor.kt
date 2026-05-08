@@ -1,13 +1,13 @@
 package com.lumina.feature.system.triggers.monitor
 
-import android.Manifest
 import android.bluetooth.BluetoothDevice
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.os.Build
-import androidx.annotation.RequiresPermission
+import androidx.core.content.ContextCompat
+import androidx.core.content.IntentCompat
+import com.lumina.core.android.PlatformCapabilityChecker
 import com.lumina.core.android.di.ApplicationScope
 import com.lumina.core.logging.Logger
 import com.lumina.domain.profiles.model.TriggerCondition
@@ -24,23 +24,21 @@ class BluetoothTriggerMonitor @Inject constructor(
     @param:ApplicationContext private val context: Context,
     @param:ApplicationScope private val scope: CoroutineScope,
     private val triggerSystemStateCache: TriggerSystemStateCache,
+    private val capabilityChecker: PlatformCapabilityChecker,
     private val logger: Logger
 ) : TriggerMonitor {
     private val TAG = this::class.java.simpleName
 
-    @Suppress("DEPRECATION")
     private val receiver = object : BroadcastReceiver() {
-        override fun onReceive(p0: Context?, p1: Intent?) {
-            val device = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                p1?.getParcelableExtra(
-                    BluetoothDevice.EXTRA_DEVICE, BluetoothDevice::class.java
-                )
-            } else {
-                p1?.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
-            }
+        override fun onReceive(context: Context?, intent: Intent?) {
+            val device = IntentCompat.getParcelableExtra(
+                intent ?: return,
+                BluetoothDevice.EXTRA_DEVICE,
+                BluetoothDevice::class.java
+            ) ?: return
 
-            val address = device?.address ?: return
-            when (p1?.action) {
+            val address = device.address
+            when (intent.action) {
                 BluetoothDevice.ACTION_ACL_CONNECTED -> {
                     logger.d(TAG, "Bluetooth connected: ${address}. Evaluating Triggers.")
                     scope.launch { triggerSystemStateCache.addConnectedDevice(address) }
@@ -53,19 +51,20 @@ class BluetoothTriggerMonitor @Inject constructor(
         }
     }
 
-    @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
+    // This Suppress is very intentional here as PlatformCapabilityChecker should handle all permission.
+    @Suppress("MissingPermission")
     fun register() {
+        if (!capabilityChecker.canMonitorBluetoothTriggers()) {
+            logger.d(TAG, "Skipping Bluetooth registration because of missing permission.")
+            return
+        }
+
         val filter = IntentFilter().apply {
             addAction(BluetoothDevice.ACTION_ACL_CONNECTED)
             addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED)
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            context.registerReceiver(receiver, filter, Context.RECEIVER_NOT_EXPORTED)
-        } else {
-            context.registerReceiver(receiver, filter)
-        }
-
+        ContextCompat.registerReceiver(context, receiver, filter, ContextCompat.RECEIVER_NOT_EXPORTED)
         logger.d(TAG, "Bluetooth Receiver registered.")
     }
 

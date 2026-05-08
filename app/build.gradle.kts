@@ -7,7 +7,7 @@ plugins {
     alias(libs.plugins.ksp)
 }
 
-val baseVersionCode = "0.4.0.0507"
+val baseVersionCode = "0.4.0.0508"
 
 android {
     namespace = "com.lumina.rikta"
@@ -146,6 +146,7 @@ dependencies {
     implementation(project(":features:feature-appfavourite"))
     implementation(project(":features:feature-appcountdown"))
     implementation(project(":features:feature-home"))
+    implementation(project(":features:feature-profiles"))
     implementation(project(":features:feature-settings"))
     implementation(project(":features:feature-system"))
 
@@ -198,6 +199,9 @@ dependencies {
 
     testImplementation(libs.mockk)
     androidTestImplementation(libs.mockk.android)
+
+    // Auth
+    implementation(libs.androidx.biometric)
 
     // Debugging Tools
     debugImplementation(libs.androidx.compose.ui.tooling)

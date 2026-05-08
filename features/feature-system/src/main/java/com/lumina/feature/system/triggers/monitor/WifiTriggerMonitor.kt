@@ -1,6 +1,5 @@
 package com.lumina.feature.system.triggers.monitor
 
-import android.Manifest
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.Network
@@ -9,7 +8,7 @@ import android.net.NetworkRequest
 import android.net.wifi.WifiInfo
 import android.net.wifi.WifiManager
 import android.os.Build
-import androidx.annotation.RequiresPermission
+import com.lumina.core.android.PlatformCapabilityChecker
 import com.lumina.core.android.di.ApplicationScope
 import com.lumina.core.logging.Logger
 import com.lumina.domain.profiles.model.TriggerCondition
@@ -21,11 +20,15 @@ import jakarta.inject.Singleton
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
+private const val WIFI_RAW_DELIMITER = "\""
+private const val WIFI_UNKNOWN_SSID = "<unknown ssid>"
+
 @Singleton
 class WifiTriggerMonitor @Inject constructor(
     @param:ApplicationContext private val context: Context,
     @param:ApplicationScope private val scope: CoroutineScope,
     private val triggerSystemStateCache: TriggerSystemStateCache,
+    private val capabilityChecker: PlatformCapabilityChecker,
     private val logger: Logger
 ) : TriggerMonitor {
     private val TAG = this::class.java.simpleName
@@ -77,9 +80,8 @@ class WifiTriggerMonitor @Inject constructor(
             wifiManager?.connectionInfo?.ssid
         }
 
-        val cleanSsid = rawSsid?.removeSurrounding("\"")
-
-        if (!cleanSsid.isNullOrBlank() && cleanSsid != "<unknown ssid>") {
+        val cleanSsid = rawSsid?.removeSurrounding(WIFI_RAW_DELIMITER)
+        if (!cleanSsid.isNullOrBlank() && cleanSsid != WIFI_UNKNOWN_SSID) {
             scope.launch {
                 triggerSystemStateCache.updateSsid(cleanSsid)
                 logger.d(TAG, "Wifi Changed. Evaluating Triggers.")
@@ -94,11 +96,14 @@ class WifiTriggerMonitor @Inject constructor(
         }
     }
 
-    @RequiresPermission(allOf = [
-        Manifest.permission.ACCESS_NETWORK_STATE,
-        Manifest.permission.ACCESS_FINE_LOCATION
-    ])
+    // This Suppress is very intentional here as PlatformCapabilityChecker should handle all permission.
+    @Suppress("MissingPermission")
     fun register() {
+        if (!capabilityChecker.canMonitorWifiTriggers()) {
+            logger.d(TAG, "Skipping Wifi registration because of missing permission.")
+            return
+        }
+
         val request = NetworkRequest.Builder()
             .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
             .build()

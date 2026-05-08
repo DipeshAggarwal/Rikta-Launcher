@@ -1,9 +1,8 @@
 package com.lumina.feature.system.triggers
 
-import android.Manifest
-import androidx.annotation.RequiresPermission
 import com.lumina.core.android.di.ApplicationScope
 import com.lumina.core.logging.Logger
+import com.lumina.domain.coordination.TriggerScheduler
 import com.lumina.feature.system.triggers.monitor.BluetoothTriggerMonitor
 import com.lumina.feature.system.triggers.monitor.LocationTriggerMonitor
 import com.lumina.feature.system.triggers.monitor.TimeTriggerScheduler
@@ -22,16 +21,17 @@ class TriggerLifecycleManager @Inject constructor(
     private val bluetoothTriggerMonitor: BluetoothTriggerMonitor,
     private val locationTriggerMonitor: LocationTriggerMonitor,
     private val logger: Logger
-) {
+) : TriggerScheduler {
     private val TAG = this::class.java.simpleName
 
-    @RequiresPermission(allOf = [
-        Manifest.permission.ACCESS_NETWORK_STATE,
-        Manifest.permission.ACCESS_FINE_LOCATION,
-        Manifest.permission.BLUETOOTH_CONNECT
-    ]
-    )
+    // Ensure Manager is not started multiple times.
+    @Volatile private var started = false
+
     fun start() {
+        if (started) {
+            logger.d(TAG, "Trigger Lifecycle is already running.")
+            return
+        }
         logger.d(TAG, "Starting Trigger Lifecycle.")
 
         triggerEvaluationEngine.start()
@@ -44,11 +44,13 @@ class TriggerLifecycleManager @Inject constructor(
         } catch (e: SecurityException) {
             logger.w(TAG, "Failed to register Wifi monitor.", e)
         }
+
         try {
             bluetoothTriggerMonitor.register()
         } catch (e: SecurityException) {
             logger.w(TAG, "Failed to register Bluetooth monitor", e)
         }
+
         scope.launch {
             try {
                 locationTriggerMonitor.registerGeofences()
@@ -56,6 +58,7 @@ class TriggerLifecycleManager @Inject constructor(
                 logger.w(TAG, "Failed to register Location monitor.", e)
             }
         }
+        started = true
     }
 
     fun stop() {
@@ -63,18 +66,39 @@ class TriggerLifecycleManager @Inject constructor(
 
         triggerEvaluationEngine.stop()
 
-        wifiTriggerMonitor.unregister()
-        bluetoothTriggerMonitor.unregister()
-        locationTriggerMonitor.unregisterGeofences()
-        timeTriggerScheduler.cancel()
+        try {
+            wifiTriggerMonitor.unregister()
+        } catch (e: Exception) {
+            logger.w(TAG, "Exception unregistering Wifi monitor.", e)
+        }
+
+        try {
+            bluetoothTriggerMonitor.unregister()
+        } catch (e: Exception) {
+            logger.w(TAG, "Exception unregistering Bluetooth monitor.", e)
+        }
+
+        try {
+            locationTriggerMonitor.unregisterGeofences()
+        } catch (e: Exception) {
+            logger.w(TAG, "Exception unregistering location monitor.", e)
+        }
+
+        try {
+            timeTriggerScheduler.cancel()
+        } catch (e: Exception) {
+            logger.w(TAG, "Exception cancelling Time scheduler.", e)
+        }
+        started = false
     }
 
-    @RequiresPermission(Manifest.permission.ACCESS_FINE_LOCATION)
-    fun refresh(scope: CoroutineScope) {
-        scope.launch {
-            timeTriggerScheduler.scheduleNextAlarm()
+    override suspend fun refresh() {
+        timeTriggerScheduler.scheduleNextAlarm()
+        try {
             locationTriggerMonitor.unregisterGeofences()
             locationTriggerMonitor.registerGeofences()
+        } catch (e: SecurityException) {
+            logger.w(TAG, "Location permission not granted. Cannot refresh geofence.", e)
         }
     }
 }

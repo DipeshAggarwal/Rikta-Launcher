@@ -14,6 +14,7 @@ dependencies {
     implementation(project(":core:core-logging"))
     implementation(project(":core:core-model"))
 
+    implementation(project(":domain:domain-coordination"))
     implementation(project(":domain:domain-profiles"))
     implementation(project(":domain:domain-usage"))
 

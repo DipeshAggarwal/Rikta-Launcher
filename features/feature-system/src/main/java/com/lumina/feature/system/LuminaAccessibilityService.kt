@@ -11,7 +11,6 @@ import android.content.IntentFilter
 import android.os.Process.myUserHandle
 import android.os.UserManager
 import android.view.accessibility.AccessibilityEvent
-import androidx.annotation.RequiresPermission
 import androidx.core.content.ContextCompat
 import com.lumina.core.android.di.ApplicationScope
 import com.lumina.core.common.SystemActions
@@ -59,11 +58,6 @@ class LuminaAccessibilityService : AccessibilityService() {
         }
     }
 
-    @RequiresPermission(allOf = [
-        Manifest.permission.ACCESS_NETWORK_STATE,
-        Manifest.permission.ACCESS_FINE_LOCATION,
-        Manifest.permission.BLUETOOTH_CONNECT
-    ])
     override fun onServiceConnected() {
         super.onServiceConnected()
         serviceInfo = AccessibilityServiceInfo().apply {
