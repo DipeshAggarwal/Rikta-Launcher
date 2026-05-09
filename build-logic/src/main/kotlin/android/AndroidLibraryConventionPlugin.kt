@@ -29,7 +29,7 @@ class AndroidLibraryConventionPlugin : Plugin<Project> {
         target.extensions.configure<LibraryExtension> {
             namespace = fullNamespace
 
-            compileSdk = 36
+            compileSdk = 37
             defaultConfig {
                 minSdk = 26
             }

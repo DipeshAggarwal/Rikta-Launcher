@@ -13,6 +13,9 @@ object ProfileEntityBuilder {
         id: String = "profile_test",
         name: String = "Test Profile",
         type: ProfileType = ProfileType.CUSTOM,
+        description: String = "",
+        createdAt: Long = 0L,
+        updatedAt: Long = 0L,
         userHandleNumber: Long = 0L,
         strictMode: Boolean = false,
         isAdmin: Boolean = false,
@@ -35,6 +38,7 @@ object ProfileEntityBuilder {
         overrideShowDate: Boolean? = null,
         overrideShowWeather: Boolean? = null,
         overrideHideScreenTime: Boolean? = null,
+        overrideIconName: String? = null,
         entryAuthMethod: ProfileAuthMethod = ProfileAuthMethod.NONE,
         exitAuthMethod: ProfileAuthMethod = ProfileAuthMethod.NONE,
         activationKey: String? = null,
@@ -43,6 +47,9 @@ object ProfileEntityBuilder {
         userHandleNumber = userHandleNumber,
         type = type,
         name = name,
+        description = description,
+        createdAt = createdAt,
+        updatedAt = updatedAt,
         settings = ProfileSettings(
             strictMode = strictMode,
             isAdmin = isAdmin,
@@ -69,7 +76,8 @@ object ProfileEntityBuilder {
             showBigClock = overrideShowBigClock,
             showDate = overrideShowDate,
             showWeather = overrideShowWeather,
-            hideScreenTime = overrideHideScreenTime
+            hideScreenTime = overrideHideScreenTime,
+            iconName = overrideIconName
         )
     )
 }

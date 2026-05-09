@@ -63,6 +63,7 @@ class GetActiveHomeConfigUseCaseTest {
             showDate = false,
             showWeather = false,
             hideScreenTime = false,
+            iconName = null
         )
         every { settingsRepository.allSettings } returns MutableStateFlow(defaultSettings)
         every { profileRepository.activeProfile } returns MutableStateFlow(mockk<LauncherProfile> {

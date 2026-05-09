@@ -3,6 +3,7 @@ package com.lumina.domain.profiles
 import com.lumina.core.model.AppBasicData
 import com.lumina.core.model.ProfileAppConfig
 import com.lumina.domain.profiles.model.LauncherProfile
+import com.lumina.domain.profiles.model.ProfileSummary
 import com.lumina.domain.profiles.model.TriggerCondition
 import kotlinx.coroutines.flow.Flow
 
@@ -49,6 +50,7 @@ interface ProfileRepository {
 
     fun getProfileTriggers(profileId: String): Flow<List<TriggerCondition>>
     suspend fun addProfileTrigger(profileId: String, conditions: TriggerCondition)
+    suspend fun updateProfileTrigger(conditions: TriggerCondition)
     suspend fun removeProfileTrigger(triggerId: Long)
     suspend fun clearAllProfileTriggers(profileId: String)
 
@@ -56,4 +58,6 @@ interface ProfileRepository {
     fun getNotificationAllowedApps(profileId: String): Flow<Set<AppBasicData>>
     suspend fun saveNotificationWhitelist(profileId: String, packageName: String, userHandleNumber: Long)
     suspend fun removeNotificationWhitelist(profileId: String, packageName: String, userHandleNumber: Long)
+
+    fun getAllProfileSummaries(): Flow<List<ProfileSummary>>
 }

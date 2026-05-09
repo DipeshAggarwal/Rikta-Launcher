@@ -19,6 +19,10 @@ data class ProfileEntity(
 
     val type: ProfileType,
     val name: String,
+    val description: String?,
+
+    val createdAt: Long = System.currentTimeMillis(),
+    val updatedAt: Long = System.currentTimeMillis(),
 
     @Embedded
     val settings: ProfileSettings,
@@ -62,5 +66,6 @@ data class ProfileOverrides(
     val showBigClock: Boolean? = null,
     val showDate: Boolean? = null,
     val showWeather: Boolean? = null,
-    val hideScreenTime: Boolean? = null
+    val hideScreenTime: Boolean? = null,
+    val iconName: String? = null
 )

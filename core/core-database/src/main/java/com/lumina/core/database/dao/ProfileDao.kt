@@ -11,6 +11,7 @@ import com.lumina.core.database.entity.NotificationWhitelistEntity
 import com.lumina.core.database.entity.ProfileAppCrossRef
 import com.lumina.core.database.entity.ProfileEntity
 import com.lumina.core.database.entity.ProfileTriggerEntity
+import com.lumina.core.database.models.ProfileSummaryRow
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -182,4 +183,16 @@ interface ProfileDao {
 
     @Delete
     suspend fun deleteNotificationWhitelist(entry: NotificationWhitelistEntity)
+
+    // ------------------------------------------------
+    // Profile Summary
+
+    @Query("""
+        SELECT p.*, 
+        (SELECT COUNT(*) FROM profile_app_mapping WHERE profileId = p.id) AS appCount,
+        (SELECT COUNT(*) FROM profile_triggers WHERE profileId = p.id) AS triggerCount,
+        (SELECT COUNT(*) FROM profile_notification_whitelist WHERE profileId = p.id) AS allowedNotificationCount
+        FROM profiles p
+    """)
+    fun getAllProfileSummaries(): Flow<List<ProfileSummaryRow>>
 }

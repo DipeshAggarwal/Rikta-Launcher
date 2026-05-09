@@ -27,7 +27,10 @@ class InitialiseDefaultProfileUseCase @Inject constructor(
                 id = SystemProfileIds.DEFAULT,
                 userHandleNumber = defaultUserHandle,
                 type = ProfileType.CUSTOM,
-                name = "Default",
+                name = SystemProfileIds.DEFAULT,
+                description = "",
+                createdAt = System.currentTimeMillis(),
+                updatedAt = System.currentTimeMillis(),
                 settings = LauncherProfileSettings(
                     strictMode = false,
                     isAdmin = true,
@@ -55,6 +58,7 @@ class InitialiseDefaultProfileUseCase @Inject constructor(
                     showDate = true,
                     showWeather = true,
                     hideScreenTime = false,
+                    iconName = null
                 ),
             )
 
@@ -102,6 +106,7 @@ class InitialiseDefaultProfileUseCase @Inject constructor(
             showDate = true,
             showWeather = true,
             hideScreenTime = false,
+            iconName = null
         )
 
         val existingIds = profileRepository.getAllProfiles().first().map { it.id }.toSet()
@@ -148,6 +153,9 @@ class InitialiseDefaultProfileUseCase @Inject constructor(
         userHandleNumber = userHandleNumber,
         type = type,
         name = name,
+        description = "",
+        createdAt = System.currentTimeMillis(),
+        updatedAt = System.currentTimeMillis(),
         settings = settings,
         overrides = overrides
     )

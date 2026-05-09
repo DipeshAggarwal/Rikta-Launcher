@@ -18,6 +18,7 @@ import com.lumina.core.model.getAppKey
 import com.lumina.domain.profiles.model.LauncherProfile
 import com.lumina.domain.profiles.model.LauncherProfileSettings
 import com.lumina.domain.profiles.model.LauncherProfileOverrides
+import com.lumina.domain.profiles.model.ProfileSummary
 import com.lumina.domain.profiles.model.TriggerCondition
 import jakarta.inject.Inject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -49,6 +50,9 @@ class RoomProfileRepository @Inject constructor(
         userHandleNumber = userHandleNumber,
         type = type,
         name = name,
+        description = description,
+        createdAt = createdAt,
+        updatedAt = updatedAt,
         settings = LauncherProfileSettings(
             strictMode = settings.strictMode,
             isAdmin = settings.isAdmin,
@@ -76,6 +80,7 @@ class RoomProfileRepository @Inject constructor(
             showDate = overrides.showDate,
             showWeather = overrides.showWeather,
             hideScreenTime = overrides.hideScreenTime,
+            iconName = overrides.iconName,
         )
     )
 
@@ -84,6 +89,9 @@ class RoomProfileRepository @Inject constructor(
         userHandleNumber = userHandleNumber,
         type = type,
         name = name,
+        description = description,
+        createdAt = createdAt,
+        updatedAt = System.currentTimeMillis(),
         settings = ProfileSettings(
             strictMode = settings.strictMode,
             isAdmin = settings.isAdmin,
@@ -111,6 +119,7 @@ class RoomProfileRepository @Inject constructor(
             showDate = overrides.showDate,
             showWeather = overrides.showWeather,
             hideScreenTime = overrides.hideScreenTime,
+            iconName = overrides.iconName,
         )
     )
 
@@ -358,6 +367,10 @@ class RoomProfileRepository @Inject constructor(
         profileDao.insertTriggerWithOrder(conditions.toEntity(profileId))
     }
 
+    override suspend fun updateProfileTrigger(conditon: TriggerCondition) {
+        profileDao.insertTrigger(conditon.toEntity(conditon.profileId, conditon.sequenceOrder))
+    }
+
     override suspend fun removeProfileTrigger(triggerId: Long) {
         profileDao.deleteTrigger(triggerId)
     }
@@ -411,5 +424,18 @@ class RoomProfileRepository @Inject constructor(
         profileDao.deleteNotificationWhitelist(
             NotificationWhitelistEntity(profileId, packageName, userHandleNumber)
         )
+    }
+
+    override fun getAllProfileSummaries(): Flow<List<ProfileSummary>> {
+        return profileDao.getAllProfileSummaries().map { summaries ->
+            summaries.map { result ->
+                ProfileSummary(
+                    profile = result.profile.toDomain(),
+                    appCount = result.appCount,
+                    triggerCount = result.triggerCount,
+                    allowedNotificationCount = result.allowedNotificationCount
+                )
+            }
+        }
     }
 }

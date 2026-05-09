@@ -7,11 +7,11 @@ plugins {
     alias(libs.plugins.ksp)
 }
 
-val baseVersionCode = "0.4.0.0508"
+val baseVersionCode = "0.4.0.0509"
 
 android {
     namespace = "com.lumina.rikta"
-    compileSdk = 36
+    compileSdk = 37
 
     lint {
         baseline = file("lint-baseline.xml")

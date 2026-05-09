@@ -27,7 +27,6 @@ data class TriggerCondition(
 ) {
     companion object {
         fun create(
-            isNewTrigger: Boolean,
             triggerId: Long,
             profileId: String,
             sequenceOrder: Int,
@@ -43,11 +42,9 @@ data class TriggerCondition(
             wifiSsid: String?,
             bluetoothAddress: String?
         ): TriggerCondition {
-            val resolvedTriggerId = if (isNewTrigger) 0L else triggerId
-
             return when (triggerType) {
                 ProfileTriggerType.TIME -> TriggerCondition(
-                    triggerId = resolvedTriggerId,
+                    triggerId = triggerId,
                     profileId = profileId,
                     sequenceOrder = sequenceOrder,
                     triggerType = ProfileTriggerType.TIME,
@@ -59,7 +56,7 @@ data class TriggerCondition(
                 )
 
                 ProfileTriggerType.DAY -> TriggerCondition(
-                    triggerId = resolvedTriggerId,
+                    triggerId = triggerId,
                     profileId = profileId,
                     sequenceOrder = sequenceOrder,
                     triggerType = ProfileTriggerType.DAY,
@@ -69,7 +66,7 @@ data class TriggerCondition(
                 )
 
                 ProfileTriggerType.WIFI -> TriggerCondition(
-                    triggerId = resolvedTriggerId,
+                    triggerId = triggerId,
                     profileId = profileId,
                     sequenceOrder = sequenceOrder,
                     triggerType = ProfileTriggerType.WIFI,
@@ -79,7 +76,7 @@ data class TriggerCondition(
                 )
 
                 ProfileTriggerType.BLUETOOTH -> TriggerCondition(
-                    triggerId = resolvedTriggerId,
+                    triggerId = triggerId,
                     profileId = profileId,
                     sequenceOrder = sequenceOrder,
                     triggerType = ProfileTriggerType.BLUETOOTH,
@@ -89,7 +86,7 @@ data class TriggerCondition(
                 )
 
                 ProfileTriggerType.LOCATION -> TriggerCondition(
-                    triggerId = resolvedTriggerId,
+                    triggerId = triggerId,
                     profileId = profileId,
                     sequenceOrder = sequenceOrder,
                     triggerType = ProfileTriggerType.LOCATION,

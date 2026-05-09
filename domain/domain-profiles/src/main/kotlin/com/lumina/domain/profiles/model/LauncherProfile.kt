@@ -9,6 +9,10 @@ data class LauncherProfile(
 
     val type: ProfileType,
     val name: String,
+    val description: String?,
+
+    val createdAt: Long,
+    val updatedAt: Long,
 
     val settings: LauncherProfileSettings,
     val overrides: LauncherProfileOverrides
@@ -47,5 +51,6 @@ data class LauncherProfileOverrides(
     val showBigClock: Boolean?,
     val showDate: Boolean?,
     val showWeather: Boolean?,
-    val hideScreenTime: Boolean?
+    val hideScreenTime: Boolean?,
+    val iconName: String?
 )

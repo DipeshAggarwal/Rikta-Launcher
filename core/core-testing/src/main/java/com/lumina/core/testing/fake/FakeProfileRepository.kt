@@ -4,6 +4,7 @@ import com.lumina.core.model.AppBasicData
 import com.lumina.domain.profiles.ProfileRepository
 import com.lumina.core.model.ProfileAppConfig
 import com.lumina.domain.profiles.model.LauncherProfile
+import com.lumina.domain.profiles.model.ProfileSummary
 import com.lumina.domain.profiles.model.TriggerCondition
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -160,6 +161,8 @@ class FakeProfileRepository : ProfileRepository {
         profileTrigger.value += conditions
     }
 
+    override suspend fun updateProfileTrigger(conditions: TriggerCondition) { }
+
     override suspend fun removeProfileTrigger(triggerId: Long) {
         triggers.values.forEach { trigger ->
             trigger.value = trigger.value.filter { it.triggerId != triggerId }
@@ -189,4 +192,8 @@ class FakeProfileRepository : ProfileRepository {
         packageName: String,
         userHandleNumber: Long
     ) { }
+
+    override fun getAllProfileSummaries(): Flow<List<ProfileSummary>> {
+        return MutableStateFlow(emptyList())
+    }
 }

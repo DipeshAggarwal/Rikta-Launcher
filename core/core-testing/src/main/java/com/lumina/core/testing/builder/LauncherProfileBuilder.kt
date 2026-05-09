@@ -12,6 +12,9 @@ object LauncherProfileBuilder {
         id: String = "profile_test",
         name: String = "Test Profile",
         type: ProfileType = ProfileType.CUSTOM,
+        description: String = "",
+        createdAt: Long = 0L,
+        updatedAt: Long = 0L,
         userHandleNumber: Long = 0L,
         strictMode: Boolean = false,
         isAdmin: Boolean = false,
@@ -34,6 +37,7 @@ object LauncherProfileBuilder {
         overrideShowDate: Boolean? = null,
         overrideShowWeather: Boolean? = null,
         overrideHideScreenTime: Boolean? = null,
+        overrideIconName: String? = null,
         entryAuthMethod: ProfileAuthMethod = ProfileAuthMethod.NONE,
         exitAuthMethod: ProfileAuthMethod = ProfileAuthMethod.NONE,
         activationKey: String? = null,
@@ -41,6 +45,9 @@ object LauncherProfileBuilder {
         id = id,
         name = name,
         type = type,
+        description = description,
+        createdAt = createdAt,
+        updatedAt = updatedAt,
         userHandleNumber = userHandleNumber,
         settings = LauncherProfileSettings(
             strictMode = strictMode,
@@ -68,7 +75,8 @@ object LauncherProfileBuilder {
             showBigClock = overrideShowBigClock,
             showDate = overrideShowDate,
             showWeather = overrideShowWeather,
-            hideScreenTime = overrideHideScreenTime
+            hideScreenTime = overrideHideScreenTime,
+            iconName = overrideIconName
         )
     )
 }
