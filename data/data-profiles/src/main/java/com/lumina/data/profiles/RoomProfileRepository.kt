@@ -13,6 +13,8 @@ import com.lumina.core.logging.Logger
 import com.lumina.core.model.AppBasicData
 import com.lumina.domain.profiles.ProfileRepository
 import com.lumina.core.model.ProfileAppConfig
+import com.lumina.core.model.ProfileType
+import com.lumina.core.model.RestrictionMode
 import com.lumina.core.model.componentKey
 import com.lumina.core.model.getAppKey
 import com.lumina.domain.profiles.model.LauncherProfile

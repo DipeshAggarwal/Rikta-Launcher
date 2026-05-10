@@ -57,6 +57,7 @@ include(":core:core-ui")
 
 // domain module
 include(":domain:domain-apps")
+include(":domain:domain-appstate")
 include(":domain:domain-coordination")
 include(":domain:domain-countdown")
 include(":domain:domain-profiles")
@@ -68,6 +69,7 @@ include(":domain:domain-usage")
 
 // data module
 include(":data:data-apps")
+include(":data:data-appstate")
 include(":data:data-coordination")
 include(":data:data-countdown")
 include(":data:data-profiles")

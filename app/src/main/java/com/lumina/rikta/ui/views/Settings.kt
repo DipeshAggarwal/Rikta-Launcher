@@ -136,6 +136,8 @@ import com.lumina.feature.appfavourite.ui.appFavouriteNavigation
 import com.lumina.feature.apphiding.AppHidingViewModel
 import com.lumina.feature.apphiding.ui.HIDDEN_APPS_MANAGEMENT_ROUTE
 import com.lumina.feature.apphiding.ui.appHidingNavigation
+import com.lumina.feature.profiles.ProfileNavigationRoute
+import com.lumina.feature.profiles.ui.profilesNavigation
 import com.lumina.feature.settings.ui.SPACER_CONFIG_ROUTE
 import com.lumina.feature.settings.ui.settingsNavigation
 import kotlinx.coroutines.delay
@@ -279,6 +281,7 @@ fun Settings(
             }
             settingsNavigation(navController)
             appCountdownNavigation(navController)
+            profilesNavigation(navController)
         }
     }
 
@@ -720,6 +723,15 @@ fun MainSettingsPage(
                 label = stringResource(R.string.countdown_settings),
                 diagonalArrow = false,
                 onClick = { navController.navigate(APPS_COUNTDOWN_MANAGEMENT_ROUTE) }
+            )
+        }
+
+
+        item {
+            SettingsNavigationItem(
+                label = "Profile",
+                diagonalArrow = false,
+                onClick = { navController.navigate(ProfileNavigationRoute.PROFILE_LIST_ROUTE) }
             )
         }
 

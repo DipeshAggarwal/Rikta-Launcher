@@ -94,5 +94,12 @@
     <string name="system_work">Work</string>
     <string name="system_private">Private</string>
 
+    <!-- Profile Restriction Level -->
+    <string name="restriction_strict">Strict</string>
+    <string name="restriction_balanced">Balanced</string>
+    <string name="restriction_relaxed">Relaxed</string>
+    <string name="restriction_custom">Custom</string>
+    <string name="restriction_locked">Locked</string>
+
     <string name="drag_to_reorder">"Drag to reorder"</string>
 </resources>

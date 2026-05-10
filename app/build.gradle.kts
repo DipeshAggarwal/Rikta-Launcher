@@ -7,7 +7,7 @@ plugins {
     alias(libs.plugins.ksp)
 }
 
-val baseVersionCode = "0.4.0.0509"
+val baseVersionCode = "0.4.0.0510"
 
 android {
     namespace = "com.lumina.rikta"
@@ -126,6 +126,7 @@ dependencies {
     implementation(project(":core:core-ui"))
 
     implementation(project(":data:data-apps"))
+    implementation(project(":data:data-appstate"))
     implementation(project(":data:data-coordination"))
     implementation(project(":data:data-countdown"))
     implementation(project(":data:data-profiles"))
@@ -134,6 +135,7 @@ dependencies {
     implementation(project(":data:data-usage"))
 
     implementation(project(":domain:domain-apps"))
+    implementation(project(":domain:domain-appstate"))
     implementation(project(":domain:domain-coordination"))
     implementation(project(":domain:domain-countdown"))
     implementation(project(":domain:domain-profiles"))

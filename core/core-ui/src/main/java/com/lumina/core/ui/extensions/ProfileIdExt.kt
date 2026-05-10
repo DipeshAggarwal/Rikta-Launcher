@@ -1,8 +1,9 @@
-package com.lumina.core.ui
+package com.lumina.core.ui.extensions
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import com.lumina.core.model.SystemProfileIds
+import com.lumina.core.ui.R
 
 @Composable
 fun systemProfileDisplayName(name: String): String {

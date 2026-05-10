@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="profiles_header">Manage Profiles</string>
+    <string name="active_profile">Active Profile</string>
+    <string name="all_profiles">All Profiles</string>
+    <string name="profile_go_back">Go Back</string>
+
+    <string name="no_inactive_profiles">No additional profiles.</string>
+    <string name="no_inactive_profiles_subtitle">Create a new profile to manage a new you.</string>
+
+    <string name="create_new_profile">Create New Profile</string>
+    <string name="create_new_profile_subtitle">Set up a new profile for the other you.</string>
+    <string name="long_press_tip">Tip: Long-press a profile to duplicate or delete.</string>
+
+    <string name="active_now">Active Now</string>
+    <string name="profile_already_active">This profile is already active.</string>
+    <string name="active_profile_summary_text">%1$s • %2$d Apps • %3$d Triggers</string>
+    <string name="profile_options_description">Profile Options</string>
+
+    <string name="profile_info_banner">"Profiles control what apps you can use and when.</string>
+    <string name="profile_details_text">Learn More</string>
+    <string name="profile_dismiss_text">Dismiss banner</string>
+</resources>

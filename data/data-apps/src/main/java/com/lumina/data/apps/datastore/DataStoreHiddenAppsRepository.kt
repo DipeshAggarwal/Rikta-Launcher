@@ -4,6 +4,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringSetPreferencesKey
+import com.lumina.core.datastore.di.SettingsDataStore
 import com.lumina.domain.apps.HiddenAppsRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -15,7 +16,7 @@ import jakarta.inject.Inject
  * lookup performance for visibility checks.
  */
 class DataStoreHiddenAppsRepository @Inject constructor(
-    private val dataStore: DataStore<Preferences>
+    @param:SettingsDataStore private val dataStore: DataStore<Preferences>
 ) : HiddenAppsRepository {
     private val HIDDEN_APPS_KEY = stringSetPreferencesKey("hidden_apps")
 

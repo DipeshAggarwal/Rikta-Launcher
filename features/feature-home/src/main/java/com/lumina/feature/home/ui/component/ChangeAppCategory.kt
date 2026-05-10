@@ -37,7 +37,7 @@ import com.lumina.core.model.AppCategory
 import com.lumina.core.ui.Motion
 import com.lumina.core.ui.ThemeDimensions
 import com.lumina.core.ui.theme.ContentColor
-import com.lumina.core.ui.toDisplayString
+import com.lumina.core.ui.extensions.toDisplayString
 import com.lumina.feature.home.R
 
 @Composable

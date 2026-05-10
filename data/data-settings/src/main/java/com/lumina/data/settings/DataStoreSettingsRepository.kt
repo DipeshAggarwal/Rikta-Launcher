@@ -7,6 +7,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
+import com.lumina.core.datastore.di.SettingsDataStore
 import com.lumina.domain.settings.AppListSettings
 import com.lumina.domain.settings.AppAlignment
 import com.lumina.domain.settings.CountdownSettings
@@ -23,7 +24,7 @@ import jakarta.inject.Inject
 import kotlinx.coroutines.flow.combine
 
 class DataStoreSettingsRepository @Inject constructor(
-    private val dataStore: DataStore<Preferences>
+    @param:SettingsDataStore private val dataStore: DataStore<Preferences>
 ) : SettingsRepository {
     private object Keys {
         // Home

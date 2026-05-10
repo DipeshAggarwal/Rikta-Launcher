@@ -10,10 +10,12 @@ import com.lumina.feature.profiles.ProfileListViewModel
 fun ProfilesScreen(
     viewModel: ProfileListViewModel = hiltViewModel(),
     onCreateNewProfile: () -> Unit,
-    onOpenProfileOptions: (String) -> Unit
+    onOpenProfileOptions: (String) -> Unit,
+    onBack: () -> Unit
 ) {
     val activeProfileId by viewModel.activeProfileId.collectAsStateWithLifecycle()
     val summaries by viewModel.profileSummaries.collectAsStateWithLifecycle()
+    val showingProfileInfoBanner by viewModel.showingProfileInfoBanner.collectAsStateWithLifecycle()
 
     val activeProfileSummary = summaries.find { it.profile.id == activeProfileId }
     val inactiveProfileSummaries = summaries.filter { it.profile.id != activeProfileId }
@@ -23,6 +25,9 @@ fun ProfilesScreen(
         inactiveProfileSummaries = inactiveProfileSummaries,
         onCreateNewProfile = onCreateNewProfile,
         onSwitchToProfile = { profileId -> viewModel.switchProfile(profileId) },
-        onOpenProfileOptions = onOpenProfileOptions
+        onOpenProfileOptions = onOpenProfileOptions,
+        showBanner = showingProfileInfoBanner,
+        onDismissBanner = { viewModel.onDismissProfileInfo() },
+        onBack = onBack
     )
 }

@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lumina.core.common.FlowDefaults.WhileSubscribedTimeoutMs
 import com.lumina.core.logging.Logger
+import com.lumina.domain.appstate.AppUiStateRepository
 import com.lumina.domain.profiles.ProfileRepository
 import com.lumina.domain.profiles.model.LauncherProfile
 import com.lumina.domain.profiles.model.ProfileSummary
@@ -18,12 +19,10 @@ import kotlinx.coroutines.launch
 @HiltViewModel
 class ProfileListViewModel @Inject constructor(
     private val profileRepository: ProfileRepository,
+    private val appUiStateRepository: AppUiStateRepository,
     private val logger: Logger
 ) : ViewModel() {
     private val TAG = this::class.java.simpleName
-
-    val profiles: StateFlow<List<LauncherProfile>> = profileRepository.getAllProfiles()
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(WhileSubscribedTimeoutMs), emptyList())
 
     val activeProfileId: StateFlow<String?> = profileRepository.activeProfile
         .map { it?.id }
@@ -31,6 +30,9 @@ class ProfileListViewModel @Inject constructor(
 
     val profileSummaries: StateFlow<List<ProfileSummary>> = profileRepository.getAllProfileSummaries()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(WhileSubscribedTimeoutMs), emptyList())
+
+    val showingProfileInfoBanner: StateFlow<Boolean> = appUiStateRepository.showProfilesInfoBanner
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(WhileSubscribedTimeoutMs),true)
 
     fun switchProfile(profileId: String) {
         viewModelScope.launch {
@@ -40,6 +42,12 @@ class ProfileListViewModel @Inject constructor(
             } catch (e: Exception) {
                 logger.e(TAG, "Failed to switch profile $profileId", e)
             }
+        }
+    }
+
+    fun onDismissProfileInfo() {
+        viewModelScope.launch {
+            appUiStateRepository.dismissProfilesInfoBanner()
         }
     }
 }

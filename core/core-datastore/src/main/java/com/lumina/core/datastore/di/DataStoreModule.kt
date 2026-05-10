@@ -11,14 +11,16 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import jakarta.inject.Singleton
 
-private const val DATA_STORE_NAME = "settings"
+private const val DATA_STORE_SETTINGS_NAME = "settings"
+private const val DATA_STORE_APP_UI_STATE_NAME = "app_ui_state"
 
 // Extension property to ensure a single DataStore instance per process
-val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = DATA_STORE_NAME)
+private val Context.settingsDataStore: DataStore<Preferences> by preferencesDataStore(name = DATA_STORE_SETTINGS_NAME)
+private val Context.appUiStateDataStore: DataStore<Preferences> by preferencesDataStore(name = DATA_STORE_APP_UI_STATE_NAME)
 
 @Module
 @InstallIn(SingletonComponent::class)
-class DataStoreModule {
+object DataStoreModule {
 
     /**
      * Provides the global Preferences DataStore.
@@ -27,7 +29,15 @@ class DataStoreModule {
      */
     @Provides
     @Singleton
-    fun provideDataStore(@ApplicationContext context: Context): DataStore<Preferences> {
-        return context.dataStore
+    @SettingsDataStore
+    fun provideSettingsDataStore(@ApplicationContext context: Context): DataStore<Preferences> {
+        return context.settingsDataStore
+    }
+
+    @Provides
+    @Singleton
+    @AppUiStateDataStore
+    fun provideAppUiStateDataStore(@ApplicationContext context: Context): DataStore<Preferences> {
+        return context.appUiStateDataStore
     }
 }

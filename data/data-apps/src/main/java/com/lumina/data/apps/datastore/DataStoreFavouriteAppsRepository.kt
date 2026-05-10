@@ -4,6 +4,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
+import com.lumina.core.datastore.di.SettingsDataStore
 import com.lumina.core.logging.Logger
 import com.lumina.domain.apps.FavouriteAppsRepository
 import kotlinx.coroutines.flow.Flow
@@ -18,7 +19,7 @@ private const val DELIMITER = ","
  * String to maintain the user's custom sorting.
  */
 class DataStoreFavouriteAppsRepository @Inject constructor(
-    private val dataStore: DataStore<Preferences>,
+    @param:SettingsDataStore private val dataStore: DataStore<Preferences>,
     private val logger: Logger
 ) : FavouriteAppsRepository {
     private val FAVOURITE_APPS_KEY = stringPreferencesKey("favourite_apps")

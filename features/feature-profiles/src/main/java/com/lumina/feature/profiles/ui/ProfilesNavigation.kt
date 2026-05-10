@@ -26,7 +26,8 @@ fun NavGraphBuilder.profilesNavigation(
             onCreateNewProfile = { navController.navigate(ProfileNavigationRoute.manageRoute()) },
             onOpenProfileOptions = { profileId ->
                 navController.navigate(ProfileNavigationRoute.detailRoute(profileId))
-            }
+            },
+            onBack = { navController.popBackStack() }
         )
     }
 }
