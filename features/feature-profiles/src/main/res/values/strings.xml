@@ -14,8 +14,19 @@
 
     <string name="active_now">Active Now</string>
     <string name="profile_already_active">This profile is already active.</string>
-    <string name="active_profile_summary_text">%1$s • %2$d Apps • %3$d Triggers</string>
     <string name="profile_options_description">Profile Options</string>
+
+    <plurals name="profile_app_count">
+        <item quantity="zero">0 Apps</item>
+        <item quantity="one">1 App</item>
+        <item quantity="other">%d Apps</item>
+    </plurals>
+
+    <plurals name="profile_trigger_count">
+        <item quantity="zero">0 Triggers</item>
+        <item quantity="one">1 Trigger</item>
+        <item quantity="other">%d Triggers</item>
+    </plurals>
 
     <string name="profile_info_banner">"Profiles control what apps you can use and when.</string>
     <string name="profile_details_text">Learn More</string>

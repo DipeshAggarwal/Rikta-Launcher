@@ -4,7 +4,6 @@ import com.lumina.domain.coordination.model.ResolvedThemeState
 import com.lumina.domain.coordination.model.ResolvedUIState
 import com.lumina.domain.profiles.ProfileRepository
 import com.lumina.domain.profiles.model.LauncherProfile
-import com.lumina.domain.settings.AppListSettings
 import com.lumina.domain.settings.HomeSettings
 import com.lumina.domain.settings.SettingsRepository
 import jakarta.inject.Inject

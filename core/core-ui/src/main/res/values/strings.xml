@@ -94,12 +94,36 @@
     <string name="system_work">Work</string>
     <string name="system_private">Private</string>
 
-    <!-- Profile Restriction Level -->
-    <string name="restriction_strict">Strict</string>
-    <string name="restriction_balanced">Balanced</string>
-    <string name="restriction_relaxed">Relaxed</string>
-    <string name="restriction_custom">Custom</string>
-    <string name="restriction_locked">Locked</string>
+    <!-- Profile Mode -->
+    <string name="mode_admin_name">Admin</string>
+    <string name="mode_admin_subtitle">Full Access</string>
+    <string name="mode_admin_description">Full Access to all apps and settings.</string>
 
-    <string name="drag_to_reorder">"Drag to reorder"</string>
+    <string name="mode_private_name">Private</string>
+    <string name="mode_private_subtitle">Protect personal apps and data</string>
+    <string name="mode_private_description">Keep personal apps and data hidden from prying eyes.</string>
+
+    <string name="mode_work_name">Work</string>
+    <string name="mode_work_subtitle">Hide distractions</string>
+    <string name="mode_work_description">Stay focused while working.</string>
+
+    <string name="mode_focus_name">Focus</string>
+    <string name="mode_focus_subtitle">Minimise distractions</string>
+    <string name="mode_focus_description">Minimise distractions and stay in the zone.</string>
+
+    <string name="mode_guest_name">Guest</string>
+    <string name="mode_guest_subtitle">Safe shared access</string>
+    <string name="mode_guest_description">Safe access for friends and family.</string>
+
+    <string name="mode_kid_name">Kid</string>
+    <string name="mode_kid_subtitle">Child-friendly restrictions</string>
+    <string name="mode_kid_description">Child-friendly apps and restrictions.</string>
+
+    <string name="mode_custom_name">Custom</string>
+    <string name="mode_custom_subtitle">Build your own setup</string>
+    <string name="mode_custom_description">A fully customised profile built by you, for you.</string>
+
+    <string name="mode_customised"> (Customised)</string>
+
+    <string name="drag_to_reorder">Drag to reorder</string>
 </resources>

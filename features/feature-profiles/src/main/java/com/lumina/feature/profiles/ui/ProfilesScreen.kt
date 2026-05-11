@@ -16,6 +16,7 @@ fun ProfilesScreen(
     val activeProfileId by viewModel.activeProfileId.collectAsStateWithLifecycle()
     val summaries by viewModel.profileSummaries.collectAsStateWithLifecycle()
     val showingProfileInfoBanner by viewModel.showingProfileInfoBanner.collectAsStateWithLifecycle()
+    val profileClassificationMap by viewModel.profileClassificationMap.collectAsStateWithLifecycle()
 
     val activeProfileSummary = summaries.find { it.profile.id == activeProfileId }
     val inactiveProfileSummaries = summaries.filter { it.profile.id != activeProfileId }
@@ -23,6 +24,7 @@ fun ProfilesScreen(
     ProfileListScreen(
         activeProfileSummary = activeProfileSummary,
         inactiveProfileSummaries = inactiveProfileSummaries,
+        profileClassificationMap = profileClassificationMap,
         onCreateNewProfile = onCreateNewProfile,
         onSwitchToProfile = { profileId -> viewModel.switchProfile(profileId) },
         onOpenProfileOptions = onOpenProfileOptions,

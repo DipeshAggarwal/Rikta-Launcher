@@ -66,14 +66,14 @@ class TriggerEvaluationEngine @Inject constructor(
 
     suspend fun evaluateTriggers() {
         val activeProfile = profileRepository.activeProfile.first()
-        if (activeProfile?.settings?.blockProfileTriggerSwitching == true) return
+        if (activeProfile?.restrictions?.blockProfileTriggerSwitching == true) return
 
         val now = timeProvider.now()
         val lastSwitchTime = lastProfiledSwitchedAt
         if (lastSwitchTime != null && now - lastSwitchTime < TriggersConstant.PROFILE_SWITCH_COOLDOWN_MS) return
 
         val profiles = profileRepository.getAllProfiles().first()
-            .sortedByDescending { it.settings.priorityTriggerLaunch }
+            .sortedByDescending { it.priorityTriggerLaunch }
 
         var matchedProfileId: String? = null
         var anyProfileMatching = false

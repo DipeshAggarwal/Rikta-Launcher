@@ -2,6 +2,7 @@ package com.lumina.core.database
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 import com.lumina.core.database.dao.AppOverrideDao
 import com.lumina.core.database.dao.AppUsageDao
 import com.lumina.core.database.dao.ProfileDao
@@ -11,6 +12,8 @@ import com.lumina.core.database.entity.AppOverrideEntity
 import com.lumina.core.database.entity.AppUsageSessionEntity
 import com.lumina.core.database.entity.NotificationWhitelistEntity
 import com.lumina.core.database.entity.ProfileAppCrossRef
+import com.lumina.core.database.entity.ProfileAppCrossRefConverters
+import com.lumina.core.database.entity.ProfileConverters
 import com.lumina.core.database.entity.ProfileEntity
 import com.lumina.core.database.entity.ProfileFavouriteEntity
 import com.lumina.core.database.entity.ProfileShortcutCrossRef
@@ -18,6 +21,7 @@ import com.lumina.core.database.entity.ProfileSwitchLogEntity
 import com.lumina.core.database.entity.ProfileTriggerEntity
 import com.lumina.core.database.entity.ShortcutEntity
 
+@TypeConverters(ProfileConverters::class, ProfileAppCrossRefConverters::class)
 @Database(
     entities = [
         ProfileEntity::class,

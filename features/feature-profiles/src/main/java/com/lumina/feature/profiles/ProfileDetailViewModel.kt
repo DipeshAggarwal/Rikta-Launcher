@@ -93,7 +93,7 @@ class ProfileDetailViewModel @Inject constructor(
                 val duplicateLauncherProfile = currentProfile.copy(
                     id = newId,
                     name = "${currentProfile.name} (Copy)",
-                    settings = currentProfile.settings.copy(activationKey = null)
+                    auth = currentProfile.auth.copy(activationKey = null)
                 )
                 profileRepository.saveProfile(duplicateLauncherProfile)
                 _events.emit(ProfileDetailEvent.ProfileDuplicated(newId))

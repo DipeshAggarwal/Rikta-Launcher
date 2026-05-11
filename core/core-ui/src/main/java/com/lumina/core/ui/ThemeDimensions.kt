@@ -22,7 +22,7 @@ object ThemeDimensions {
     }
 
     object Spacing {
-        val ExtraLarge = 12.dp
+        val ExtraLarge = 16.dp
         val Large = 12.dp
         val Medium = 8.dp
         val Small = 4.dp

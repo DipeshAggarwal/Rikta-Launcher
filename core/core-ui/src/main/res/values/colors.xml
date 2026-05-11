@@ -9,4 +9,13 @@
     <color name="OffBlack" tools:ignore="UnusedResources">@color/DeepGrey</color>
     <color name="YellowOffWhite" tools:ignore="UnusedResources">@color/Cream</color>
     <color name="OffWhite" tools:ignore="UnusedResources">@color/Cream</color>
+
+    <!-- Profile Mode -->
+    <color name="mode_admin_accent">#7C6FE0</color>
+    <color name="mode_private_accent">#5B8DEF</color>
+    <color name="mode_work_accent">#4CAF82</color>
+    <color name="mode_focus_accent">#E8A020</color>
+    <color name="mode_guest_accent">#26A69A</color>
+    <color name="mode_kid_accent">#9C7CBC</color>
+    <color name="mode_custom_accent">#9E9E9E</color>
 </resources>

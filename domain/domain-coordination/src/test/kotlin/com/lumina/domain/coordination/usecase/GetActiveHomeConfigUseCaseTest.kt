@@ -1,6 +1,7 @@
 package com.lumina.domain.coordination.usecase
 
 import com.lumina.core.common.AppDefaults
+import com.lumina.core.model.ProfileBackground
 import com.lumina.domain.profiles.ProfileRepository
 import com.lumina.domain.profiles.model.LauncherProfile
 import com.lumina.domain.profiles.model.LauncherProfileOverrides
@@ -56,7 +57,7 @@ class GetActiveHomeConfigUseCaseTest {
     fun `returns profile overrides if present`() = runTest {
         val profileOverrides = LauncherProfileOverrides(
             theme = AppDefaults.DEFAULT_THEME,
-            background ="bg",
+            background = ProfileBackground.SOLID,
             font = "font",
             showClock = false,
             showBigClock = false,

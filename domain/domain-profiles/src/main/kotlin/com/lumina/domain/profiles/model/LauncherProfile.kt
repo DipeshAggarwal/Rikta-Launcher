@@ -1,6 +1,9 @@
 package com.lumina.domain.profiles.model
 
+import com.lumina.core.model.AppCategory
+import com.lumina.core.model.AppUsageEnforcementMode
 import com.lumina.core.model.ProfileAuthMethod
+import com.lumina.core.model.ProfileBackground
 import com.lumina.core.model.ProfileType
 
 data class LauncherProfile(
@@ -14,30 +17,43 @@ data class LauncherProfile(
     val createdAt: Long,
     val updatedAt: Long,
 
+    val isAdmin: Boolean,
+    val priorityTriggerLaunch: Boolean,
+
     val settings: LauncherProfileSettings,
+    val permissions: LauncherProfilePermissions,
+    val restrictions: LauncherProfileRestrictions,
+    val auth: LauncherProfileAuth,
     val overrides: LauncherProfileOverrides
 )
 
 data class LauncherProfileSettings(
-    val strictMode: Boolean,
-    val isAdmin: Boolean,
-
-    val priorityTriggerLaunch: Boolean,
-    val filterNotification: Boolean,
-
-    val allowAppRename: Boolean,
-    val allowProfileManagement: Boolean,
-    val allowAppCategoryChange: Boolean,
-
-    val blockProfileTriggerSwitching: Boolean,
-
     val startDnd: Boolean,
-    val showAppList: Boolean,
     val hideScreenTimeOnApps: Boolean,
-    val disableOnLock: Boolean,
+    val maxAppCount: Int,
+    val autoAddCategoryApps: List<AppCategory>
+)
 
+data class LauncherProfilePermissions(
+    val allowLauncherSettingsChange: Boolean,
+    val allowManagingApps: Boolean,
+    val allowLauncherAppActions: Boolean,
+    val allowProfileManagement: Boolean
+)
+
+data class LauncherProfileRestrictions(
+    val appUsageEnforcementMode: AppUsageEnforcementMode,
+    val blockAppList: Boolean,
+    val blockProfileTriggerSwitching: Boolean,
     val blockUnauthorisedApps: Boolean,
+    val blockRecentApps: Boolean,
+    val blockSystemAppAdd: Boolean,
+    val blockNotificationShade: Boolean,
+    val filterNotifications: Boolean,
+    val switchOnDeviceLock: Boolean
+)
 
+data class LauncherProfileAuth(
     val entryAuthMethod: ProfileAuthMethod,
     val exitAuthMethod: ProfileAuthMethod,
     val activationKey: String?
@@ -45,7 +61,7 @@ data class LauncherProfileSettings(
 
 data class LauncherProfileOverrides(
     val theme: String?,
-    val background: String?,
+    val background: ProfileBackground?,
     val font: String?,
     val showClock: Boolean?,
     val showBigClock: Boolean?,

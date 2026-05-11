@@ -1,9 +1,15 @@
 package com.lumina.core.testing.builder
 
+import com.lumina.core.database.entity.ProfileAuth
 import com.lumina.core.database.entity.ProfileEntity
 import com.lumina.core.database.entity.ProfileOverrides
+import com.lumina.core.database.entity.ProfilePermissions
+import com.lumina.core.database.entity.ProfileRestrictions
 import com.lumina.core.database.entity.ProfileSettings
+import com.lumina.core.model.AppCategory
+import com.lumina.core.model.AppUsageEnforcementMode
 import com.lumina.core.model.ProfileAuthMethod
+import com.lumina.core.model.ProfileBackground
 import com.lumina.core.model.ProfileType
 import com.lumina.domain.profiles.model.LauncherProfileOverrides
 import com.lumina.domain.profiles.model.LauncherProfileSettings
@@ -17,31 +23,37 @@ object ProfileEntityBuilder {
         createdAt: Long = 0L,
         updatedAt: Long = 0L,
         userHandleNumber: Long = 0L,
-        strictMode: Boolean = false,
         isAdmin: Boolean = false,
-        blockProfileTriggerSwitching: Boolean = false,
         priorityTriggerLaunch: Boolean = false,
-        filterNotification: Boolean = false,
-        allowAppRename: Boolean = false,
-        allowProfileManagement: Boolean = false,
-        allowAppCategoryChange: Boolean = false,
         startDnd: Boolean = false,
-        showAppList: Boolean = true,
         hideScreenTimeOnApps: Boolean = false,
-        disableOnLock: Boolean = false,
+        maxAppCount: Int = 0,
+        autoAddCategoryApps: List<AppCategory> = emptyList(),
+        allowLauncherSettingsChange: Boolean = false,
+        allowManagingApps: Boolean = false,
+        allowLauncherAppActions: Boolean = false,
+        allowProfileManagement: Boolean = false,
+        appUsageEnforcementMode: AppUsageEnforcementMode = AppUsageEnforcementMode.COUNTDOWN,
+        blockAppList: Boolean = false,
+        blockProfileTriggerSwitching: Boolean = false,
         blockUnauthorisedApps: Boolean = false,
-        overrideTheme: String? = null,
-        overrideBackground: String? = null,
-        overrideFont: String? = null,
-        overrideShowClock: Boolean? = null,
-        overrideShowBigClock: Boolean? = null,
-        overrideShowDate: Boolean? = null,
-        overrideShowWeather: Boolean? = null,
-        overrideHideScreenTime: Boolean? = null,
-        overrideIconName: String? = null,
+        blockRecentApps: Boolean = false,
+        blockSystemAppAdd: Boolean = false,
+        blockNotificationShade: Boolean = false,
+        filterNotifications: Boolean = false,
+        switchOnDeviceLock: Boolean = false,
         entryAuthMethod: ProfileAuthMethod = ProfileAuthMethod.NONE,
         exitAuthMethod: ProfileAuthMethod = ProfileAuthMethod.NONE,
         activationKey: String? = null,
+        theme: String? = null,
+        background: ProfileBackground? = null,
+        font: String? = null,
+        showClock: Boolean? = null,
+        showBigClock: Boolean? = null,
+        showDate: Boolean? = null,
+        showWeather: Boolean? = null,
+        hideScreenTime: Boolean? = null,
+        iconName: String? = null,
     ) = ProfileEntity(
         id = id,
         userHandleNumber = userHandleNumber,
@@ -50,34 +62,46 @@ object ProfileEntityBuilder {
         description = description,
         createdAt = createdAt,
         updatedAt = updatedAt,
+        isAdmin = isAdmin,
+        priorityTriggerLaunch = priorityTriggerLaunch,
         settings = ProfileSettings(
-            strictMode = strictMode,
-            isAdmin = isAdmin,
-            blockProfileTriggerSwitching = blockProfileTriggerSwitching,
-            priorityTriggerLaunch = priorityTriggerLaunch,
-            filterNotification = filterNotification,
-            allowAppRename = allowAppRename,
-            allowProfileManagement = allowProfileManagement,
-            allowAppCategoryChange = allowAppCategoryChange,
             startDnd = startDnd,
-            showAppList = showAppList,
             hideScreenTimeOnApps = hideScreenTimeOnApps,
-            disableOnLock = disableOnLock,
+            maxAppCount = maxAppCount,
+            autoAddCategoryApps = autoAddCategoryApps
+        ),
+        permissions = ProfilePermissions(
+            allowLauncherSettingsChange = allowLauncherSettingsChange,
+            allowManagingApps = allowManagingApps,
+            allowLauncherAppActions = allowLauncherAppActions,
+            allowProfileManagement = allowProfileManagement
+        ),
+        restrictions = ProfileRestrictions(
+            appUsageEnforcementMode = appUsageEnforcementMode,
+            blockAppList = blockAppList,
+            blockProfileTriggerSwitching = blockProfileTriggerSwitching,
             blockUnauthorisedApps = blockUnauthorisedApps,
+            blockRecentApps = blockRecentApps,
+            blockSystemAppAdd = blockSystemAppAdd,
+            blockNotificationShade = blockNotificationShade,
+            filterNotifications = filterNotifications,
+            switchOnDeviceLock = switchOnDeviceLock
+        ),
+        auth = ProfileAuth(
             entryAuthMethod = entryAuthMethod,
             exitAuthMethod = exitAuthMethod,
             activationKey = activationKey
         ),
         overrides = ProfileOverrides(
-            theme = overrideTheme,
-            background = overrideBackground,
-            font = overrideFont,
-            showClock = overrideShowClock,
-            showBigClock = overrideShowBigClock,
-            showDate = overrideShowDate,
-            showWeather = overrideShowWeather,
-            hideScreenTime = overrideHideScreenTime,
-            iconName = overrideIconName
+            theme = theme,
+            background = background,
+            font = font,
+            showClock = showClock,
+            showBigClock = showBigClock,
+            showDate = showDate,
+            showWeather = showWeather,
+            hideScreenTime = hideScreenTime,
+            iconName = iconName
         )
     )
 }

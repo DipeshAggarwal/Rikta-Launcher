@@ -41,10 +41,10 @@ interface ProfileDao {
     // ------------------------------------------------
     // Profile Authentication
 
-    @Query("SELECT * FROM profiles WHERE activationKey = :hashedKey LIMIT 1")
+    @Query("SELECT * FROM profiles WHERE auth_activationKey = :hashedKey LIMIT 1")
     suspend fun getProfileByActivationKey(hashedKey: String): ProfileEntity?
 
-    @Query("SELECT EXISTS(SELECT 1 FROM profiles WHERE activationKey = :hashedKey AND id != :excludeId)")
+    @Query("SELECT EXISTS(SELECT 1 FROM profiles WHERE auth_activationKey = :hashedKey AND id != :excludeId)")
     suspend fun isKeyTaken(hashedKey: String, excludeId: String): Boolean
 
     // ------------------------------------------------
@@ -94,6 +94,13 @@ interface ProfileDao {
             "WHERE (packageName || '::' || userHandleNumber) NOT IN (:installedKeys)"
     )
     suspend fun deleteAppMappingForUninstalledApps(installedKeys: Set<String>)
+
+    @Query("""
+        DELETE FROM profile_app_mapping
+        WHERE addedBy = :addedBy
+        AND (packageName || '::' || userHandleNumber) NOT IN (:installedKeys)
+    """)
+    suspend fun deleteAppMappingsByRules(installedKeys: Set<String>, addedBy: String)
 
     // ------------------------------------------------
     // Recommended Usage Apps

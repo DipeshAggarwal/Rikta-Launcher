@@ -1,5 +1,6 @@
 package com.lumina.domain.coordination.model
 
+import com.lumina.core.model.ProfileBackground
 import com.lumina.domain.settings.AppListSettings
 import com.lumina.domain.settings.CountdownSettings
 import com.lumina.domain.settings.HomeSettings
@@ -16,6 +17,6 @@ data class ResolvedUIState(
 )
 
 data class ResolvedThemeState(
-    val background: String?,
+    val background: ProfileBackground?,
     val font: String?
 )

@@ -5,21 +5,26 @@ import com.lumina.core.database.LuminaDatabase
 import com.lumina.core.database.dao.ProfileDao
 import com.lumina.core.database.entity.NotificationWhitelistEntity
 import com.lumina.core.database.entity.ProfileAppCrossRef
+import com.lumina.core.database.entity.ProfileAuth
 import com.lumina.core.database.entity.ProfileEntity
 import com.lumina.core.database.entity.ProfileOverrides
+import com.lumina.core.database.entity.ProfilePermissions
+import com.lumina.core.database.entity.ProfileRestrictions
 import com.lumina.core.database.entity.ProfileSettings
 import com.lumina.core.database.entity.ProfileTriggerEntity
 import com.lumina.core.logging.Logger
+import com.lumina.core.model.AppAddedSource
 import com.lumina.core.model.AppBasicData
 import com.lumina.domain.profiles.ProfileRepository
 import com.lumina.core.model.ProfileAppConfig
-import com.lumina.core.model.ProfileType
-import com.lumina.core.model.RestrictionMode
 import com.lumina.core.model.componentKey
 import com.lumina.core.model.getAppKey
 import com.lumina.domain.profiles.model.LauncherProfile
+import com.lumina.domain.profiles.model.LauncherProfileAuth
 import com.lumina.domain.profiles.model.LauncherProfileSettings
 import com.lumina.domain.profiles.model.LauncherProfileOverrides
+import com.lumina.domain.profiles.model.LauncherProfilePermissions
+import com.lumina.domain.profiles.model.LauncherProfileRestrictions
 import com.lumina.domain.profiles.model.ProfileSummary
 import com.lumina.domain.profiles.model.TriggerCondition
 import jakarta.inject.Inject
@@ -47,7 +52,7 @@ class RoomProfileRepository @Inject constructor(
         return bytes.joinToString("") { "%02x".format(it) }
     }
 
-    private fun ProfileEntity.toDomain() = LauncherProfile(
+    fun ProfileEntity.toDomain() = LauncherProfile(
         id = id,
         userHandleNumber = userHandleNumber,
         type = type,
@@ -55,23 +60,35 @@ class RoomProfileRepository @Inject constructor(
         description = description,
         createdAt = createdAt,
         updatedAt = updatedAt,
+        isAdmin = isAdmin,
+        priorityTriggerLaunch = priorityTriggerLaunch,
         settings = LauncherProfileSettings(
-            strictMode = settings.strictMode,
-            isAdmin = settings.isAdmin,
-            priorityTriggerLaunch = settings.priorityTriggerLaunch,
-            filterNotification = settings.filterNotification,
-            blockProfileTriggerSwitching = settings.blockProfileTriggerSwitching,
-            allowAppRename = settings.allowAppRename,
-            allowProfileManagement = settings.allowProfileManagement,
-            allowAppCategoryChange = settings.allowAppCategoryChange,
             startDnd = settings.startDnd,
-            showAppList = settings.showAppList,
             hideScreenTimeOnApps = settings.hideScreenTimeOnApps,
-            disableOnLock = settings.disableOnLock,
-            blockUnauthorisedApps = settings.blockUnauthorisedApps,
-            entryAuthMethod = settings.entryAuthMethod,
-            exitAuthMethod = settings.exitAuthMethod,
-            activationKey = settings.activationKey,
+            maxAppCount = settings.maxAppCount,
+            autoAddCategoryApps = settings.autoAddCategoryApps
+        ),
+        permissions = LauncherProfilePermissions(
+            allowLauncherSettingsChange = permissions.allowLauncherSettingsChange,
+            allowManagingApps = permissions.allowManagingApps,
+            allowLauncherAppActions = permissions.allowLauncherAppActions,
+            allowProfileManagement = permissions.allowProfileManagement
+        ),
+        restrictions = LauncherProfileRestrictions(
+            appUsageEnforcementMode = restrictions.appUsageEnforcementMode,
+            blockAppList = restrictions.blockAppList,
+            blockProfileTriggerSwitching = restrictions.blockProfileTriggerSwitching,
+            blockUnauthorisedApps = restrictions.blockUnauthorisedApps,
+            blockRecentApps = restrictions.blockRecentApps,
+            blockSystemAppAdd = restrictions.blockSystemAppAdd,
+            blockNotificationShade = restrictions.blockNotificationShade,
+            filterNotifications = restrictions.filterNotifications,
+            switchOnDeviceLock = restrictions.switchOnDeviceLock
+        ),
+        auth = LauncherProfileAuth(
+            entryAuthMethod = auth.entryAuthMethod,
+            exitAuthMethod = auth.exitAuthMethod,
+            activationKey = auth.activationKey
         ),
         overrides = LauncherProfileOverrides(
             theme = overrides.theme,
@@ -82,11 +99,11 @@ class RoomProfileRepository @Inject constructor(
             showDate = overrides.showDate,
             showWeather = overrides.showWeather,
             hideScreenTime = overrides.hideScreenTime,
-            iconName = overrides.iconName,
+            iconName = overrides.iconName
         )
     )
 
-    private fun LauncherProfile.toEntity(hashedKey: String?) = ProfileEntity(
+    fun LauncherProfile.toEntity(hashedKey: String?) = ProfileEntity(
         id = id,
         userHandleNumber = userHandleNumber,
         type = type,
@@ -94,23 +111,35 @@ class RoomProfileRepository @Inject constructor(
         description = description,
         createdAt = createdAt,
         updatedAt = System.currentTimeMillis(),
+        isAdmin = isAdmin,
+        priorityTriggerLaunch = priorityTriggerLaunch,
         settings = ProfileSettings(
-            strictMode = settings.strictMode,
-            isAdmin = settings.isAdmin,
-            priorityTriggerLaunch = settings.priorityTriggerLaunch,
-            filterNotification = settings.filterNotification,
-            blockProfileTriggerSwitching = settings.blockProfileTriggerSwitching,
-            allowAppRename = settings.allowAppRename,
-            allowProfileManagement = settings.allowProfileManagement,
-            allowAppCategoryChange = settings.allowAppCategoryChange,
             startDnd = settings.startDnd,
-            showAppList = settings.showAppList,
             hideScreenTimeOnApps = settings.hideScreenTimeOnApps,
-            disableOnLock = settings.disableOnLock,
-            blockUnauthorisedApps = settings.blockUnauthorisedApps,
-            entryAuthMethod = settings.entryAuthMethod,
-            exitAuthMethod = settings.exitAuthMethod,
-            activationKey = settings.activationKey,
+            maxAppCount = settings.maxAppCount,
+            autoAddCategoryApps = settings.autoAddCategoryApps
+        ),
+        permissions = ProfilePermissions(
+            allowLauncherSettingsChange = permissions.allowLauncherSettingsChange,
+            allowManagingApps = permissions.allowManagingApps,
+            allowLauncherAppActions = permissions.allowLauncherAppActions,
+            allowProfileManagement = permissions.allowProfileManagement
+        ),
+        restrictions = ProfileRestrictions(
+            appUsageEnforcementMode = restrictions.appUsageEnforcementMode,
+            blockAppList = restrictions.blockAppList,
+            blockProfileTriggerSwitching = restrictions.blockProfileTriggerSwitching,
+            blockUnauthorisedApps = restrictions.blockUnauthorisedApps,
+            blockRecentApps = restrictions.blockRecentApps,
+            blockSystemAppAdd = restrictions.blockSystemAppAdd,
+            blockNotificationShade = restrictions.blockNotificationShade,
+            filterNotifications = restrictions.filterNotifications,
+            switchOnDeviceLock = restrictions.switchOnDeviceLock
+        ),
+        auth = ProfileAuth(
+            entryAuthMethod = auth.entryAuthMethod,
+            exitAuthMethod = auth.exitAuthMethod,
+            activationKey = hashedKey
         ),
         overrides = ProfileOverrides(
             theme = overrides.theme,
@@ -121,7 +150,7 @@ class RoomProfileRepository @Inject constructor(
             showDate = overrides.showDate,
             showWeather = overrides.showWeather,
             hideScreenTime = overrides.hideScreenTime,
-            iconName = overrides.iconName,
+            iconName = overrides.iconName
         )
     )
 
@@ -201,7 +230,7 @@ class RoomProfileRepository @Inject constructor(
     }
 
     override suspend fun saveProfile(profile: LauncherProfile) {
-        val hashedKey = profile.settings.activationKey?.hash()
+        val hashedKey = profile.auth.activationKey?.hash()
 
         if (hashedKey != null && profileDao.isKeyTaken(hashedKey, profile.id)) {
             logger.w(
@@ -215,7 +244,7 @@ class RoomProfileRepository @Inject constructor(
     }
 
     override suspend fun updateProfile(profile: LauncherProfile) {
-        val hashedKey = profile.settings.activationKey?.hash()
+        val hashedKey = profile.auth.activationKey?.hash()
 
         if (hashedKey != null && profileDao.isKeyTaken(hashedKey, profile.id)) {
             logger.w(
@@ -315,6 +344,10 @@ class RoomProfileRepository @Inject constructor(
 
     override suspend fun removeAllUninstalledApps(installedKeys: Set<String>) {
         profileDao.deleteAppMappingForUninstalledApps(installedKeys)
+    }
+
+    override suspend fun removeAppsAddedByRules(installedKeys: Set<String>) {
+        profileDao.deleteAppMappingsByRules(installedKeys, AppAddedSource.RULE.name)
     }
 
     override suspend fun getRecommendedUsageMinutes(

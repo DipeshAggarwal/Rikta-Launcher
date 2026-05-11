@@ -1,9 +1,15 @@
 package com.lumina.core.testing.builder
 
+import com.lumina.core.model.AppCategory
+import com.lumina.core.model.AppUsageEnforcementMode
 import com.lumina.core.model.ProfileAuthMethod
+import com.lumina.core.model.ProfileBackground
 import com.lumina.core.model.ProfileType
 import com.lumina.domain.profiles.model.LauncherProfile
+import com.lumina.domain.profiles.model.LauncherProfileAuth
 import com.lumina.domain.profiles.model.LauncherProfileOverrides
+import com.lumina.domain.profiles.model.LauncherProfilePermissions
+import com.lumina.domain.profiles.model.LauncherProfileRestrictions
 import com.lumina.domain.profiles.model.LauncherProfileSettings
 import kotlin.Boolean
 
@@ -16,67 +22,90 @@ object LauncherProfileBuilder {
         createdAt: Long = 0L,
         updatedAt: Long = 0L,
         userHandleNumber: Long = 0L,
-        strictMode: Boolean = false,
         isAdmin: Boolean = false,
-        blockProfileTriggerSwitching: Boolean = false,
         priorityTriggerLaunch: Boolean = false,
-        filterNotification: Boolean = false,
-        allowAppRename: Boolean = false,
-        allowProfileManagement: Boolean = false,
-        allowAppCategoryChange: Boolean = false,
+        // Settings
         startDnd: Boolean = false,
-        showAppList: Boolean = true,
         hideScreenTimeOnApps: Boolean = false,
-        disableOnLock: Boolean = false,
+        maxAppCount: Int = 0,
+        autoAddCategoryApps: List<AppCategory> = emptyList(),
+        // Permissions
+        allowLauncherSettingsChange: Boolean = false,
+        allowManagingApps: Boolean = false,
+        allowLauncherAppActions: Boolean = false,
+        allowProfileManagement: Boolean = false,
+        // Restrictions
+        appUsageEnforcementMode: AppUsageEnforcementMode = AppUsageEnforcementMode.COUNTDOWN,
+        blockAppList: Boolean = false,
+        blockProfileTriggerSwitching: Boolean = false,
         blockUnauthorisedApps: Boolean = false,
-        overrideTheme: String? = null,
-        overrideBackground: String? = null,
-        overrideFont: String? = null,
-        overrideShowClock: Boolean? = null,
-        overrideShowBigClock: Boolean? = null,
-        overrideShowDate: Boolean? = null,
-        overrideShowWeather: Boolean? = null,
-        overrideHideScreenTime: Boolean? = null,
-        overrideIconName: String? = null,
+        blockRecentApps: Boolean = false,
+        blockSystemAppAdd: Boolean = false,
+        blockNotificationShade: Boolean = false,
+        filterNotifications: Boolean = false,
+        switchOnDeviceLock: Boolean = false,
+        // Auth
         entryAuthMethod: ProfileAuthMethod = ProfileAuthMethod.NONE,
         exitAuthMethod: ProfileAuthMethod = ProfileAuthMethod.NONE,
         activationKey: String? = null,
+        // Overrides
+        theme: String? = null,
+        background: ProfileBackground? = null,
+        font: String? = null,
+        showClock: Boolean? = null,
+        showBigClock: Boolean? = null,
+        showDate: Boolean? = null,
+        showWeather: Boolean? = null,
+        hideScreenTime: Boolean? = null,
+        iconName: String? = null,
     ) = LauncherProfile(
         id = id,
-        name = name,
+        userHandleNumber = userHandleNumber,
         type = type,
+        name = name,
         description = description,
         createdAt = createdAt,
         updatedAt = updatedAt,
-        userHandleNumber = userHandleNumber,
+        isAdmin = isAdmin,
+        priorityTriggerLaunch = priorityTriggerLaunch,
         settings = LauncherProfileSettings(
-            strictMode = strictMode,
-            isAdmin = isAdmin,
-            blockProfileTriggerSwitching = blockProfileTriggerSwitching,
-            priorityTriggerLaunch = priorityTriggerLaunch,
-            filterNotification = filterNotification,
-            allowAppRename = allowAppRename,
-            allowProfileManagement = allowProfileManagement,
-            allowAppCategoryChange = allowAppCategoryChange,
             startDnd = startDnd,
-            showAppList = showAppList,
             hideScreenTimeOnApps = hideScreenTimeOnApps,
-            disableOnLock = disableOnLock,
+            maxAppCount = maxAppCount,
+            autoAddCategoryApps = autoAddCategoryApps
+        ),
+        permissions = LauncherProfilePermissions(
+            allowLauncherSettingsChange = allowLauncherSettingsChange,
+            allowManagingApps = allowManagingApps,
+            allowLauncherAppActions = allowLauncherAppActions,
+            allowProfileManagement = allowProfileManagement
+        ),
+        restrictions = LauncherProfileRestrictions(
+            appUsageEnforcementMode = appUsageEnforcementMode,
+            blockAppList = blockAppList,
+            blockProfileTriggerSwitching = blockProfileTriggerSwitching,
             blockUnauthorisedApps = blockUnauthorisedApps,
+            blockRecentApps = blockRecentApps,
+            blockSystemAppAdd = blockSystemAppAdd,
+            blockNotificationShade = blockNotificationShade,
+            filterNotifications = filterNotifications,
+            switchOnDeviceLock = switchOnDeviceLock
+        ),
+        auth = LauncherProfileAuth(
             entryAuthMethod = entryAuthMethod,
             exitAuthMethod = exitAuthMethod,
             activationKey = activationKey
         ),
         overrides = LauncherProfileOverrides(
-            theme = overrideTheme,
-            background = overrideBackground,
-            font = overrideFont,
-            showClock = overrideShowClock,
-            showBigClock = overrideShowBigClock,
-            showDate = overrideShowDate,
-            showWeather = overrideShowWeather,
-            hideScreenTime = overrideHideScreenTime,
-            iconName = overrideIconName
+            theme = theme,
+            background = background,
+            font = font,
+            showClock = showClock,
+            showBigClock = showBigClock,
+            showDate = showDate,
+            showWeather = showWeather,
+            hideScreenTime = hideScreenTime,
+            iconName = iconName
         )
     )
 }

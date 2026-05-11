@@ -31,6 +31,7 @@ interface ProfileRepository {
     suspend fun removeAppsFromProfile(profileId: String, apps: List<AppBasicData>)
     suspend fun removeAppFromAllProfiles(packageName: String, userHandleNumber: Long)
     suspend fun removeAllUninstalledApps(installedKeys: Set<String>)
+    suspend fun removeAppsAddedByRules(installedKeys: Set<String>)
 
     suspend fun getRecommendedUsageMinutes(profileId: String, packageName: String, userHandleNumber: Long): Int?
     suspend fun updateRecommendedUsageMinutes(

@@ -59,7 +59,7 @@ class FakeProfileRepository : ProfileRepository {
     }
 
     override suspend fun findProfileByKey(key: String): LauncherProfile? {
-        return profiles.value.find { it.settings.activationKey == key }
+        return profiles.value.find { it.auth.activationKey == key }
     }
 
     override suspend fun saveProfile(profile: LauncherProfile) {
@@ -118,6 +118,8 @@ class FakeProfileRepository : ProfileRepository {
     ) { }
 
     override suspend fun removeAllUninstalledApps(installedKeys: Set<String>) { }
+
+    override suspend fun removeAppsAddedByRules(installedKeys: Set<String>) { }
 
     override suspend fun getRecommendedUsageMinutes(
         profileId: String,

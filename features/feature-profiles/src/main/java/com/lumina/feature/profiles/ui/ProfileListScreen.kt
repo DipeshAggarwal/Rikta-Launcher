@@ -13,13 +13,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Inventory2
-import androidx.compose.material.icons.outlined.TouchApp
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -44,12 +42,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.lumina.core.model.ProfileType
-import com.lumina.core.model.RestrictionMode
+import com.lumina.core.model.ProfileClassification
 import com.lumina.core.ui.ThemeDimensions
-import com.lumina.core.ui.extensions.displayName
 import com.lumina.core.ui.extensions.systemProfileDisplayName
-import com.lumina.domain.profiles.model.LauncherProfile
 import com.lumina.domain.profiles.model.ProfileSummary
 import com.lumina.feature.profiles.R
 import com.lumina.feature.profiles.ui.component.InfoBanner
@@ -57,11 +52,6 @@ import com.lumina.feature.profiles.ui.component.ProfileActiveCard
 import com.lumina.feature.profiles.ui.component.ProfileListRow
 import com.lumina.feature.profiles.ui.component.SectionLabel
 import kotlinx.coroutines.launch
-
-private object ProfileListScreenDefaults {
-    val InfoContainerAlpha = 0.4f
-    val InfoContainerContentAlpha = 0.7f
-}
 
 private object EmptyProfilesCardDefaults {
     val TextTopPadding = 32.dp
@@ -74,6 +64,7 @@ private object EmptyProfilesCardDefaults {
 fun ProfileListScreen(
     activeProfileSummary: ProfileSummary?,
     inactiveProfileSummaries: List<ProfileSummary>,
+    profileClassificationMap: Map<String, ProfileClassification>,
     showBanner: Boolean,
     onDismissBanner: () -> Unit,
     onCreateNewProfile: () -> Unit,
@@ -86,6 +77,7 @@ fun ProfileListScreen(
     val coroutineScope = rememberCoroutineScope()
 
     val profileAlreadyActive = stringResource(R.string.profile_already_active)
+
     Scaffold(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
@@ -101,7 +93,8 @@ fun ProfileListScreen(
                     IconButton(onClick = onBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
-                            contentDescription = stringResource(R.string.profile_go_back)
+                            contentDescription = stringResource(R.string.profile_go_back),
+                            modifier = Modifier.size(ThemeDimensions.Icon.PrimaryIconSize)
                         )
                     }
                 },
@@ -116,7 +109,7 @@ fun ProfileListScreen(
                 .fillMaxSize()
                 .padding(paddingValues),
             contentPadding = PaddingValues(
-                horizontal = ThemeDimensions.Spacing.ExtraLarge,
+                horizontal = ThemeDimensions.Spacing.Small,
                 vertical = ThemeDimensions.Spacing.Large
             ),
             verticalArrangement = Arrangement.spacedBy(ThemeDimensions.Spacing.ExtraLarge)
@@ -128,12 +121,9 @@ fun ProfileListScreen(
                     }
                     ProfileActiveCard(
                         title = systemProfileDisplayName(summary.profile.name),
-                        subtitle = stringResource(
-                            R.string.active_profile_summary_text,
-                            summary.profile.toRestrictionMode().displayName(),
-                            summary.appCount,
-                            summary.triggerCount
-                        ),
+                        profileClassification = profileClassificationMap.getValue(summary.profile.id),
+                        appCount = summary.appCount,
+                        triggerCount = summary.triggerCount,
                         profileId = summary.profile.id,
                         iconName = summary.profile.overrides.iconName,
                         activeText = stringResource(R.string.active_now),
@@ -177,17 +167,12 @@ fun ProfileListScreen(
                             inactiveProfileSummaries.forEachIndexed { index, summary ->
                                 ProfileListRow(
                                     title = systemProfileDisplayName(summary.profile.name),
-                                    subtitle = stringResource(
-                                        R.string.active_profile_summary_text,
-                                        summary.profile.toRestrictionMode().displayName(),
-                                        summary.appCount,
-                                        summary.triggerCount
-                                    ),
+                                    profileClassification = profileClassificationMap.getValue(summary.profile.id),
+                                    appCount = summary.appCount,
+                                    triggerCount = summary.triggerCount,
                                     profileId = summary.profile.id,
                                     iconName = summary.profile.overrides.iconName,
-                                    optionsDescription = stringResource(R.string.profile_options_description),
-                                    onClick = { onSwitchToProfile(summary.profile.id) },
-                                    onOptionsClick = { onOpenProfileOptions(summary.profile.id) }
+                                    onClick = { onSwitchToProfile(summary.profile.id) }
                                 )
                                 if (index < inactiveProfileSummaries.lastIndex) {
                                     HorizontalDivider(
@@ -214,55 +199,6 @@ fun ProfileListScreen(
                     subtitle = stringResource(R.string.create_new_profile_subtitle),
                     onClick = onCreateNewProfile
                 )
-            }
-
-            item(key = "long_press_tip") {
-                OutlinedCard(
-                    modifier = Modifier.fillMaxWidth(),
-                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
-                    colors = CardDefaults.outlinedCardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(
-                            alpha = ProfileListScreenDefaults.InfoContainerAlpha
-                        )
-                    ),
-                    shape = MaterialTheme.shapes.medium
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(
-                                horizontal = ThemeDimensions.Spacing.ExtraLarge,
-                                vertical = ThemeDimensions.Spacing.Large
-                            ),
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            imageVector = Icons.Outlined.TouchApp,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(
-                                alpha = ProfileListScreenDefaults.InfoContainerContentAlpha
-                            ),
-                            modifier = Modifier.size(ThemeDimensions.Icon.BannerIconSize)
-                        )
-                        Spacer(modifier = Modifier.width(ThemeDimensions.Spacing.Medium))
-
-                        Text(
-                            text = stringResource(R.string.long_press_tip),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(
-                                alpha = ProfileListScreenDefaults.InfoContainerContentAlpha
-                            ),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(
-                                    horizontal = ThemeDimensions.Spacing.ExtraLarge,
-                                    vertical = ThemeDimensions.Spacing.Large
-                                )
-                                .wrapContentWidth(Alignment.CenterHorizontally)
-                        )
-                    }
-                }
             }
         }
     }
@@ -368,16 +304,4 @@ private fun EmptyProfilesCard(
             )
         }
     }
-}
-
-fun LauncherProfile.toRestrictionMode(): RestrictionMode = when (type) {
-    ProfileType.LAUNCHER_DEFAULT -> if (settings.strictMode) RestrictionMode.STRICT
-        else RestrictionMode.BALANCED
-    ProfileType.LAUNCHER_GUEST -> if (settings.strictMode) RestrictionMode.STRICT
-        else RestrictionMode.RELAXED
-    ProfileType.SYSTEM_WORK -> RestrictionMode.BALANCED
-    ProfileType.SYSTEM_PRIVATE -> if (settings.strictMode) RestrictionMode.STRICT
-        else RestrictionMode.CUSTOM
-    ProfileType.CUSTOM -> if (settings.strictMode) RestrictionMode.STRICT
-        else RestrictionMode.CUSTOM
 }

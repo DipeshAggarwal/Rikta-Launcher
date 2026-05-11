@@ -13,7 +13,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.MoreVert
+import androidx.compose.material.icons.outlined.ChevronRight
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -25,6 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.lumina.core.model.ProfileClassification
 import com.lumina.core.ui.ThemeDimensions
 
 private object ProfileActiveCardDefaults {
@@ -34,7 +35,9 @@ private object ProfileActiveCardDefaults {
 @Composable
 fun ProfileActiveCard(
     title: String,
-    subtitle: String,
+    profileClassification: ProfileClassification,
+    appCount: Int,
+    triggerCount: Int,
     profileId: String,
     iconName: String?,
     activeText: String,
@@ -93,8 +96,10 @@ fun ProfileActiveCard(
                 }
                 Spacer(modifier = Modifier.height(ThemeDimensions.Spacing.Tiny))
 
-                Text(
-                    text = subtitle,
+                ProfileSubtitle(
+                    classification = profileClassification,
+                    appCount = appCount,
+                    triggerCount = triggerCount,
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = ProfileActiveCardDefaults.SubtitleTextColorAlpha)
                 )
@@ -102,7 +107,7 @@ fun ProfileActiveCard(
 
             IconButton(onClick = onOptionsClick) {
                 Icon(
-                    imageVector = Icons.Outlined.MoreVert,
+                    imageVector = Icons.Outlined.ChevronRight,
                     contentDescription = optionsDescription,
                     tint = MaterialTheme.colorScheme.onPrimaryContainer
                 )
