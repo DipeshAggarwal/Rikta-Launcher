@@ -1,6 +1,6 @@
 package com.lumina.core.model
 
-enum class ProfileMode {
+enum class ProfilePreset {
     ADMIN,
     PRIVATE,
     WORK,

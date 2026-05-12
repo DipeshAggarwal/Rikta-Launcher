@@ -3,6 +3,7 @@
     <string name="remove">Remove</string>
     <string name="reset_to_default">Reset to default</string>
     <string name="swipe_to_show_app">Swipe to unhide app</string>
+    <string name="go_back">Go Back</string>
 
     <!-- Theme -->
     <string name="theme">Theme</string>
@@ -100,8 +101,8 @@
     <string name="mode_admin_description">Full Access to all apps and settings.</string>
 
     <string name="mode_private_name">Private</string>
-    <string name="mode_private_subtitle">Protect personal apps and data</string>
-    <string name="mode_private_description">Keep personal apps and data hidden from prying eyes.</string>
+    <string name="mode_private_subtitle">Protect personal apps</string>
+    <string name="mode_private_description">Keep personal apps hidden from prying eyes.</string>
 
     <string name="mode_work_name">Work</string>
     <string name="mode_work_subtitle">Hide distractions</string>

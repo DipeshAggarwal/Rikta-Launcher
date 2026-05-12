@@ -7,9 +7,11 @@ import com.lumina.core.common.FlowDefaults.WhileSubscribedTimeoutMs
 import com.lumina.core.common.time.TimeProvider
 import com.lumina.core.logging.Logger
 import com.lumina.core.model.ProfileClassification
+import com.lumina.core.model.ProfilePreset
 import com.lumina.core.model.ProfileType
 import com.lumina.domain.coordination.DeviceUserProvider
 import com.lumina.domain.coordination.usecase.CreateDraftProfileUseCase
+import com.lumina.domain.profiles.PresetDefaults
 import com.lumina.domain.profiles.ProfileRepository
 import com.lumina.domain.profiles.model.LauncherProfile
 import com.lumina.domain.profiles.model.LauncherProfileAuth
@@ -157,6 +159,10 @@ class ProfileManageViewModel @Inject constructor(
 
     fun updateOverrides(modifiedOverrides: (LauncherProfileOverrides) -> LauncherProfileOverrides) {
         updateDraftProfile { it.copy(overrides = modifiedOverrides(it.overrides)) }
+    }
+
+    fun applyPreset(preset: ProfilePreset) {
+        updateDraftProfile { PresetDefaults.forPreset(preset).applyTo(it) }
     }
 
     fun saveProfile() {

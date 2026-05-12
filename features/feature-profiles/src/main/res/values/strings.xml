@@ -3,7 +3,6 @@
     <string name="profiles_header">Manage Profiles</string>
     <string name="active_profile">Active Profile</string>
     <string name="all_profiles">All Profiles</string>
-    <string name="profile_go_back">Go Back</string>
 
     <string name="no_inactive_profiles">No additional profiles.</string>
     <string name="no_inactive_profiles_subtitle">Create a new profile to manage a new you.</string>
@@ -31,4 +30,14 @@
     <string name="profile_info_banner">"Profiles control what apps you can use and when.</string>
     <string name="profile_details_text">Learn More</string>
     <string name="profile_dismiss_text">Dismiss banner</string>
+
+    <string name="create_profile_headers">Create New Profile</string>
+    <string name="create_profile_button_default">Create Profile</string>
+    <string name="create_profile_button_selected">Create %s Profile</string>
+    <string name="create_profile_info">Create a profile by selecting a preset. You can customise everything later.</string>
+    <string name="create_profile_add_details">Profile Details</string>
+    <string name="create_profile_add_name_label">Name</string>
+    <string name="create_profile_add_description_label">Description (optional)</string>
+    <string name="create_button_review">Review &amp; Customise Settings</string>
+    <string name="create_button_review_subtitle">Change settings to whatever you want to achieve.</string>
 </resources>

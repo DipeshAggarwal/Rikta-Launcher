@@ -1,6 +1,6 @@
 package com.lumina.core.model
 
 data class ProfileClassification(
-    val mode: ProfileMode,
+    val preset: ProfilePreset,
     val isCustomised: Boolean
 )

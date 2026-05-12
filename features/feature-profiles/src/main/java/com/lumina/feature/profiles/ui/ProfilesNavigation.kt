@@ -25,7 +25,7 @@ fun NavGraphBuilder.profilesNavigation(
 
         ProfilesScreen(
             viewModel = viewModel,
-            onCreateNewProfile = { navController.navigate(ProfileNavigationRoute.manageRoute()) },
+            onCreateNewProfile = { navController.navigate(ProfileNavigationRoute.PROFILE_CREATE_ROUTE) },
             onOpenProfileOptions = { profileId ->
                 navController.navigate(ProfileNavigationRoute.detailRoute(profileId))
             },
@@ -41,7 +41,7 @@ fun NavGraphBuilder.profilesNavigation(
         val parentEntry = remember(navBackStackEntry) {
             navController.getBackStackEntry(ProfileNavigationRoute.PROFILE_LIST_ROUTE)
         }
-        val viewModel: ProfileManageViewModel = hiltViewModel(navBackStackEntry)
+        val viewModel: ProfileManageViewModel = hiltViewModel(parentEntry)
 
         ProfileCreateScreen(
             viewModel = viewModel,

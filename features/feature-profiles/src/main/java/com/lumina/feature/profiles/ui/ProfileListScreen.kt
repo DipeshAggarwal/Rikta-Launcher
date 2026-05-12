@@ -15,22 +15,17 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Inventory2
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -44,6 +39,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.lumina.core.model.ProfileClassification
 import com.lumina.core.ui.ThemeDimensions
+import com.lumina.core.ui.components.TopTitleBar
 import com.lumina.core.ui.extensions.systemProfileDisplayName
 import com.lumina.domain.profiles.model.ProfileSummary
 import com.lumina.feature.profiles.R
@@ -59,7 +55,6 @@ private object EmptyProfilesCardDefaults {
     val InactiveElementAlpha = 0.5f
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileListScreen(
     activeProfileSummary: ProfileSummary?,
@@ -81,26 +76,9 @@ fun ProfileListScreen(
     Scaffold(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = stringResource(R.string.profiles_header),
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
-                            contentDescription = stringResource(R.string.profile_go_back),
-                            modifier = Modifier.size(ThemeDimensions.Icon.PrimaryIconSize)
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background
-                )
+            TopTitleBar(
+                title = stringResource(R.string.profiles_header),
+                onBack = onBack
             )
         }
     ) { paddingValues ->
