@@ -35,7 +35,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import com.lumina.core.model.AppCategory
 import com.lumina.core.ui.Motion
-import com.lumina.core.ui.ThemeDimensions
+import com.lumina.core.ui.ThemeTokens
 import com.lumina.core.ui.theme.ContentColor
 import com.lumina.core.ui.extensions.toDisplayString
 import com.lumina.feature.home.R
@@ -52,7 +52,7 @@ fun ChangeAppCategory(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .heightIn(max = ThemeDimensions.ExpandedContentMaxHeight)
+                .heightIn(max = ThemeTokens.ExpandedContentMaxHeight)
                 .verticalScroll(rememberScrollState())
         ) {
             AppCategory.entries.forEach { category ->
@@ -68,7 +68,7 @@ fun ChangeAppCategory(
                 Surface(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clip(RoundedCornerShape(ThemeDimensions.DefaultCornerRadius))
+                        .clip(RoundedCornerShape(ThemeTokens.DefaultCornerRadius))
                         .clickable { selectedCategory = category },
                     color = if (isSelectedCategory) MaterialTheme.colorScheme.secondaryContainer
                         else Color.Transparent,
@@ -80,8 +80,8 @@ fun ChangeAppCategory(
                             .fillMaxWidth()
                             .clickable { selectedCategory = category }
                             .padding(
-                                vertical = ThemeDimensions.RowVerticalPadding,
-                                horizontal = ThemeDimensions.RowHorizontalPadding
+                                vertical = ThemeTokens.RowVerticalPadding,
+                                horizontal = ThemeTokens.RowHorizontalPadding
                             ),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
@@ -108,7 +108,7 @@ fun ChangeAppCategory(
                 Text(stringResource(R.string.category_reset_label), color = ContentColor)
             }
 
-            Spacer(modifier = Modifier.width(ThemeDimensions.InLineButtonSpacerWidth))
+            Spacer(modifier = Modifier.width(ThemeTokens.InLineButtonSpacerWidth))
             FilledTonalButton(
                 onClick = { onSave(selectedCategory) },
                 shape = MaterialTheme.shapes.medium

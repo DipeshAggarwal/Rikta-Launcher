@@ -8,5 +8,5 @@ import com.lumina.core.ui.R
 @Composable
 fun ProfileClassification.displayLabel(): String = buildString {
     append(preset.displayName())
-    if (isCustomised) append(stringResource(R.string.mode_customised))
+    if (isCustomised) append(" ${stringResource(R.string.mode_customised)}")
 }

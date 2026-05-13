@@ -15,7 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import com.lumina.core.ui.R
-import com.lumina.core.ui.ThemeDimensions
+import com.lumina.core.ui.ThemeTokens
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -36,7 +36,7 @@ fun TopTitleBar(
                 Icon(
                     imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
                     contentDescription = stringResource(R.string.go_back),
-                    modifier = Modifier.size(ThemeDimensions.Icon.PrimaryIconSize)
+                    modifier = Modifier.size(ThemeTokens.Icon.SecondaryIconSize)
                 )
             }
         },

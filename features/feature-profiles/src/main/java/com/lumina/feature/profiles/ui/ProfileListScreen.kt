@@ -38,7 +38,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.lumina.core.model.ProfileClassification
-import com.lumina.core.ui.ThemeDimensions
+import com.lumina.core.ui.ThemeTokens
 import com.lumina.core.ui.components.TopTitleBar
 import com.lumina.core.ui.extensions.systemProfileDisplayName
 import com.lumina.domain.profiles.model.ProfileSummary
@@ -47,7 +47,6 @@ import com.lumina.feature.profiles.ui.component.InfoBanner
 import com.lumina.feature.profiles.ui.component.ProfileActiveCard
 import com.lumina.feature.profiles.ui.component.ProfileListRow
 import com.lumina.feature.profiles.ui.component.SectionLabel
-import kotlinx.coroutines.launch
 
 private object EmptyProfilesCardDefaults {
     val TextTopPadding = 32.dp
@@ -62,9 +61,8 @@ fun ProfileListScreen(
     profileClassificationMap: Map<String, ProfileClassification>,
     showBanner: Boolean,
     onDismissBanner: () -> Unit,
+    onViewProfileDetails: (String) -> Unit,
     onCreateNewProfile: () -> Unit,
-    onSwitchToProfile: (String) -> Unit,
-    onOpenProfileOptions: (String) -> Unit,
     onBack: () -> Unit
 ) {
     val uriHandler = LocalUriHandler.current
@@ -87,10 +85,10 @@ fun ProfileListScreen(
                 .fillMaxSize()
                 .padding(paddingValues),
             contentPadding = PaddingValues(
-                horizontal = ThemeDimensions.Spacing.Small,
-                vertical = ThemeDimensions.Spacing.Large
+                horizontal = ThemeTokens.Spacing.Small,
+                vertical = ThemeTokens.Spacing.Large
             ),
-            verticalArrangement = Arrangement.spacedBy(ThemeDimensions.Spacing.ExtraLarge)
+            verticalArrangement = Arrangement.spacedBy(ThemeTokens.Spacing.ExtraLarge)
         ) {
             activeProfileSummary?.let { summary ->
                 item(key = "active_profile_section") {
@@ -106,12 +104,7 @@ fun ProfileListScreen(
                         iconName = summary.profile.overrides.iconName,
                         activeText = stringResource(R.string.active_now),
                         optionsDescription = stringResource(R.string.profile_options_description),
-                        onClick = {
-                            coroutineScope.launch {
-                                snackbarHostState.showSnackbar(profileAlreadyActive)
-                            }
-                        },
-                        onOptionsClick = { onOpenProfileOptions(summary.profile.id) }
+                        onClick = { onViewProfileDetails(summary.profile.id) }
                     )
                 }
             }
@@ -150,11 +143,11 @@ fun ProfileListScreen(
                                     triggerCount = summary.triggerCount,
                                     profileId = summary.profile.id,
                                     iconName = summary.profile.overrides.iconName,
-                                    onClick = { onSwitchToProfile(summary.profile.id) }
+                                    onClick = { onViewProfileDetails(summary.profile.id) }
                                 )
                                 if (index < inactiveProfileSummaries.lastIndex) {
                                     HorizontalDivider(
-                                        modifier = Modifier.padding(horizontal = ThemeDimensions.Spacing.ExtraLarge),
+                                        modifier = Modifier.padding(horizontal = ThemeTokens.Spacing.ExtraLarge),
                                         color = MaterialTheme.colorScheme.outlineVariant
                                     )
                                 }
@@ -203,8 +196,8 @@ private fun CreateProfileRow(
                 .clip(MaterialTheme.shapes.large)
                 .clickable(onClick = onClick)
                 .padding(
-                    horizontal = ThemeDimensions.Spacing.ExtraLarge,
-                    vertical = ThemeDimensions.Spacing.Large
+                    horizontal = ThemeTokens.Spacing.ExtraLarge,
+                    vertical = ThemeTokens.Spacing.Large
                 ),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -212,9 +205,9 @@ private fun CreateProfileRow(
                 imageVector = Icons.Outlined.Add,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onSecondaryContainer,
-                modifier = Modifier.size(ThemeDimensions.Icon.TertiaryIconSize)
+                modifier = Modifier.size(ThemeTokens.Icon.TertiaryIconSize)
             )
-            Spacer(modifier = Modifier.width(ThemeDimensions.Spacing.Large))
+            Spacer(modifier = Modifier.width(ThemeTokens.Spacing.Large))
             Column {
                 Text(
                     text = title,
@@ -241,7 +234,7 @@ private fun EmptyProfilesCard(
     OutlinedCard(
         modifier = modifier
             .fillMaxWidth()
-            .padding(bottom = ThemeDimensions.DefaultVerticalPadding),
+            .padding(bottom = ThemeTokens.DefaultVerticalPadding),
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
         colors = CardDefaults.outlinedCardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = EmptyProfilesCardDefaults.InactiveElementAlpha)
@@ -262,9 +255,9 @@ private fun EmptyProfilesCard(
                 imageVector = Icons.Outlined.Inventory2,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = EmptyProfilesCardDefaults.InactiveElementAlpha),
-                modifier = Modifier.size(ThemeDimensions.Icon.PrimaryIconSize)
+                modifier = Modifier.size(ThemeTokens.Icon.PrimaryIconSize)
             )
-            Spacer(modifier = Modifier.height(ThemeDimensions.Spacing.ExtraLarge))
+            Spacer(modifier = Modifier.height(ThemeTokens.Spacing.ExtraLarge))
 
             Text(
                 text = title,
@@ -272,7 +265,7 @@ private fun EmptyProfilesCard(
                 fontWeight = FontWeight.SemiBold,
                 color = MaterialTheme.colorScheme.onSurface
             )
-            Spacer(modifier = Modifier.height(ThemeDimensions.Spacing.Medium))
+            Spacer(modifier = Modifier.height(ThemeTokens.Spacing.Medium))
 
             Text(
                 text = subtitle,

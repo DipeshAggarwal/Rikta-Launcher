@@ -19,11 +19,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.lumina.core.ui.ThemeDimensions
-
-private object ClickableListIconDefaults {
-    val disabledTextAlpha = 0.38f
-}
+import com.lumina.core.ui.ThemeTokens
 
 @Composable
 fun ElevatedButton(
@@ -35,14 +31,16 @@ fun ElevatedButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val contentAlpha = if (enabled) 1f else ClickableListIconDefaults.disabledTextAlpha
+    val contentAlpha = if (enabled) 1f else ThemeTokens.Alpha.Medium
     val textColor = MaterialTheme.colorScheme.onSurface.copy(alpha = contentAlpha)
     val subtitleColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = contentAlpha)
     val iconColor = MaterialTheme.colorScheme.primary.copy(alpha = contentAlpha)
 
     OutlinedCard(
         modifier = modifier.fillMaxWidth(),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = contentAlpha)),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(
+            alpha = contentAlpha)
+        ),
         colors = CardDefaults.outlinedCardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
         shape = MaterialTheme.shapes.medium
     ) {
@@ -52,8 +50,8 @@ fun ElevatedButton(
                 .clip(MaterialTheme.shapes.medium)
                 .then(if (enabled) Modifier.clickable(onClick = onClick) else Modifier)
                 .padding(
-                    horizontal = ThemeDimensions.Spacing.ExtraLarge,
-                    vertical = ThemeDimensions.Spacing.Medium
+                    horizontal = ThemeTokens.Spacing.ExtraLarge,
+                    vertical = ThemeTokens.Spacing.Medium
                 ),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -62,7 +60,7 @@ fun ElevatedButton(
                     imageVector = leadingIcon,
                     contentDescription = null,
                     tint = iconColor,
-                    modifier = Modifier.size(ThemeDimensions.Icon.BannerIconSize)
+                    modifier = Modifier.size(ThemeTokens.Icon.BannerIconSize)
                 )
             }
 
@@ -89,7 +87,7 @@ fun ElevatedButton(
                     imageVector = trailingIcon,
                     contentDescription = null,
                     tint = iconColor,
-                    modifier = Modifier.size(ThemeDimensions.Icon.BannerIconSize)
+                    modifier = Modifier.size(ThemeTokens.Icon.BannerIconSize)
                 )
             }
         }

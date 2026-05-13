@@ -11,7 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
-import com.lumina.core.ui.ThemeDimensions
+import com.lumina.core.ui.ThemeTokens
 import kotlin.math.absoluteValue
 
 private object ProfileIconDefaults {
@@ -39,7 +39,7 @@ fun ProfileIcon(
             .size(size)
             .background(
                 backgroundColor.copy(alpha = ProfileIconDefaults.BackgroundAlpha),
-                RoundedCornerShape(ThemeDimensions.DefaultCornerRadius)
+                RoundedCornerShape(ThemeTokens.DefaultCornerRadius)
             ),
         contentAlignment = Alignment.Center
     ) {

@@ -11,12 +11,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.unit.Dp
 import com.lumina.core.model.ProfileClassification
-import com.lumina.core.ui.ThemeDimensions
+import com.lumina.core.ui.ThemeTokens
 import com.lumina.core.ui.extensions.displayLabel
 import com.lumina.feature.profiles.R
 import androidx.compose.ui.platform.LocalResources
@@ -47,7 +45,7 @@ fun ProfileSubtitle(
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(ThemeDimensions.Spacing.Small)
+        horizontalArrangement = Arrangement.spacedBy(ThemeTokens.Spacing.Small)
     ) {
         Text(text = modeLabel, style = style, color = color)
         SeparatorDot(color = color, textStyle = style)

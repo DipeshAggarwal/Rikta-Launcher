@@ -9,8 +9,8 @@ import com.lumina.feature.profiles.ProfileListViewModel
 @Composable
 fun ProfilesScreen(
     viewModel: ProfileListViewModel = hiltViewModel(),
+    onViewProfileDetails: (String) -> Unit,
     onCreateNewProfile: () -> Unit,
-    onOpenProfileOptions: (String) -> Unit,
     onBack: () -> Unit
 ) {
     val activeProfileId by viewModel.activeProfileId.collectAsStateWithLifecycle()
@@ -25,9 +25,8 @@ fun ProfilesScreen(
         activeProfileSummary = activeProfileSummary,
         inactiveProfileSummaries = inactiveProfileSummaries,
         profileClassificationMap = profileClassificationMap,
+        onViewProfileDetails = onViewProfileDetails,
         onCreateNewProfile = onCreateNewProfile,
-        onSwitchToProfile = { profileId -> viewModel.switchProfile(profileId) },
-        onOpenProfileOptions = onOpenProfileOptions,
         showBanner = showingProfileInfoBanner,
         onDismissBanner = { viewModel.onDismissProfileInfo() },
         onBack = onBack

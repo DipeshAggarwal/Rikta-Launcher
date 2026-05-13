@@ -40,4 +40,33 @@
     <string name="create_profile_add_description_label">Description (optional)</string>
     <string name="create_button_review">Review &amp; Customise Settings</string>
     <string name="create_button_review_subtitle">Change settings to whatever you want to achieve.</string>
+
+    <string name="profile_details_make_active">Switch to %s profile</string>
+    <string name="profile_details_default_theme">System Default</string>
+    <string name="profile_details_duplicate_profile">Duplicate %s profile</string>
+    <string name="profile_details_delete_profile">Delete %s profile</string>
+
+    <string name="profile_details_summary">Summary</string>
+    <string name="profile_details_home_screen">Home Screen</string>
+    <string name="profile_details_allowed_apps">Allowed Apps</string>
+    <string name="profile_details_restrictions">Restrictions</string>
+    <string name="profile_details_triggers">Triggers</string>
+    <string name="profile_details_appearance">Appearance</string>
+    <string name="profile_details_security">Security</string>
+
+    <string name="profile_details_allowed_apps_count">%1$d apps</string>
+    <string name="profile_details_restrictions_count">%1$d enabled</string>
+    <string name="profile_details_triggers_count">%1$d active</string>
+
+    <string name="profile_details_no_security">None</string>
+    <string name="profile_details_security_key">Activation Key Required</string>
+    <string name="profile_details_biometric_required">Biometric Required</string>
+    <string name="profile_details_biometric_and_pin">Biometric &amp; Activation Key</string>
+
+    <string name="profile_details_duplicate_profile_subtitle">A copy of this profile will be created.\nYou can edit it after duplication.</string>
+    <string name="profile_details_delete_profile_subtitle">This action cannot be undone.\nEvery setting and customisation in this profile will be lost.</string>
+
+    <string name="profile_details_duplicate_button_text">Duplicate</string>
+    <string name="profile_details_delete_button_text">Delete</string>
+    <string name="profile_details_cancel_button_text">Cancel</string>
 </resources>

@@ -16,7 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.lumina.core.model.ProfileClassification
-import com.lumina.core.ui.ThemeDimensions
+import com.lumina.core.ui.ThemeTokens
 
 private object ProfileListRowDefaults {
     val SubtitleTextColorAlpha = 0.8f
@@ -38,8 +38,8 @@ fun ProfileListRow(
             .fillMaxWidth()
             .clickable(onClick = onClick)
             .padding(
-                horizontal = ThemeDimensions.Spacing.ExtraLarge,
-                vertical = ThemeDimensions.Spacing.Large
+                horizontal = ThemeTokens.Spacing.ExtraLarge,
+                vertical = ThemeTokens.Spacing.Large
             ),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -47,9 +47,9 @@ fun ProfileListRow(
             profileName = title,
             profileId = profileId,
             iconName = iconName,
-            size = ThemeDimensions.Icon.SecondaryIconSize
+            size = ThemeTokens.Icon.SecondaryIconSize
         )
-        Spacer(modifier = Modifier.width(ThemeDimensions.Spacing.Large))
+        Spacer(modifier = Modifier.width(ThemeTokens.Spacing.Large))
 
         Column(modifier = Modifier.weight(1f)) {
             Text(

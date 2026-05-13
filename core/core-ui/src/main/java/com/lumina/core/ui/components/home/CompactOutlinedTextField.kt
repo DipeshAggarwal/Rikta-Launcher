@@ -23,7 +23,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.lumina.core.ui.ThemeDimensions
+import com.lumina.core.ui.ThemeTokens
 import com.lumina.core.ui.ThemeTextDefaults
 import com.lumina.core.ui.theme.ContentColor
 
@@ -33,7 +33,7 @@ fun CompactOutlinedTextField(
     value: String,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
-    height: Dp = ThemeDimensions.CompactTextFieldHeight,
+    height: Dp = ThemeTokens.CompactTextFieldHeight,
     textStyle: TextStyle = MaterialTheme.typography.bodySmall,
     colors: TextFieldColors = OutlinedTextFieldDefaults.colors(),
     labelName: String? = null,
@@ -79,7 +79,7 @@ fun CompactOutlinedTextField(
                 leadingIcon = leadingIcon,
                 trailingIcon = trailingIcon,
                 contentPadding = PaddingValues(
-                    horizontal = if (leadingIcon != null) 0.dp else ThemeDimensions.CompactTextFieldContentHorizontalPadding,
+                    horizontal = if (leadingIcon != null) 0.dp else ThemeTokens.CompactTextFieldContentHorizontalPadding,
                     vertical = 0.dp
                 ),
                 container = {

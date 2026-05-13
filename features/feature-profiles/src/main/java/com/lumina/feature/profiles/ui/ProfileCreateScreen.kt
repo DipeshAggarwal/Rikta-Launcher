@@ -53,7 +53,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lumina.core.model.ProfilePreset
 import com.lumina.core.ui.Motion
-import com.lumina.core.ui.ThemeDimensions
+import com.lumina.core.ui.ThemeTokens
 import com.lumina.core.ui.components.ElevatedButton
 import com.lumina.core.ui.components.PrimaryButton
 import com.lumina.core.ui.components.TopTitleBar
@@ -127,10 +127,10 @@ fun ProfileCreateScreen(
                 .padding(paddingValues)
                 .imePadding(),
             contentPadding = PaddingValues(
-                horizontal = ThemeDimensions.Spacing.Small,
-                vertical = ThemeDimensions.Spacing.Large
+                horizontal = ThemeTokens.Spacing.Small,
+                vertical = ThemeTokens.Spacing.Large
             ),
-            verticalArrangement = Arrangement.spacedBy(ThemeDimensions.Spacing.Small)
+            verticalArrangement = Arrangement.spacedBy(ThemeTokens.Spacing.Small)
         ) {
             item(key = "create_profile_info") {
                 Text(
@@ -140,7 +140,7 @@ fun ProfileCreateScreen(
                 )
             }
             item(key = "create_profile_info_spacer") {
-                Spacer(modifier = Modifier.height(ThemeDimensions.Spacing.Large))
+                Spacer(modifier = Modifier.height(ThemeTokens.Spacing.Large))
             }
 
             items(
@@ -165,7 +165,7 @@ fun ProfileCreateScreen(
                 )
             }
             item(key = "create_profile_preset_spacer") {
-                Spacer(modifier = Modifier.height(ThemeDimensions.Spacing.Large))
+                Spacer(modifier = Modifier.height(ThemeTokens.Spacing.Large))
             }
 
             item(key = "create_profile_details_field") {
@@ -184,7 +184,7 @@ fun ProfileCreateScreen(
                 )
             }
             item(key = "create_profile_details_spacer") {
-                Spacer(modifier = Modifier.height(ThemeDimensions.Spacing.Large))
+                Spacer(modifier = Modifier.height(ThemeTokens.Spacing.Large))
             }
 
             item(key = "create_profile_review") {
@@ -198,7 +198,7 @@ fun ProfileCreateScreen(
                 )
             }
             item(key = "create_profile_review_spacer") {
-                Spacer(modifier = Modifier.height(ThemeDimensions.Spacing.Medium))
+                Spacer(modifier = Modifier.height(ThemeTokens.Spacing.Medium))
             }
 
             item(key = "cta_button") {
@@ -265,8 +265,8 @@ private fun PresetCard(
                 .clip(MaterialTheme.shapes.medium)
                 .clickable(onClick = onClick)
                 .padding(
-                    horizontal = ThemeDimensions.Spacing.ExtraLarge,
-                    vertical = ThemeDimensions.Spacing.Medium
+                    horizontal = ThemeTokens.Spacing.ExtraLarge,
+                    vertical = ThemeTokens.Spacing.Medium
                 ),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -282,10 +282,10 @@ private fun PresetCard(
                     imageVector = if (selected) Icons.Outlined.Check else preset.icon(),
                     contentDescription = null,
                     tint = accentColor,
-                    modifier = Modifier.size(ThemeDimensions.Icon.BannerIconSize)
+                    modifier = Modifier.size(ThemeTokens.Icon.BannerIconSize)
                 )
             }
-            Spacer(modifier = Modifier.width(ThemeDimensions.Spacing.Large))
+            Spacer(modifier = Modifier.width(ThemeTokens.Spacing.Large))
 
             Text(
                 text = preset.displayName(),
@@ -293,7 +293,7 @@ private fun PresetCard(
                 fontWeight = FontWeight.SemiBold,
                 color = MaterialTheme.colorScheme.onSurface
             )
-            Spacer(modifier = Modifier.width(ThemeDimensions.Spacing.Large))
+            Spacer(modifier = Modifier.width(ThemeTokens.Spacing.Large))
             Text(
                 text = preset.subtitle(),
                 style = MaterialTheme.typography.bodyMedium,
@@ -334,9 +334,9 @@ private fun ProfileDetailsContainer(
                 fontWeight = FontWeight.SemiBold,
                 color = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier.padding(
-                    start = ThemeDimensions.Spacing.ExtraLarge,
-                    end = ThemeDimensions.Spacing.ExtraLarge,
-                    top = ThemeDimensions.Spacing.Large
+                    start = ThemeTokens.Spacing.ExtraLarge,
+                    end = ThemeTokens.Spacing.ExtraLarge,
+                    top = ThemeTokens.Spacing.Large
                 )
             )
 
@@ -352,7 +352,7 @@ private fun ProfileDetailsContainer(
                 imeAction = ImeAction.Next
             )
             HorizontalDivider(
-                modifier = Modifier.padding(horizontal = ThemeDimensions.Spacing.ExtraLarge),
+                modifier = Modifier.padding(horizontal = ThemeTokens.Spacing.ExtraLarge),
                 color = MaterialTheme.colorScheme.outlineVariant
             )
 

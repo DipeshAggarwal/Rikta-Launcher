@@ -5,9 +5,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lumina.core.common.FlowDefaults.WhileSubscribedTimeoutMs
 import com.lumina.core.logging.Logger
+import com.lumina.core.model.ProfileClassification
+import com.lumina.core.ui.extensions.systemProfileDisplayName
 import com.lumina.domain.profiles.ProfileRepository
 import com.lumina.domain.profiles.model.LauncherProfile
-import com.lumina.domain.profiles.model.TriggerCondition
+import com.lumina.domain.profiles.usecase.ClassifyProfileModeUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.channels.BufferOverflow
@@ -17,8 +19,7 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlin.uuid.ExperimentalUuidApi
@@ -30,9 +31,20 @@ sealed interface ProfileDetailEvent {
     data class ShowError(val message: String) : ProfileDetailEvent
 }
 
+data class ProfileDetailUiState(
+    val isLoading: Boolean = true,
+    val profile: LauncherProfile? = null,
+    val isActive: Boolean = false,
+    val triggerCount: Int = 0,
+    val allowedAppCount: Int = 0,
+    val isPerformingAction: Boolean = false,
+    val classification: ProfileClassification? = null
+)
+
 @HiltViewModel
 class ProfileDetailViewModel @Inject constructor(
     private val profileRepository: ProfileRepository,
+    classifyProfileModeUseCase: ClassifyProfileModeUseCase,
     savedStateHandle: SavedStateHandle,
     private val logger: Logger
 ) : ViewModel() {
@@ -48,21 +60,28 @@ class ProfileDetailViewModel @Inject constructor(
     val events: SharedFlow<ProfileDetailEvent> = _events.asSharedFlow()
 
     private val _isPerformingAction = MutableStateFlow(false)
-    val isPerformingAction: StateFlow<Boolean> = _isPerformingAction.asStateFlow()
 
-    val profile: StateFlow<LauncherProfile?> = profileRepository.getProfileById(targetProfileId)
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(WhileSubscribedTimeoutMs), null)
-
-    val isActive: StateFlow<Boolean> = profileRepository.activeProfile
-        .map { it?.id == targetProfileId }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(WhileSubscribedTimeoutMs), false)
-
-    val triggers: StateFlow<List<TriggerCondition>> = profileRepository.getProfileTriggers(targetProfileId)
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(WhileSubscribedTimeoutMs), emptyList())
-
-    val allowedAppCount: StateFlow<Int> = profileRepository.getAppsForProfile(targetProfileId)
-        .map { it.size }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(WhileSubscribedTimeoutMs), 0)
+    val uiState: StateFlow<ProfileDetailUiState> = combine(
+        profileRepository.getProfileById(targetProfileId),
+        profileRepository.activeProfile,
+        profileRepository.getProfileTriggers(targetProfileId),
+        profileRepository.getAppsForProfile(targetProfileId),
+        _isPerformingAction
+    ) { profile, activeProfile, triggers, apps, isPerformingAction ->
+        ProfileDetailUiState(
+            isLoading = profile == null,
+            profile = profile,
+            isActive = activeProfile?.id == targetProfileId,
+            triggerCount = triggers.size,
+            allowedAppCount = apps.size,
+            isPerformingAction = _isPerformingAction.value,
+            classification = profile?.let { classifyProfileModeUseCase(it) }
+        )
+    }.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(WhileSubscribedTimeoutMs),
+        ProfileDetailUiState()
+    )
 
     fun toggleActiveState() {
         viewModelScope.launch {
@@ -70,7 +89,7 @@ class ProfileDetailViewModel @Inject constructor(
             _isPerformingAction.value = true
 
             try {
-                if (isActive.value) profileRepository.clearActiveProfile()
+                if (uiState.value.isActive) profileRepository.clearActiveProfile()
                 else profileRepository.setActiveProfile(targetProfileId)
             } catch (e: Exception) {
                 logger.e(TAG, "Failed to toggle active state for $targetProfileId.", e)
@@ -82,9 +101,9 @@ class ProfileDetailViewModel @Inject constructor(
     }
 
     @OptIn(ExperimentalUuidApi::class)
-    fun duplicateProfile() {
+    fun duplicateProfile(newName: String) {
         viewModelScope.launch {
-            val currentProfile = profile.value
+            val currentProfile = uiState.value.profile
             if (currentProfile == null || _isPerformingAction.value) return@launch
 
             _isPerformingAction.value = true
@@ -92,7 +111,7 @@ class ProfileDetailViewModel @Inject constructor(
                 val newId = Uuid.random().toString()
                 val duplicateLauncherProfile = currentProfile.copy(
                     id = newId,
-                    name = "${currentProfile.name} (Copy)",
+                    name = "$newName (Copy)",
                     auth = currentProfile.auth.copy(activationKey = null)
                 )
                 profileRepository.saveProfile(duplicateLauncherProfile)
@@ -108,7 +127,7 @@ class ProfileDetailViewModel @Inject constructor(
 
     fun deleteProfile() {
         viewModelScope.launch {
-            if (profile.value == null || _isPerformingAction.value) return@launch
+            if (uiState.value.profile == null || _isPerformingAction.value) return@launch
 
             _isPerformingAction.value = true
             try {

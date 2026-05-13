@@ -18,7 +18,7 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
-import com.lumina.core.ui.ThemeDimensions
+import com.lumina.core.ui.ThemeTokens
 
 @Composable
 fun InLineTextField(
@@ -37,8 +37,8 @@ fun InLineTextField(
         modifier = modifier
             .fillMaxWidth()
             .padding(
-                horizontal = ThemeDimensions.Spacing.ExtraLarge,
-                vertical = ThemeDimensions.Spacing.Large
+                horizontal = ThemeTokens.Spacing.ExtraLarge,
+                vertical = ThemeTokens.Spacing.Large
             )
     ) {
         Text(
@@ -46,7 +46,7 @@ fun InLineTextField(
             style = MaterialTheme.typography.labelSmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
-        Spacer(modifier = Modifier.height(ThemeDimensions.Spacing.Small))
+        Spacer(modifier = Modifier.height(ThemeTokens.Spacing.Small))
 
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -69,7 +69,7 @@ fun InLineTextField(
                 singleLine = singleLine,
                 maxLines = maxLines
             )
-            Spacer(modifier = Modifier.width(ThemeDimensions.Spacing.Medium))
+            Spacer(modifier = Modifier.width(ThemeTokens.Spacing.Medium))
             Text(
                 text = "${value.length}/$maxLength",
                 style = MaterialTheme.typography.labelSmall,

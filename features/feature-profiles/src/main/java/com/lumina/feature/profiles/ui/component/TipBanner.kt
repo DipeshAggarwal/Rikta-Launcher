@@ -20,15 +20,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.lumina.core.ui.ThemeDimensions
-import com.lumina.feature.profiles.R
-
-private object TipBannerDefaults {
-    val InfoContainerAlpha = 0.4f
-    val InfoContainerContentAlpha = 0.7f
-}
+import com.lumina.core.ui.ThemeTokens
 
 @Composable
 fun TipBanner(
@@ -41,7 +34,7 @@ fun TipBanner(
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
         colors = CardDefaults.outlinedCardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(
-                alpha = TipBannerDefaults.InfoContainerAlpha
+                alpha = ThemeTokens.Alpha.Medium
             )
         ),
         shape = MaterialTheme.shapes.medium
@@ -50,8 +43,8 @@ fun TipBanner(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(
-                    horizontal = ThemeDimensions.Spacing.ExtraLarge,
-                    vertical = ThemeDimensions.Spacing.Large
+                    horizontal = ThemeTokens.Spacing.ExtraLarge,
+                    vertical = ThemeTokens.Spacing.Large
                 ),
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
@@ -60,23 +53,23 @@ fun TipBanner(
                 imageVector = iconVector,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(
-                    alpha = TipBannerDefaults.InfoContainerContentAlpha
+                    alpha = ThemeTokens.Alpha.Heavy
                 ),
-                modifier = Modifier.size(ThemeDimensions.Icon.BannerIconSize)
+                modifier = Modifier.size(ThemeTokens.Icon.BannerIconSize)
             )
-            Spacer(modifier = Modifier.width(ThemeDimensions.Spacing.Medium))
+            Spacer(modifier = Modifier.width(ThemeTokens.Spacing.Medium))
 
             Text(
                 text = tipText,
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant.copy(
-                    alpha = TipBannerDefaults.InfoContainerContentAlpha
+                    alpha = ThemeTokens.Alpha.Heavy
                 ),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(
-                        horizontal = ThemeDimensions.Spacing.ExtraLarge,
-                        vertical = ThemeDimensions.Spacing.Large
+                        horizontal = ThemeTokens.Spacing.ExtraLarge,
+                        vertical = ThemeTokens.Spacing.Large
                     )
                     .wrapContentWidth(Alignment.CenterHorizontally)
             )

@@ -15,11 +15,9 @@ import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -30,7 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.lumina.core.ui.ThemeDimensions
+import com.lumina.core.ui.ThemeTokens
 import com.lumina.core.ui.components.home.CompactOutlinedTextField
 import com.lumina.core.ui.theme.ContentColor
 import com.lumina.feature.home.R
@@ -68,7 +66,7 @@ fun RenameApp(
             singleLine = true,
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(ThemeDimensions.DefaultCornerRadius)),
+                .clip(RoundedCornerShape(ThemeTokens.DefaultCornerRadius)),
             colors = OutlinedTextFieldDefaults.colors(
                 focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
                 unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
@@ -95,7 +93,7 @@ fun RenameApp(
                 Text(stringResource(R.string.rename_reset_label), color = ContentColor)
             }
 
-            Spacer(modifier = Modifier.width(ThemeDimensions.InLineButtonSpacerWidth))
+            Spacer(modifier = Modifier.width(ThemeTokens.InLineButtonSpacerWidth))
             FilledTonalButton(
                 onClick = { onSave(text) },
                 shape = MaterialTheme.shapes.medium

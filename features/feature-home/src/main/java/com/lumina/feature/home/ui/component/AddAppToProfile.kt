@@ -39,7 +39,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.lumina.core.ui.Motion
-import com.lumina.core.ui.ThemeDimensions
+import com.lumina.core.ui.ThemeTokens
 import com.lumina.core.ui.components.home.CompactTextField
 import com.lumina.core.ui.extensions.systemProfileDisplayName
 import com.lumina.core.ui.theme.ContentColor
@@ -87,7 +87,7 @@ fun AddAppToProfile(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .heightIn(max = ThemeDimensions.ExpandedContentMaxHeight)
+                .heightIn(max = ThemeTokens.ExpandedContentMaxHeight)
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(AddAppToProfileDefaults.SpaceBetweenColumnItems)
         ) {
@@ -104,7 +104,7 @@ fun AddAppToProfile(
                 Surface(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clip(RoundedCornerShape(ThemeDimensions.DefaultCornerRadius))
+                        .clip(RoundedCornerShape(ThemeTokens.DefaultCornerRadius))
                         .clickable {
                             selectedProfileIds = if (isSelectedProfile) selectedProfileIds - id
                             else selectedProfileIds + id
@@ -118,8 +118,8 @@ fun AddAppToProfile(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(
-                                vertical = ThemeDimensions.RowVerticalPadding,
-                                horizontal = ThemeDimensions.RowHorizontalPadding
+                                vertical = ThemeTokens.RowVerticalPadding,
+                                horizontal = ThemeTokens.RowHorizontalPadding
                             ),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
@@ -139,7 +139,7 @@ fun AddAppToProfile(
         }
 
         HorizontalDivider(
-            modifier = Modifier.padding(bottom = ThemeDimensions.DividerBottomPadding),
+            modifier = Modifier.padding(bottom = ThemeTokens.DividerBottomPadding),
             color = MaterialTheme.colorScheme.surfaceVariant
         )
 
@@ -152,7 +152,7 @@ fun AddAppToProfile(
                 Text(stringResource(R.string.profile_create_new_label), color = ContentColor)
             }
 
-            Spacer(modifier = Modifier.width(ThemeDimensions.InLineButtonSpacerWidth))
+            Spacer(modifier = Modifier.width(ThemeTokens.InLineButtonSpacerWidth))
             FilledTonalButton(
                 onClick = { onSave(selectedProfileIds) },
                 shape = MaterialTheme.shapes.medium

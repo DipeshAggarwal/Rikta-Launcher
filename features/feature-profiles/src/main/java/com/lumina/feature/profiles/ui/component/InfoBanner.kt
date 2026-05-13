@@ -23,7 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
-import com.lumina.core.ui.ThemeDimensions
+import com.lumina.core.ui.ThemeTokens
 
 @Composable
 fun InfoBanner(
@@ -46,8 +46,8 @@ fun InfoBanner(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(
-                    horizontal = ThemeDimensions.Spacing.ExtraLarge,
-                    vertical = ThemeDimensions.Spacing.Medium
+                    horizontal = ThemeTokens.Spacing.ExtraLarge,
+                    vertical = ThemeTokens.Spacing.Medium
                 ),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -55,9 +55,9 @@ fun InfoBanner(
                 imageVector = Icons.Outlined.LightbulbCircle,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.size(ThemeDimensions.Icon.BannerIconSize)
+                modifier = Modifier.size(ThemeTokens.Icon.BannerIconSize)
             )
-            Spacer(modifier = Modifier.width(ThemeDimensions.Spacing.Medium))
+            Spacer(modifier = Modifier.width(ThemeTokens.Spacing.Medium))
 
             Text(
                 text = bannerText,
@@ -65,7 +65,7 @@ fun InfoBanner(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.weight(1f)
             )
-            Spacer(modifier = Modifier.width(ThemeDimensions.Spacing.Small))
+            Spacer(modifier = Modifier.width(ThemeTokens.Spacing.Small))
             Text(
                 text = detailsFindText,
                 style = MaterialTheme.typography.bodySmall,
@@ -74,14 +74,14 @@ fun InfoBanner(
                 textDecoration = TextDecoration.Underline,
                 modifier = Modifier.clickable(onClick = onDetailsFind)
             )
-            Spacer(modifier = Modifier.width(ThemeDimensions.Spacing.Small))
+            Spacer(modifier = Modifier.width(ThemeTokens.Spacing.Small))
 
             IconButton(onClick = onDismiss) {
                 Icon(
                     imageVector = Icons.Outlined.Close,
                     contentDescription = dismissDescription,
                     tint = MaterialTheme.colorScheme.onSecondaryContainer,
-                    modifier = Modifier.size(ThemeDimensions.Icon.BannerCloseIconSize)
+                    modifier = Modifier.size(ThemeTokens.Icon.BannerCloseIconSize)
                 )
             }
         }

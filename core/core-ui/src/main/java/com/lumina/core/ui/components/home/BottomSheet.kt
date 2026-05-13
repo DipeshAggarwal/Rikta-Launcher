@@ -46,7 +46,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lumina.core.ui.R
-import com.lumina.core.ui.ThemeDimensions
+import com.lumina.core.ui.ThemeTokens
 import com.lumina.core.ui.ThemeTextDefaults
 import com.lumina.core.ui.components.settings.SettingsComponentsDefaults
 import com.lumina.core.ui.theme.ContentColor
@@ -169,7 +169,7 @@ fun BottomSheet(
                                     modifier = Modifier
                                         .weight(ThemeTextDefaults.TEXT_WEIGHT)
                                         .size(BottomSheetDefaults.QuickSurfaceSize),
-                                    shape = RoundedCornerShape(ThemeDimensions.DefaultCornerRadius),
+                                    shape = RoundedCornerShape(ThemeTokens.DefaultCornerRadius),
                                     color = MaterialTheme.colorScheme.surfaceVariant,
                                     contentColor = MaterialTheme.colorScheme.onSurfaceVariant
                                 ) {

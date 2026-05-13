@@ -124,7 +124,7 @@
     <string name="mode_custom_subtitle">Build your own setup</string>
     <string name="mode_custom_description">A fully customised profile built by you, for you.</string>
 
-    <string name="mode_customised"> (Customised)</string>
+    <string name="mode_customised">(Customised)</string>
 
     <string name="drag_to_reorder">Drag to reorder</string>
 </resources>
