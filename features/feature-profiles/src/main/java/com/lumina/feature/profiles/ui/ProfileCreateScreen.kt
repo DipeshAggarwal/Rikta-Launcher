@@ -62,20 +62,13 @@ import com.lumina.core.ui.extensions.description
 import com.lumina.core.ui.extensions.displayName
 import com.lumina.core.ui.extensions.icon
 import com.lumina.core.ui.extensions.subtitle
+import com.lumina.feature.profiles.ProfileManageUiState
 import com.lumina.feature.profiles.ProfileManageViewModel
+import com.lumina.feature.profiles.ProfilesDefaults
 import com.lumina.feature.profiles.R
 import com.lumina.feature.profiles.ui.component.InLineTextField
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
-
-private object PresetCardDefaults {
-    val SelectedCardAlpha = 0.16f
-}
-
-private object ProfileDetailsContainerDefaults {
-    val NAME_MAX_CHARACTERS = 32
-    val DESCRIPTION_MAX_CHARACTERS = 256
-}
 
 @Composable
 fun ProfileCreateScreen(
@@ -85,6 +78,7 @@ fun ProfileCreateScreen(
     onBack: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val createState = uiState as? ProfileManageUiState.Ready ?: return
 
     var selectedPreset by rememberSaveable { mutableStateOf<ProfilePreset?>(null) }
     var nameEdited by rememberSaveable { mutableStateOf(false) }
@@ -107,9 +101,7 @@ fun ProfileCreateScreen(
     val createButtonLabel = if (selectedPreset == null) stringResource(R.string.create_profile_button_default)
         else stringResource(
             R.string.create_profile_button_selected,
-        uiState.draftProfile?.name
-            ?.ifBlank { (selectedPreset as ProfilePreset).displayName() }
-            ?: (selectedPreset as ProfilePreset).displayName()
+        createState.draftProfile.name.ifBlank { (selectedPreset as ProfilePreset).displayName() }
         )
 
     Scaffold(
@@ -171,8 +163,8 @@ fun ProfileCreateScreen(
             item(key = "create_profile_details_field") {
                 ProfileDetailsContainer(
                     title = stringResource(R.string.create_profile_add_details),
-                    name = uiState.draftProfile?.name ?: "",
-                    description = uiState.draftProfile?.description ?: "",
+                    name = createState.draftProfile.name,
+                    description = createState.draftProfile.description ?: "",
                     onNameChange = { value ->
                         nameEdited = value.isNotEmpty()
                         viewModel.updateName(value)
@@ -207,15 +199,15 @@ fun ProfileCreateScreen(
 
                 PrimaryButton(
                     title = createButtonLabel,
-                    enabled = selectedPreset != null && uiState.draftProfile!!.name.isNotBlank() && !uiState.isSaving,
+                    enabled = selectedPreset != null && createState.draftProfile.name.isNotBlank() && !createState.isSaving,
                     onClick = {
                         if (isCustom) {
                             onCustomiseSettings()
                         } else {
-                            if (!nameEdited && selectedPreset != null && uiState.draftProfile!!.name.isBlank()) {
+                            if (!nameEdited && selectedPreset != null && createState.draftProfile.name.isBlank()) {
                                 viewModel.updateName(name)
                             }
-                            if (!descriptionEdited && selectedPreset != null && uiState.draftProfile!!.description.isNullOrBlank()) {
+                            if (!descriptionEdited && selectedPreset != null && createState.draftProfile.description.isNullOrBlank()) {
                                 viewModel.updateDescription(description)
                             }
                             viewModel.saveProfile()
@@ -242,7 +234,7 @@ private fun PresetCard(
         label = "preset_border_${preset.name}"
     )
     val containerColor by animateColorAsState(
-        targetValue = if (isSelected) accentColor.copy(alpha = PresetCardDefaults.SelectedCardAlpha)
+        targetValue = if (isSelected) accentColor.copy(alpha = ThemeTokens.Alpha.Light)
             else MaterialTheme.colorScheme.surfaceContainer,
         animationSpec = tween(Motion.SINGlE_ELEMENT_TRANSITION_MS),
         label = "preset_container_${preset.name}"
@@ -343,10 +335,10 @@ private fun ProfileDetailsContainer(
             InLineTextField(
                 label = stringResource(R.string.create_profile_add_name_label),
                 value = name,
-                maxLength = ProfileDetailsContainerDefaults.NAME_MAX_CHARACTERS,
+                maxLength = ProfilesDefaults.NAME_MAX_CHARACTERS,
                 maxLines = 1,
                 onValueChange = {
-                    if (it.length <= ProfileDetailsContainerDefaults.NAME_MAX_CHARACTERS) onNameChange(it)
+                    if (it.length <= ProfilesDefaults.NAME_MAX_CHARACTERS) onNameChange(it)
                 },
                 onFocusChange = { containerFocused = it },
                 imeAction = ImeAction.Next
@@ -359,10 +351,10 @@ private fun ProfileDetailsContainer(
             InLineTextField(
                 label = stringResource(R.string.create_profile_add_description_label),
                 value = description,
-                maxLength = ProfileDetailsContainerDefaults.DESCRIPTION_MAX_CHARACTERS,
+                maxLength = ProfilesDefaults.DESCRIPTION_MAX_CHARACTERS,
                 maxLines = 3,
                 onValueChange = {
-                    if (it.length <= ProfileDetailsContainerDefaults.DESCRIPTION_MAX_CHARACTERS) onDescriptionChange(it)
+                    if (it.length <= ProfilesDefaults.DESCRIPTION_MAX_CHARACTERS) onDescriptionChange(it)
                 },
                 onFocusChange = { containerFocused = it },
                 imeAction = ImeAction.Done

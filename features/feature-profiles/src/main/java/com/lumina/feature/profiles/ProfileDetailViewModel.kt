@@ -6,10 +6,9 @@ import androidx.lifecycle.viewModelScope
 import com.lumina.core.common.FlowDefaults.WhileSubscribedTimeoutMs
 import com.lumina.core.logging.Logger
 import com.lumina.core.model.ProfileClassification
-import com.lumina.core.ui.extensions.systemProfileDisplayName
 import com.lumina.domain.profiles.ProfileRepository
 import com.lumina.domain.profiles.model.LauncherProfile
-import com.lumina.domain.profiles.usecase.ClassifyProfileModeUseCase
+import com.lumina.domain.profiles.usecase.ClassifyProfilePresetUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.channels.BufferOverflow
@@ -44,7 +43,7 @@ data class ProfileDetailUiState(
 @HiltViewModel
 class ProfileDetailViewModel @Inject constructor(
     private val profileRepository: ProfileRepository,
-    classifyProfileModeUseCase: ClassifyProfileModeUseCase,
+    classifyProfilePresetUseCase: ClassifyProfilePresetUseCase,
     savedStateHandle: SavedStateHandle,
     private val logger: Logger
 ) : ViewModel() {
@@ -75,7 +74,7 @@ class ProfileDetailViewModel @Inject constructor(
             triggerCount = triggers.size,
             allowedAppCount = apps.size,
             isPerformingAction = _isPerformingAction.value,
-            classification = profile?.let { classifyProfileModeUseCase(it) }
+            classification = profile?.let { classifyProfilePresetUseCase(it) }
         )
     }.stateIn(
         viewModelScope,

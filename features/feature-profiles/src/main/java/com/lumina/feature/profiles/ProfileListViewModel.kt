@@ -8,7 +8,7 @@ import com.lumina.core.model.ProfileClassification
 import com.lumina.domain.appstate.AppUiStateRepository
 import com.lumina.domain.profiles.ProfileRepository
 import com.lumina.domain.profiles.model.ProfileSummary
-import com.lumina.domain.profiles.usecase.ClassifyProfileModeUseCase
+import com.lumina.domain.profiles.usecase.ClassifyProfilePresetUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.flow.SharingStarted
@@ -22,7 +22,7 @@ import kotlinx.coroutines.launch
 class ProfileListViewModel @Inject constructor(
     private val profileRepository: ProfileRepository,
     private val appUiStateRepository: AppUiStateRepository,
-    private val classifyProfileModeUseCase: ClassifyProfileModeUseCase,
+    private val classifyProfilePresetUseCase: ClassifyProfilePresetUseCase,
     private val logger: Logger
 ) : ViewModel() {
     private val TAG = this::class.java.simpleName
@@ -35,7 +35,7 @@ class ProfileListViewModel @Inject constructor(
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(WhileSubscribedTimeoutMs), emptyList())
 
     val profileClassificationMap: StateFlow<Map<String, ProfileClassification>> = profileSummaries
-        .map { summaries -> summaries.associate { it.profile.id to classifyProfileModeUseCase(it.profile) }}
+        .map { summaries -> summaries.associate { it.profile.id to classifyProfilePresetUseCase(it.profile) }}
         .distinctUntilChanged()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(WhileSubscribedTimeoutMs), emptyMap())
 

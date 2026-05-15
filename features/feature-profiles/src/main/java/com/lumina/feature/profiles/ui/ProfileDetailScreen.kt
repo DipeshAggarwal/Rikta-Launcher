@@ -166,7 +166,7 @@ fun ProfileDetailScreen(
                             R.string.profile_details_delete_profile,
                             resolvedName
                         ),
-                        enabled = !uiState.isPerformingAction,
+                        enabled = !uiState.isPerformingAction && !profile.isAdmin,
                         onClick = { showDeleteSheet = true }
                     )
                 }

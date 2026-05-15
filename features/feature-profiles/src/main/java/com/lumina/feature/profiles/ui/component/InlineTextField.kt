@@ -15,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -29,7 +30,8 @@ fun InLineTextField(
     onValueChange: (String) -> Unit,
     onFocusChange: (Boolean) -> Unit,
     imeAction: ImeAction,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    labelColor: Color = MaterialTheme.colorScheme.onSurfaceVariant
 ) {
     val singleLine = maxLines == 1
 
@@ -44,7 +46,7 @@ fun InLineTextField(
         Text(
             text = label,
             style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+            color = labelColor
         )
         Spacer(modifier = Modifier.height(ThemeTokens.Spacing.Small))
 
@@ -67,7 +69,8 @@ fun InLineTextField(
                     imeAction = imeAction
                 ),
                 singleLine = singleLine,
-                maxLines = maxLines
+                minLines = maxLines,
+                maxLines = maxLines,
             )
             Spacer(modifier = Modifier.width(ThemeTokens.Spacing.Medium))
             Text(

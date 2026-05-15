@@ -3,7 +3,6 @@ package com.lumina.feature.profiles
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.lumina.core.common.FlowDefaults.WhileSubscribedTimeoutMs
 import com.lumina.core.common.time.TimeProvider
 import com.lumina.core.logging.Logger
 import com.lumina.core.model.ProfileClassification
@@ -19,22 +18,17 @@ import com.lumina.domain.profiles.model.LauncherProfileOverrides
 import com.lumina.domain.profiles.model.LauncherProfilePermissions
 import com.lumina.domain.profiles.model.LauncherProfileRestrictions
 import com.lumina.domain.profiles.model.LauncherProfileSettings
-import com.lumina.domain.profiles.usecase.ClassifyProfileModeUseCase
+import com.lumina.domain.profiles.usecase.ClassifyProfilePresetUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapNotNull
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlin.uuid.ExperimentalUuidApi
@@ -44,14 +38,22 @@ sealed interface ProfileManageEvent {
     data object DeleteSuccess : ProfileManageEvent
 }
 
-data class ProfileManageUiState(
-    val isLoading: Boolean = false,
-    val isSaving: Boolean = false,
-    val isNewProfile: Boolean = true,
+sealed interface ProfileManageUiState {
+    data object Loading : ProfileManageUiState
 
-    val draftProfile: LauncherProfile? = null,
-    val errorMessage: String? = null
-)
+    data class Ready(
+        val draftProfile: LauncherProfile,
+        val classification: ProfileClassification,
+
+        val isNewProfile: Boolean,
+        val isSaving: Boolean = false,
+
+        val errorMessage: String? = null
+    ) : ProfileManageUiState
+
+    // A non recoverable state while loading
+    data class Error(val message: String) : ProfileManageUiState
+}
 
 @HiltViewModel
 class ProfileManageViewModel @Inject constructor(
@@ -59,7 +61,7 @@ class ProfileManageViewModel @Inject constructor(
     private val deviceUserProvider: DeviceUserProvider,
     private val timeProvider: TimeProvider,
     private val createDraftProfileUseCase: CreateDraftProfileUseCase,
-    private val classifyProfileModeUseCase: ClassifyProfileModeUseCase,
+    private val classifyProfilePresetUseCase: ClassifyProfilePresetUseCase,
     savedStateHandle: SavedStateHandle,
     private val logger: Logger
 ) : ViewModel() {
@@ -68,16 +70,8 @@ class ProfileManageViewModel @Inject constructor(
     // Profile being viewed, provided by navigation.
     private val targetProfileId: String? = savedStateHandle[ProfileNavigationRoute.PROFILE_ID_ARG]
 
-    private val _uiState = MutableStateFlow(
-        ProfileManageUiState(isLoading = targetProfileId != null)
-    )
+    private val _uiState = MutableStateFlow<ProfileManageUiState>(ProfileManageUiState.Loading)
     val uiState: StateFlow<ProfileManageUiState> = _uiState.asStateFlow()
-
-    val classification: StateFlow<ProfileClassification?> = uiState
-        .mapNotNull { it.draftProfile }
-        .map(classifyProfileModeUseCase::invoke)
-        .distinctUntilChanged()
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(WhileSubscribedTimeoutMs), null)
 
     private val _events = MutableSharedFlow<ProfileManageEvent>(
         replay = 0,
@@ -96,7 +90,11 @@ class ProfileManageViewModel @Inject constructor(
     @OptIn(ExperimentalUuidApi::class)
     private fun initialiseNewProfile() {
         val draftProfile = createDraftProfileUseCase()
-        _uiState.update { it.copy(draftProfile = draftProfile) }
+        _uiState.value = ProfileManageUiState.Ready(
+            draftProfile = draftProfile,
+            classification = classifyProfilePresetUseCase(draftProfile),
+            isNewProfile = true
+        )
     }
 
     private fun loadExistingProfile(profileId: String) {
@@ -104,26 +102,26 @@ class ProfileManageViewModel @Inject constructor(
             val existingProfile = profileRepository.getProfileById(profileId).firstOrNull()
 
             if (existingProfile != null) {
-                _uiState.update {
-                    it.copy(
-                        isLoading = false,
-                        isNewProfile = false,
-                        draftProfile = existingProfile
-                    )
-                }
+                _uiState.value = ProfileManageUiState.Ready(
+                    draftProfile = existingProfile,
+                    classification = classifyProfilePresetUseCase(existingProfile),
+                    isNewProfile = false
+                )
             } else {
                 logger.w(TAG, "Profile not found: $profileId.")
-                _uiState.update { it.copy(isLoading = false, errorMessage = "Profile not found.") }
+                _uiState.value = ProfileManageUiState.Error("Profile not found.")
             }
         }
     }
 
     private inline fun updateDraftProfile(transform: (LauncherProfile) -> LauncherProfile) {
         _uiState.update { state ->
-            val draftProfile = state.draftProfile ?: return@update state
+            if (state !is ProfileManageUiState.Ready) return@update state
 
+            val updatedProfile = transform(state.draftProfile)
             state.copy(
-                draftProfile = transform(draftProfile),
+                draftProfile = updatedProfile,
+                classification = classifyProfilePresetUseCase(updatedProfile),
                 errorMessage = null
             )
         }
@@ -167,26 +165,27 @@ class ProfileManageViewModel @Inject constructor(
 
     fun saveProfile() {
         viewModelScope.launch {
-            if (_uiState.value.isSaving) return@launch
-
             val state = _uiState.value
-            val draftProfile = state.draftProfile ?: return@launch
+            if (state !is ProfileManageUiState.Ready) return@launch
+            if (state.isSaving) return@launch
 
+            val draftProfile = state.draftProfile
             if (draftProfile.name.isBlank()) {
-                _uiState.update { it.copy(isSaving = false, errorMessage = "Profile name cannot be empty.") }
+                _uiState.value = state.copy(errorMessage = "Profile name cannot be empty.")
                 return@launch
             }
 
             val key = draftProfile.auth.activationKey
-            if (!key.isNullOrBlank() && !profileRepository.isActivationKeyUnique(key, draftProfile.id)) {
-                _uiState.update {
-                    it.copy(isSaving = false, errorMessage = "This activation key is already in use.")
-                }
+            if (!key.isNullOrBlank() && !profileRepository.isActivationKeyUnique(
+                    key,
+                    draftProfile.id
+                )
+            ) {
+                _uiState.value = state.copy(errorMessage = "This activation key is already in use.")
                 return@launch
             }
 
-            _uiState.update { it.copy(isSaving = true, errorMessage = null) }
-
+            _uiState.value = state.copy(isSaving = true, errorMessage = null)
             try {
                 val finalDraft = draftProfile.copy(updatedAt = timeProvider.now())
 
@@ -196,29 +195,46 @@ class ProfileManageViewModel @Inject constructor(
                 _events.emit(ProfileManageEvent.SaveSuccess)
             } catch (e: Exception) {
                 logger.e(TAG, "Failed to save profile: ${draftProfile.id}.", e)
-                _uiState.update { it.copy(isSaving = false, errorMessage = "Failed to save profile.") }
+                _uiState.update { currentState ->
+                    if (currentState !is ProfileManageUiState.Ready) currentState
+                    else currentState.copy(
+                        isSaving = false,
+                        errorMessage = "Failed to save profile."
+                    )
+                }
             }
         }
     }
 
     fun deleteProfile() {
         viewModelScope.launch {
-            if (_uiState.value.isSaving) return@launch
+            val state = _uiState.value
+            if (state !is ProfileManageUiState.Ready) return@launch
+            if (state.isSaving) return@launch
 
-            val draftProfile = _uiState.value.draftProfile ?: return@launch
-            _uiState.update { it.copy(isSaving = true) }
+            val draftProfile = state.draftProfile
+            _uiState.value = state.copy(isSaving = true, errorMessage = null)
 
             try {
                 profileRepository.deleteProfile(draftProfile.id)
                 _events.emit(ProfileManageEvent.DeleteSuccess)
             } catch (e: Exception) {
                 logger.e(TAG, "Failed to delete profile: ${draftProfile.id}.", e)
-                _uiState.update { it.copy(isSaving = false, errorMessage = "Failed to delete profile.") }
+                _uiState.update { currentState ->
+                    if (currentState !is ProfileManageUiState.Ready) currentState
+                    else currentState.copy(
+                        isSaving = false,
+                        errorMessage = "Failed to delete profile."
+                    )
+                }
             }
         }
     }
 
     fun dismissError() {
-        _uiState.update { it.copy(errorMessage = null) }
+        _uiState.update { state ->
+            if (state is ProfileManageUiState.Ready) state.copy(errorMessage = null)
+            else state
+        }
     }
 }

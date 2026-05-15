@@ -7,7 +7,7 @@ plugins {
     alias(libs.plugins.ksp)
 }
 
-val baseVersionCode = "0.4.0.0513"
+val baseVersionCode = "0.4.0.0515"
 
 android {
     namespace = "com.lumina.rikta"

@@ -69,4 +69,12 @@
     <string name="profile_details_duplicate_button_text">Duplicate</string>
     <string name="profile_details_delete_button_text">Delete</string>
     <string name="profile_details_cancel_button_text">Cancel</string>
+
+    <string name="profile_summary_header">Profile Summary</string>
+    <string name="profile_summary_subtitle">View and manage basic profile details.</string>
+    <string name="profile_summary_icon_label">Icon</string>
+    <string name="profile_summary_icon_default">Default Icon</string>
+    <string name="profile_summary_preset_label">Preset Name</string>
+    <string name="profile_summary_created_label">Created At</string>
+    <string name="profile_summary_updated_label">Last Updated</string>
 </resources>
