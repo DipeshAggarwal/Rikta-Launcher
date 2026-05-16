@@ -13,10 +13,12 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface ShortcutDao {
 
-    @Query("SELECT s.* FROM shortcuts s " +
-            "INNER JOIN profile_shortcut_mapping m " +
-            "ON s.id = m.shortcutId " +
-            "WHERE m.profileId = :profileId"
+    @Query("""
+        SELECT s.* FROM shortcuts s
+        INNER JOIN profile_shortcut_mapping m
+        ON s.id = m.shortcutId
+        WHERE m.profileId = :profileId
+    """
     )
     fun get(profileId: String): Flow<List<LauncherShortcut>>
     @Query("SELECT * FROM shortcuts")
@@ -34,8 +36,9 @@ interface ShortcutDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addToProfile(mapping: ProfileShortcutCrossRef)
 
-    @Query("DELETE FROM profile_shortcut_mapping " +
-            "WHERE profileId = :profileId AND shortcutId = :shortcutId"
-    )
+    @Query("""
+        DELETE FROM profile_shortcut_mapping
+        WHERE profileId = :profileId AND shortcutId = :shortcutId
+    """)
     suspend fun removeFromProfile(profileId: String, shortcutId: String)
 }

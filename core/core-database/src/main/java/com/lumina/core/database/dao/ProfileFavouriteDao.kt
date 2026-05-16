@@ -13,28 +13,32 @@ import kotlinx.coroutines.flow.first
 @Dao
 interface ProfileFavouriteDao {
 
-    @Query("SELECT * FROM profile_favourites " +
-            "WHERE profileId = :profileId AND itemId = :itemId"
-    )
+    @Query("""
+        SELECT * FROM profile_favourites
+        WHERE profileId = :profileId AND itemId = :itemId
+    """)
     suspend fun get(profileId: String, itemId: String): ProfileFavouriteEntity?
 
-    @Query("SELECT * FROM profile_favourites " +
-            "WHERE profileId = :profileId " +
-            "ORDER BY favouriteOrder ASC"
-    )
+    @Query("""
+        SELECT * FROM profile_favourites
+        WHERE profileId = :profileId
+        ORDER BY favouriteOrder ASC
+    """)
     fun getAll(profileId: String): Flow<List<ProfileFavouriteEntity>>
 
-    @Query("SELECT MAX(favouriteOrder) FROM profile_favourites " +
-            "WHERE profileId = :profileId"
-    )
+    @Query("""
+        SELECT MAX(favouriteOrder) FROM profile_favourites
+        WHERE profileId = :profileId
+    """)
     suspend fun getMaxOrder(profileId: String): Int?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun save(favourite: ProfileFavouriteEntity)
 
-    @Query("DELETE FROM profile_favourites " +
-            "WHERE profileId = :profileId AND itemId = :itemId"
-    )
+    @Query("""
+        DELETE FROM profile_favourites
+        WHERE profileId = :profileId AND itemId = :itemId
+    """)
     suspend fun delete(profileId: String, itemId: String)
 
     @Query("UPDATE profile_favourites SET favouriteOrder = :favouriteOrder " +

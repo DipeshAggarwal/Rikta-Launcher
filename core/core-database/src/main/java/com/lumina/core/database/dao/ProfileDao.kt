@@ -67,32 +67,36 @@ interface ProfileDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertAppMappings(mapping: List<ProfileAppCrossRef>)
 
-    @Query("SELECT * FROM profile_app_mapping " +
-            "WHERE profileId = :profileId " +
-            "AND packageName = :packageName " +
-            "AND userHandleNumber = :userHandleNumber"
-    )
+    @Query("""
+        SELECT * FROM profile_app_mapping
+        WHERE profileId = :profileId
+        AND packageName = :packageName
+        AND userHandleNumber = :userHandleNumber
+    """)
     suspend fun getAppMapping(profileId: String, packageName: String, userHandleNumber: Long): ProfileAppCrossRef?
 
-    @Query("DELETE FROM profile_app_mapping " +
-            "WHERE profileId = :profileId " +
-            "AND packageName = :packageName " +
-            "AND userHandleNumber = :userHandleNumber "
-    )
+    @Query("""
+        DELETE FROM profile_app_mapping
+        WHERE profileId = :profileId
+        AND packageName = :packageName
+        AND userHandleNumber = :userHandleNumber
+    """)
     suspend fun deleteAppMapping(profileId: String, packageName: String, userHandleNumber: Long)
 
     @Delete
     suspend fun deleteAppMappings(mapping: List<ProfileAppCrossRef>)
 
-    @Query("DELETE FROM profile_app_mapping " +
-            "WHERE packageName = :packageName " +
-            "AND userHandleNumber = :userHandleNumber"
-    )
+    @Query("""
+        DELETE FROM profile_app_mapping
+        WHERE packageName = :packageName
+        AND userHandleNumber = :userHandleNumber
+    """)
     suspend fun deleteAppMappingAcrossAllProfiles(packageName: String, userHandleNumber: Long)
 
-    @Query("DELETE FROM profile_app_mapping " +
-            "WHERE (packageName || '::' || userHandleNumber) NOT IN (:installedKeys)"
-    )
+    @Query("""
+        DELETE FROM profile_app_mapping
+        WHERE (packageName || '::' || userHandleNumber) NOT IN (:installedKeys)
+    """)
     suspend fun deleteAppMappingForUninstalledApps(installedKeys: Set<String>)
 
     @Query("""
@@ -105,20 +109,22 @@ interface ProfileDao {
     // ------------------------------------------------
     // Recommended Usage Apps
 
-    @Query("SELECT recommendedUsageMinutes " +
-            "FROM profile_app_mapping " +
-            "WHERE profileId = :profileId " +
-            "AND packageName = :packageName " +
-            "AND userHandleNumber = :userHandleNumber"
-    )
+    @Query("""
+        SELECT recommendedUsageMinutes
+        FROM profile_app_mapping
+        WHERE profileId = :profileId
+        AND packageName = :packageName
+        AND userHandleNumber = :userHandleNumber
+    """)
     suspend fun getAppUsageMinutes(profileId: String, packageName: String, userHandleNumber: Long): Int?
 
-    @Query("UPDATE profile_app_mapping " +
-            "SET recommendedUsageMinutes = :minutes " +
-            "WHERE profileId = :profileId " +
-            "AND packageName = :packageName " +
-            "AND userHandleNumber = :userHandleNumber"
-    )
+    @Query("""
+        UPDATE profile_app_mapping
+        SET recommendedUsageMinutes = :minutes
+        WHERE profileId = :profileId
+        AND packageName = :packageName
+        AND userHandleNumber = :userHandleNumber
+    """)
     suspend fun updateAppUsageMinutes(
         profileId: String,
         packageName: String,
@@ -129,20 +135,22 @@ interface ProfileDao {
     // ------------------------------------------------
     // Countdown Apps
 
-    @Query("SELECT showCountdown " +
-            "FROM profile_app_mapping " +
-            "WHERE profileId = :profileId " +
-            "AND packageName = :packageName " +
-            "AND userHandleNumber = :userHandleNumber"
-    )
+    @Query("""
+        SELECT showCountdown
+        FROM profile_app_mapping
+        WHERE profileId = :profileId
+        AND packageName = :packageName
+        AND userHandleNumber = :userHandleNumber
+    """)
     suspend fun isAppCountdownEnabled(profileId: String, packageName: String, userHandleNumber: Long): Boolean?
 
-    @Query("UPDATE profile_app_mapping " +
-            "SET showCountdown = :show " +
-            "WHERE profileId = :profileId " +
-            "AND packageName = :packageName " +
-            "AND userHandleNumber = :userHandleNumber"
-    )
+    @Query("""
+        UPDATE profile_app_mapping
+        SET showCountdown = :show
+        WHERE profileId = :profileId
+        AND packageName = :packageName
+        AND userHandleNumber = :userHandleNumber
+    """)
     suspend fun updateAppCountdown(
         profileId: String,
         packageName: String,
@@ -195,7 +203,7 @@ interface ProfileDao {
     // Profile Summary
 
     @Query("""
-        SELECT p.*, 
+        SELECT p.*,
         (SELECT COUNT(*) FROM profile_app_mapping WHERE profileId = p.id) AS appCount,
         (SELECT COUNT(*) FROM profile_triggers WHERE profileId = p.id) AS triggerCount,
         (SELECT COUNT(*) FROM profile_notification_whitelist WHERE profileId = p.id) AS allowedNotificationCount
