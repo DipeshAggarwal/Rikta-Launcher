@@ -49,13 +49,13 @@
     <string name="profile_details_summary">Summary</string>
     <string name="profile_details_home_screen">Home Screen</string>
     <string name="profile_details_allowed_apps">Allowed Apps</string>
-    <string name="profile_details_restrictions">Restrictions</string>
+    <string name="profile_details_rules">Profile Rules</string>
     <string name="profile_details_triggers">Triggers</string>
     <string name="profile_details_appearance">Appearance</string>
     <string name="profile_details_security">Security</string>
 
     <string name="profile_details_allowed_apps_count">%1$d apps</string>
-    <string name="profile_details_restrictions_count">%1$d enabled</string>
+    <string name="profile_details_rules_count">%1$d enabled</string>
     <string name="profile_details_triggers_count">%1$d active</string>
 
     <string name="profile_details_no_security">None</string>
@@ -77,4 +77,17 @@
     <string name="profile_summary_preset_label">Preset Name</string>
     <string name="profile_summary_created_label">Created At</string>
     <string name="profile_summary_updated_label">Last Updated</string>
+
+    <string name="profile_rules_header">Profile Rules</string>
+    <string name="profile_rules_subtitle">Manage what this profile can do.</string>
+    <string name="profile_rules_app_access_heading">App Access</string>
+    <string name="profile_rules_app_access_subtitle">Control which apps can be used in this profile</string>
+    <string name="profile_rules_hide_unauthorized_apps">Hide Unauthorized Apps</string>
+    <string name="profile_rules_hide_unauthorized_apps_subtitle">Only allow apps added to this profile</string>
+    <string name="profile_rules_hide_apps_list">Hide App List</string>
+    <string name="profile_rules_hide_apps_list_subtitle">Hide apps that are not part of this profile</string>
+    <string name="profile_rules_auto_add_categories">Auto-add App Categories</string>
+    <string name="profile_rules_auto_add_categories_subtitle">Automatically add apps from selected categories</string>
+    <string name="profile_rules_block_system_app">Don\'t allow adding System App</string>
+    <string name="profile_rules_block_system_app_subtitle">Prevent adding built-in system apps</string>
 </resources>

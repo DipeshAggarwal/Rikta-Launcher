@@ -2,6 +2,7 @@ package com.lumina.core.ui.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -24,7 +25,8 @@ fun DetailRow(
     label: String,
     subtitle: String?,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    stacked: Boolean = false
 ) {
     Row(
         modifier = modifier
@@ -35,23 +37,42 @@ fun DetailRow(
                 horizontal = ThemeTokens.Spacing.ExtraLarge,
                 vertical = ThemeTokens.Spacing.Large
             ),
-        verticalAlignment = Alignment.CenterVertically,
+        verticalAlignment = if (stacked) Alignment.Top else Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Text(
-            text = label,
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurface,
-            modifier = Modifier.weight(1f)
-        )
-        if (subtitle != null) {
-            Spacer(modifier = Modifier.width(ThemeTokens.Spacing.Medium))
+        if (stacked) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = label,
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                if (subtitle != null) {
+                    Text(
+                        text = subtitle,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+
+                        )
+                }
+            }
+        } else {
             Text(
-                text = subtitle,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                text = label,
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier.weight(1f)
             )
+            if (subtitle != null) {
+                Spacer(modifier = Modifier.width(ThemeTokens.Spacing.Medium))
+                Text(
+                    text = subtitle,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
         }
+
         Spacer(modifier = Modifier.width(ThemeTokens.Spacing.Small))
         Icon(
             imageVector = Icons.Outlined.ChevronRight,

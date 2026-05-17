@@ -81,10 +81,19 @@ fun NavGraphBuilder.profilesNavigation(
                     val profileId = checkNotNull(detailGraphEntry.arguments?.getString(
                         ProfileNavigationRoute.PROFILE_ID_ARG
                     ))
-                    navController.navigate(ProfileNavigationRoute.editRoute(profileId))
+                    navController.navigate(ProfileNavigationRoute.editRoute(
+                        profileId = profileId, route = "summary"
+                    ))
                 },
                 onNavigateToHomeScreen = {},
-                onNavigateToRestrictions = {},
+                onNavigateToRules = {
+                    val profileId = checkNotNull(detailGraphEntry.arguments?.getString(
+                        ProfileNavigationRoute.PROFILE_ID_ARG
+                    ))
+                    navController.navigate(ProfileNavigationRoute.editRoute(
+                        profileId = profileId, route = "rules"
+                    ))
+                },
                 onNavigateToAllowedApps = {},
                 onNavigateToTrigger = {},
                 onNavigateToAppearance = {},
@@ -100,10 +109,10 @@ fun NavGraphBuilder.profilesNavigation(
         // This creates a sub graph that is shared across all edit screens.
         navigation(
             route = ProfileNavigationRoute.PROFILE_GRAPH_EDIT_ROUTE,
-            startDestination = ProfileNavigationRoute.PROFILE_SUMMARY_SUB_ROUTE
+            startDestination = ProfileNavigationRoute.PROFILE_SUMMARY_ROUTE
         ) {
             composable(
-                route = ProfileNavigationRoute.PROFILE_SUMMARY_SUB_ROUTE,
+                route = ProfileNavigationRoute.PROFILE_SUMMARY_ROUTE,
                 enterTransition = { fadeIn(tween (SCREEN_TRANSITION_MS)) },
                 exitTransition = { fadeOut(tween (SCREEN_TRANSITION_MS)) }
             ) { navBackStackEntry ->
@@ -114,7 +123,7 @@ fun NavGraphBuilder.profilesNavigation(
                 val viewModel: ProfileManageViewModel = hiltViewModel(editGraphEntry)
                 val uiState by viewModel.uiState.collectAsState()
 
-                LaunchedEffect(Unit) {
+                LaunchedEffect(viewModel) {
                     viewModel.events.collect { event ->
                         when (event) {
                             ProfileManageEvent.SaveSuccess -> navController.popBackStack()
@@ -132,6 +141,50 @@ fun NavGraphBuilder.profilesNavigation(
                             classification = state.classification,
                             onNameChange = { newName -> viewModel.updateName(newName) },
                             onDescriptionChange = { newDescription ->  viewModel.updateDescription(newDescription) },
+                            onBack = { viewModel.saveProfile() }
+                        )
+                    }
+                }
+            }
+
+            composable(
+                route = ProfileNavigationRoute.PROFILE_RULES_ROUTE,
+                enterTransition = { fadeIn(tween (SCREEN_TRANSITION_MS)) },
+                exitTransition = { fadeOut(tween (SCREEN_TRANSITION_MS)) }
+            ) { navBackStackEntry ->
+                val editGraphEntry = remember(navBackStackEntry) {
+                    navController.getBackStackEntry(ProfileNavigationRoute.PROFILE_GRAPH_EDIT_ROUTE)
+                }
+
+                val viewModel: ProfileManageViewModel = hiltViewModel(editGraphEntry)
+                val uiState by viewModel.uiState.collectAsState()
+
+                LaunchedEffect(viewModel) {
+                    viewModel.events.collect { event ->
+                        when (event) {
+                            ProfileManageEvent.SaveSuccess -> navController.popBackStack()
+                            else -> Unit
+                        }
+                    }
+                }
+
+                when (val state = uiState) {
+                    is ProfileManageUiState.Loading -> {}
+                    is ProfileManageUiState.Error -> {}
+                    is ProfileManageUiState.Ready -> {
+                        ProfileRulesScreen(
+                            permissions = state.draftProfile.permissions,
+                            restrictions = state.draftProfile.restrictions,
+                            settings = state.draftProfile.settings,
+                            onPermissionsChange = { modifiedPermissions ->
+                                viewModel.updatePermissions(modifiedPermissions)
+                            },
+                            onRestrictionsChange = { modifiedRestrictions ->
+                                viewModel.updateRestrictions(modifiedRestrictions)
+                            },
+                            onSettingsChange = { modifiedSettings ->
+                                viewModel.updateSettings(modifiedSettings)
+                            },
                             onBack = { viewModel.saveProfile() }
                         )
                     }

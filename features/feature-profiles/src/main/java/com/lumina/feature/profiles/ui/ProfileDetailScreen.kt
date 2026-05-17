@@ -54,7 +54,7 @@ fun ProfileDetailScreen(
     viewModel: ProfileDetailViewModel = hiltViewModel(),
     onNavigateToSummary: () -> Unit,
     onNavigateToHomeScreen: () -> Unit,
-    onNavigateToRestrictions: () -> Unit,
+    onNavigateToRules: () -> Unit,
     onNavigateToAllowedApps: () -> Unit,
     onNavigateToTrigger: () -> Unit,
     onNavigateToAppearance: () -> Unit,
@@ -140,7 +140,7 @@ fun ProfileDetailScreen(
                     onNavigateToSummary = onNavigateToSummary,
                     onNavigateToHomeScreen = onNavigateToHomeScreen,
                     onNavigateToAllowedApps = onNavigateToAllowedApps,
-                    onNavigateToRestrictions = onNavigateToRestrictions,
+                    onNavigateToRestrictions = onNavigateToRules,
                     onNavigateToTrigger = onNavigateToTrigger,
                     onNavigateToAppearance = onNavigateToAppearance,
                     onNavigateToSecurity = onNavigateToSecurity
@@ -267,8 +267,8 @@ private fun SettingsSectionCard(
             onClick = onNavigateToAllowedApps
         ),
         SettingsRowData(
-            label = stringResource(R.string.profile_details_restrictions),
-            subtitle = stringResource(R.string.profile_details_restrictions_count, enabledRestrictionsCount),
+            label = stringResource(R.string.profile_details_rules),
+            subtitle = stringResource(R.string.profile_details_rules_count, enabledRestrictionsCount),
             onClick = onNavigateToRestrictions
         ),
         SettingsRowData(

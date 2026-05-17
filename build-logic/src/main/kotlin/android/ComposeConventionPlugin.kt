@@ -25,6 +25,9 @@ class ComposeConventionPlugin : Plugin<Project> {
             add("implementation", target.libs.findLibrary("androidx-compose-material3").get())
             add("implementation", target.libs.findLibrary("androidx-compose-runtime").get())
             add("implementation", target.libs.findLibrary("androidx-compose-ui").get())
+            add("implementation", target.libs.findLibrary("androidx-compose-ui-tooling-preview").get())
+
+            add("debugImplementation", target.libs.findLibrary("androidx-compose-ui-tooling").get())
         }
     }
 }

@@ -3,6 +3,7 @@ package com.lumina.feature.profiles
 object ProfileNavigationRoute {
     const val PROFILE_ID_ARG = "profileId"
     const val TRIGGER_ID_ARG = "triggerId"
+    const val EDIT_SECTION_ARG = "section"
 
     const val PROFILE_LIST_ROUTE = "profile_list"
     const val PROFILE_CREATE_ROUTE = "profile_create"
@@ -14,14 +15,15 @@ object ProfileNavigationRoute {
     const val PROFILE_PATTERN_MANAGE_ROUTE = "profile_manage?profileId={$PROFILE_ID_ARG}"
     const val PROFILE_PATTERN_TRIGGER_ROUTE = "profile_trigger/{$PROFILE_ID_ARG}?triggerId={$TRIGGER_ID_ARG}"
 
-    const val PROFILE_SUMMARY_SUB_ROUTE = "summary"
+    const val PROFILE_SUMMARY_ROUTE = "profile_edit/{$PROFILE_ID_ARG}/summary"
+    const val PROFILE_RULES_ROUTE = "profile_edit/{$PROFILE_ID_ARG}/rules"
 
     fun detailRoute(profileId: String): String {
         return "profile_detail/$profileId"
     }
 
-    fun editRoute(profileId: String): String {
-        return "profile_edit/$profileId"
+    fun editRoute(profileId: String, route: String): String {
+        return "profile_edit/$profileId/$route"
     }
 
     fun manageRoute(profileId: String? = null): String {
