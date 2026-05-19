@@ -1,4 +1,4 @@
-package com.lumina.core.ui.components
+package com.lumina.feature.profiles.ui.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -25,6 +25,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import com.lumina.core.ui.ThemeTokens
+import com.lumina.core.ui.components.StandardBottomSheet
 
 @Composable
 fun ConfirmationBottomSheet(
