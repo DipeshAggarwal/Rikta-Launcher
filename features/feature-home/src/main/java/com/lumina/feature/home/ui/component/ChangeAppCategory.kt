@@ -36,6 +36,7 @@ import androidx.compose.ui.res.stringResource
 import com.lumina.core.model.AppCategory
 import com.lumina.core.ui.Motion
 import com.lumina.core.ui.ThemeTokens
+import com.lumina.core.ui.components.SelectableOptionRow
 import com.lumina.core.ui.theme.ContentColor
 import com.lumina.core.ui.extensions.toDisplayString
 import com.lumina.feature.home.R
@@ -59,43 +60,11 @@ fun ChangeAppCategory(
                 val isSelectedCategory = selectedCategory == category
                 val categoryName = category.toDisplayString()
 
-                val checkAlpha by animateFloatAsState(
-                    targetValue = if (isSelectedCategory) 1f else 0f,
-                    animationSpec = tween(Motion.SHEET_TRANSITION_MS),
-                    label = "check_alpha"
+                SelectableOptionRow(
+                    title = categoryName,
+                    selected = isSelectedCategory,
+                    onClick = { selectedCategory = category }
                 )
-
-                Surface(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(ThemeTokens.DefaultCornerRadius))
-                        .clickable { selectedCategory = category },
-                    color = if (isSelectedCategory) MaterialTheme.colorScheme.secondaryContainer
-                        else Color.Transparent,
-                    contentColor = if (isSelectedCategory) MaterialTheme.colorScheme.onSecondaryContainer
-                        else ContentColor
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable { selectedCategory = category }
-                            .padding(
-                                vertical = ThemeTokens.RowVerticalPadding,
-                                horizontal = ThemeTokens.RowHorizontalPadding
-                            ),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(text = categoryName, style = MaterialTheme.typography.bodySmall)
-
-                        Icon(
-                            imageVector = Icons.Outlined.Check,
-                            contentDescription = stringResource(R.string.category_selected_label),
-                            tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.alpha(checkAlpha)
-                        )
-                    }
-                }
             }
         }
 

@@ -127,4 +127,5 @@
     <string name="mode_customised">(Customised)</string>
 
     <string name="drag_to_reorder">Drag to reorder</string>
+    <string name="category_selected_label">Selected Category</string>
 </resources>

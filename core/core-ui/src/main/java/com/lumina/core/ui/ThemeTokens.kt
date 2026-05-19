@@ -4,7 +4,7 @@ import androidx.compose.ui.unit.dp
 
 object ThemeTokens {
     val DefaultCornerRadius = 12.dp
-    val ExpandedContentMaxHeight = 240.dp
+    val ExpandedContentMaxHeight = 320.dp
     val DefaultVerticalPadding = 2.dp
     val RowVerticalPadding = 8.dp
     val RowHorizontalPadding = 8.dp

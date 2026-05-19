@@ -255,7 +255,7 @@ private fun ActionItem(action: BottomSheetAppAction) {
                 text = action.label,
                 modifier = Modifier.padding(vertical = BottomSheetDefaults.ActionVerticalPadding),
                 color = ContentColor,
-                style = MaterialTheme.typography.bodyMedium
+                style = MaterialTheme.typography.titleSmall
             )
             if (action.trailingIcon != null) {
                 Icon(

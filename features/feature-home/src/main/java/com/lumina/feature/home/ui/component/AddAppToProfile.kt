@@ -40,6 +40,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.lumina.core.ui.Motion
 import com.lumina.core.ui.ThemeTokens
+import com.lumina.core.ui.components.SelectableOptionRow
 import com.lumina.core.ui.components.home.CompactTextField
 import com.lumina.core.ui.extensions.systemProfileDisplayName
 import com.lumina.core.ui.theme.ContentColor
@@ -101,39 +102,14 @@ fun AddAppToProfile(
                     label = "check_alpha"
                 )
 
-                Surface(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(ThemeTokens.DefaultCornerRadius))
-                        .clickable {
-                            selectedProfileIds = if (isSelectedProfile) selectedProfileIds - id
+                SelectableOptionRow(
+                    title = systemProfileDisplayName(name),
+                    selected = isSelectedProfile,
+                    onClick = {
+                        selectedProfileIds = if (isSelectedProfile) selectedProfileIds - id
                             else selectedProfileIds + id
-                        },
-                    color = if (isSelectedProfile) MaterialTheme.colorScheme.secondaryContainer
-                        else Color.Transparent,
-                    contentColor = if (isSelectedProfile) MaterialTheme.colorScheme.onSecondaryContainer
-                        else ContentColor
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(
-                                vertical = ThemeTokens.RowVerticalPadding,
-                                horizontal = ThemeTokens.RowHorizontalPadding
-                            ),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(text = systemProfileDisplayName(name), style = MaterialTheme.typography.bodySmall)
-
-                        Icon(
-                            imageVector = Icons.Outlined.Check,
-                            contentDescription = stringResource(R.string.profile_selected_label),
-                            tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.alpha(checkAlpha)
-                        )
                     }
-                }
+                )
             }
             Spacer(modifier = Modifier.height(AddAppToProfileDefaults.SpaceBetweenColumnItems))
         }
