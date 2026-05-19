@@ -1,18 +1,11 @@
 package com.lumina.feature.profiles.ui
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import com.lumina.core.ui.ThemeTokens
-import com.lumina.core.ui.components.TopTitleBar
+import com.lumina.core.ui.components.StandardListScaffold
 import com.lumina.domain.profiles.model.LauncherProfilePermissions
 import com.lumina.domain.profiles.model.LauncherProfileRestrictions
 import com.lumina.domain.profiles.model.LauncherProfileSettings
@@ -30,38 +23,23 @@ fun ProfileRulesScreen(
     onSettingsChange: ((LauncherProfileSettings) -> LauncherProfileSettings) -> Unit,
     onBack: () -> Unit
 ) {
-    Scaffold(
-        topBar = {
-            TopTitleBar(
-                title = stringResource(R.string.profile_rules_header),
-                onBack = onBack
+    StandardListScaffold(
+        title = stringResource(R.string.profile_rules_header),
+        onBack = onBack
+    ) {
+        item(key = "profile_rules_subtitle") {
+            Text(
+                text = stringResource(R.string.profile_rules_subtitle),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
-    ) { paddingValues ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues),
-            contentPadding = PaddingValues(
-                horizontal = ThemeTokens.Spacing.Small,
-                vertical = ThemeTokens.Spacing.Large
-            ),
-            verticalArrangement = Arrangement.spacedBy(ThemeTokens.Spacing.ExtraLarge)
-        ) {
-            item(key = "profile_rules_subtitle") {
-                Text(
-                    text = stringResource(R.string.profile_rules_subtitle),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
 
-            item(key = "profile_rules_app_access") {
-                ProfileRulesAppAccessScreen(
-                    restrictions = restrictions,
-                    onRestrictionsChange = onRestrictionsChange
-                )
-            }
+        item(key = "profile_rules_app_access") {
+            ProfileRulesAppAccessScreen(
+                restrictions = restrictions,
+                onRestrictionsChange = onRestrictionsChange
+            )
         }
     }
 }

@@ -5,15 +5,12 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AccessTime
 import androidx.compose.material.icons.outlined.Autorenew
@@ -22,7 +19,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -40,7 +36,7 @@ import com.lumina.core.common.time.TimeUtils
 import com.lumina.core.model.ProfileClassification
 import com.lumina.core.ui.Motion
 import com.lumina.core.ui.ThemeTokens
-import com.lumina.core.ui.components.TopTitleBar
+import com.lumina.core.ui.components.StandardListScaffold
 import com.lumina.core.ui.extensions.accentColourRes
 import com.lumina.core.ui.extensions.displayName
 import com.lumina.core.ui.extensions.icon
@@ -61,52 +57,37 @@ fun ProfileSummaryScreen(
 ) {
     val resolvedName = systemProfileDisplayName(profile.name)
 
-    Scaffold(
-        topBar = {
-            TopTitleBar(
-                title = stringResource(R.string.profile_summary_header),
-                onBack = onBack
+    StandardListScaffold(
+        title = stringResource(R.string.profile_summary_header),
+        onBack = onBack
+    ) {
+        item(key = "profile_summary_subtitle") {
+            Text(
+                text = stringResource(R.string.profile_summary_subtitle),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
-    ) { paddingValues ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues),
-            contentPadding = PaddingValues(
-                horizontal = ThemeTokens.Spacing.Small,
-                vertical = ThemeTokens.Spacing.Large
-            ),
-            verticalArrangement = Arrangement.spacedBy(ThemeTokens.Spacing.Large)
-        ) {
-            item(key = "profile_summary_subtitle") {
-                Text(
-                    text = stringResource(R.string.profile_summary_subtitle),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
 
-            item(key = "profile_summary_text_fields") {
-                NameDescriptionCard(
-                    name = resolvedName,
-                    description = profile.description ?: "",
-                    onNameChange = onNameChange,
-                    onDescriptionChange = onDescriptionChange
-                )
-            }
+        item(key = "profile_summary_text_fields") {
+            NameDescriptionCard(
+                name = resolvedName,
+                description = profile.description ?: "",
+                onNameChange = onNameChange,
+                onDescriptionChange = onDescriptionChange
+            )
+        }
 
-            item(key = "profile_summary_info_details") {
-                SummaryInfoCard(
-                    profile = profile,
-                    resolvedName = resolvedName,
-                    classification = classification
-                )
-            }
+        item(key = "profile_summary_info_details") {
+            SummaryInfoCard(
+                profile = profile,
+                resolvedName = resolvedName,
+                classification = classification
+            )
+        }
 
-            item(key = "profile_summary_time_details") {
-                SummaryTimeCard(profile = profile)
-            }
+        item(key = "profile_summary_time_details") {
+            SummaryTimeCard(profile = profile)
         }
     }
 }

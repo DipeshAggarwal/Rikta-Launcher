@@ -4,16 +4,13 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Inventory2
@@ -22,8 +19,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -39,7 +34,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.lumina.core.model.ProfileClassification
 import com.lumina.core.ui.ThemeTokens
-import com.lumina.core.ui.components.TopTitleBar
+import com.lumina.core.ui.components.StandardListScaffold
 import com.lumina.core.ui.extensions.systemProfileDisplayName
 import com.lumina.domain.profiles.model.ProfileSummary
 import com.lumina.feature.profiles.R
@@ -71,106 +66,91 @@ fun ProfileListScreen(
 
     val profileAlreadyActive = stringResource(R.string.profile_already_active)
 
-    Scaffold(
-        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
-        topBar = {
-            TopTitleBar(
-                title = stringResource(R.string.profiles_header),
-                onBack = onBack
-            )
+    StandardListScaffold(
+        title = stringResource(R.string.profiles_header),
+        onBack = onBack,
+        snackbarHostState = snackbarHostState
+    ) {
+        activeProfileSummary?.let { summary ->
+            item(key = "active_profile_section") {
+                Column {
+                    SectionLabel(text = stringResource(R.string.active_profile))
+                }
+                ProfileActiveCard(
+                    title = systemProfileDisplayName(summary.profile.name),
+                    profileClassification = profileClassificationMap.getValue(summary.profile.id),
+                    appCount = summary.appCount,
+                    triggerCount = summary.triggerCount,
+                    profileId = summary.profile.id,
+                    iconName = summary.profile.overrides.iconName,
+                    activeText = stringResource(R.string.active_now),
+                    optionsDescription = stringResource(R.string.profile_options_description),
+                    onClick = { onViewProfileDetails(summary.profile.id) }
+                )
+            }
         }
-    ) { paddingValues ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues),
-            contentPadding = PaddingValues(
-                horizontal = ThemeTokens.Spacing.Small,
-                vertical = ThemeTokens.Spacing.Large
-            ),
-            verticalArrangement = Arrangement.spacedBy(ThemeTokens.Spacing.ExtraLarge)
-        ) {
-            activeProfileSummary?.let { summary ->
-                item(key = "active_profile_section") {
-                    Column {
-                        SectionLabel(text = stringResource(R.string.active_profile))
+
+        if (showBanner) {
+            item(key = "info_banner") {
+                InfoBanner(
+                    bannerText = stringResource(R.string.profile_info_banner),
+                    detailsFindText = stringResource(R.string.profile_details_text),
+                    dismissDescription = stringResource(R.string.profile_dismiss_text),
+                    onDismiss = onDismissBanner,
+                    onDetailsFind = {
+                        uriHandler.openUri("https://github.com/DipeshAggarwal/rikta-launcher")
                     }
-                    ProfileActiveCard(
-                        title = systemProfileDisplayName(summary.profile.name),
-                        profileClassification = profileClassificationMap.getValue(summary.profile.id),
-                        appCount = summary.appCount,
-                        triggerCount = summary.triggerCount,
-                        profileId = summary.profile.id,
-                        iconName = summary.profile.overrides.iconName,
-                        activeText = stringResource(R.string.active_now),
-                        optionsDescription = stringResource(R.string.profile_options_description),
-                        onClick = { onViewProfileDetails(summary.profile.id) }
-                    )
-                }
+                )
             }
+        }
 
-            if (showBanner) {
-                item(key = "info_banner") {
-                    InfoBanner(
-                        bannerText = stringResource(R.string.profile_info_banner),
-                        detailsFindText = stringResource(R.string.profile_details_text),
-                        dismissDescription = stringResource(R.string.profile_dismiss_text),
-                        onDismiss = onDismissBanner,
-                        onDetailsFind = {
-                            uriHandler.openUri("https://github.com/DipeshAggarwal/rikta-launcher")
-                        }
-                    )
-                }
-            }
-
-            if (inactiveProfileSummaries.isNotEmpty()) {
-                item(key = "all_profiles_section") {
-                    Column {
-                        SectionLabel(text = stringResource(R.string.all_profiles))
-                        OutlinedCard(
-                            modifier = Modifier.fillMaxWidth(),
-                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
-                            colors = CardDefaults.outlinedCardColors(
-                                containerColor = MaterialTheme.colorScheme.surfaceContainer
-                            ),
-                            shape = MaterialTheme.shapes.large
-                        ) {
-                            inactiveProfileSummaries.forEachIndexed { index, summary ->
-                                ProfileListRow(
-                                    title = systemProfileDisplayName(summary.profile.name),
-                                    profileClassification = profileClassificationMap.getValue(summary.profile.id),
-                                    appCount = summary.appCount,
-                                    triggerCount = summary.triggerCount,
-                                    profileId = summary.profile.id,
-                                    iconName = summary.profile.overrides.iconName,
-                                    onClick = { onViewProfileDetails(summary.profile.id) }
+        if (inactiveProfileSummaries.isNotEmpty()) {
+            item(key = "all_profiles_section") {
+                Column {
+                    SectionLabel(text = stringResource(R.string.all_profiles))
+                    OutlinedCard(
+                        modifier = Modifier.fillMaxWidth(),
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+                        colors = CardDefaults.outlinedCardColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceContainer
+                        ),
+                        shape = MaterialTheme.shapes.large
+                    ) {
+                        inactiveProfileSummaries.forEachIndexed { index, summary ->
+                            ProfileListRow(
+                                title = systemProfileDisplayName(summary.profile.name),
+                                profileClassification = profileClassificationMap.getValue(summary.profile.id),
+                                appCount = summary.appCount,
+                                triggerCount = summary.triggerCount,
+                                profileId = summary.profile.id,
+                                iconName = summary.profile.overrides.iconName,
+                                onClick = { onViewProfileDetails(summary.profile.id) }
+                            )
+                            if (index < inactiveProfileSummaries.lastIndex) {
+                                HorizontalDivider(
+                                    modifier = Modifier.padding(horizontal = ThemeTokens.Spacing.ExtraLarge),
+                                    color = MaterialTheme.colorScheme.outlineVariant
                                 )
-                                if (index < inactiveProfileSummaries.lastIndex) {
-                                    HorizontalDivider(
-                                        modifier = Modifier.padding(horizontal = ThemeTokens.Spacing.ExtraLarge),
-                                        color = MaterialTheme.colorScheme.outlineVariant
-                                    )
-                                }
                             }
                         }
                     }
                 }
-            } else {
-                item(key = "empty_profiles_state") {
-                    EmptyProfilesCard(
-                        title = stringResource(R.string.no_inactive_profiles),
-                        subtitle = stringResource(R.string.no_inactive_profiles_subtitle)
-                    )
-                }
             }
-
-            item(key = "create_new_profile") {
-                CreateProfileRow(
-                    title = stringResource(R.string.create_new_profile),
-                    subtitle = stringResource(R.string.create_new_profile_subtitle),
-                    onClick = onCreateNewProfile
+        } else {
+            item(key = "empty_profiles_state") {
+                EmptyProfilesCard(
+                    title = stringResource(R.string.no_inactive_profiles),
+                    subtitle = stringResource(R.string.no_inactive_profiles_subtitle)
                 )
             }
+        }
+
+        item(key = "create_new_profile") {
+            CreateProfileRow(
+                title = stringResource(R.string.create_new_profile),
+                subtitle = stringResource(R.string.create_new_profile_subtitle),
+                onClick = onCreateNewProfile
+            )
         }
     }
 }

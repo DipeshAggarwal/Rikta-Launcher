@@ -4,11 +4,9 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.material.icons.outlined.Delete
@@ -18,10 +16,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -40,7 +35,7 @@ import com.lumina.core.ui.components.ConfirmationBottomSheet
 import com.lumina.core.ui.components.DestructiveActionButton
 import com.lumina.core.ui.components.DetailRow
 import com.lumina.core.ui.components.OutlinedActionButton
-import com.lumina.core.ui.components.TopTitleBar
+import com.lumina.core.ui.components.StandardListScaffold
 import com.lumina.core.ui.extensions.systemProfileDisplayName
 import com.lumina.domain.profiles.model.LauncherProfile
 import com.lumina.feature.profiles.ProfileDetailEvent
@@ -65,9 +60,6 @@ fun ProfileDetailScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
-
-    val duplicateSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    val deleteSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     var showDuplicateSheet by remember { mutableStateOf(false) }
     var showDeleteSheet by remember { mutableStateOf(false) }
@@ -96,80 +88,65 @@ fun ProfileDetailScreen(
     val resolvedName = systemProfileDisplayName(profile.name)
     val profileClassification = checkNotNull(uiState.classification)
 
-    Scaffold(
-        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
-        topBar = {
-            TopTitleBar(
+    StandardListScaffold(
+        title = resolvedName,
+        onBack = onBack,
+        snackbarHostState = snackbarHostState
+    ) {
+        item(key = "viewing_profile_card") {
+            ProfileDetailCard(
                 title = resolvedName,
-                onBack = onBack
+                profileClassification = profileClassification,
+                appCount = uiState.allowedAppCount,
+                triggerCount = uiState.triggerCount,
+                profileId = profile.id,
+                iconName = profile.overrides.iconName,
+                activeText = if (uiState.isActive) stringResource(R.string.active_now) else null,
+                switchText = stringResource(
+                    R.string.profile_details_make_active,
+                    resolvedName
+                ),
+                onSwitch = { viewModel.toggleActiveState() }
             )
         }
-    ) { paddingValues ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues),
-            contentPadding = PaddingValues(
-                horizontal = ThemeTokens.Spacing.Small,
-                vertical = ThemeTokens.Spacing.Large
-            ),
-            verticalArrangement = Arrangement.spacedBy(ThemeTokens.Spacing.ExtraLarge)
-        ) {
-            item(key = "viewing_profile_card") {
-                ProfileDetailCard(
-                    title = resolvedName,
-                    profileClassification = profileClassification,
-                    appCount = uiState.allowedAppCount,
-                    triggerCount = uiState.triggerCount,
-                    profileId = profile.id,
-                    iconName = profile.overrides.iconName,
-                    activeText = if (uiState.isActive) stringResource(R.string.active_now) else null,
-                    switchText = stringResource(
-                        R.string.profile_details_make_active,
+
+        item(key = "viewing_profile_settings_section") {
+            SettingsSectionCard(
+                profile = profile,
+                allowedAppCount = uiState.allowedAppCount,
+                triggerCount = uiState.triggerCount,
+                onNavigateToSummary = onNavigateToSummary,
+                onNavigateToHomeScreen = onNavigateToHomeScreen,
+                onNavigateToAllowedApps = onNavigateToAllowedApps,
+                onNavigateToRestrictions = onNavigateToRules,
+                onNavigateToTrigger = onNavigateToTrigger,
+                onNavigateToAppearance = onNavigateToAppearance,
+                onNavigateToSecurity = onNavigateToSecurity
+            )
+        }
+
+        item(key = "viewing_profile_manage_action") {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(ThemeTokens.Spacing.Small)
+            ) {
+                OutlinedActionButton(
+                    text = stringResource(
+                        R.string.profile_details_duplicate_profile,
                         resolvedName
                     ),
-                    onSwitch = { viewModel.toggleActiveState() }
+                    enabled = !uiState.isPerformingAction,
+                    onClick = { showDuplicateSheet = true }
                 )
-            }
-
-            item(key = "viewing_profile_settings_section") {
-                SettingsSectionCard(
-                    profile = profile,
-                    allowedAppCount = uiState.allowedAppCount,
-                    triggerCount = uiState.triggerCount,
-                    onNavigateToSummary = onNavigateToSummary,
-                    onNavigateToHomeScreen = onNavigateToHomeScreen,
-                    onNavigateToAllowedApps = onNavigateToAllowedApps,
-                    onNavigateToRestrictions = onNavigateToRules,
-                    onNavigateToTrigger = onNavigateToTrigger,
-                    onNavigateToAppearance = onNavigateToAppearance,
-                    onNavigateToSecurity = onNavigateToSecurity
+                DestructiveActionButton(
+                    text = stringResource(
+                        R.string.profile_details_delete_profile,
+                        resolvedName
+                    ),
+                    enabled = !uiState.isPerformingAction && !profile.isAdmin,
+                    onClick = { showDeleteSheet = true }
                 )
-            }
-
-            item(key = "viewing_profile_manage_action") {
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(ThemeTokens.Spacing.Small)
-                ) {
-                    OutlinedActionButton(
-                        text = stringResource(
-                            R.string.profile_details_duplicate_profile,
-                            resolvedName
-                        ),
-                        enabled = !uiState.isPerformingAction,
-                        onClick = { showDuplicateSheet = true }
-                    )
-                    DestructiveActionButton(
-                        text = stringResource(
-                            R.string.profile_details_delete_profile,
-                            resolvedName
-                        ),
-                        enabled = !uiState.isPerformingAction && !profile.isAdmin,
-                        onClick = { showDeleteSheet = true }
-                    )
-                }
             }
         }
     }

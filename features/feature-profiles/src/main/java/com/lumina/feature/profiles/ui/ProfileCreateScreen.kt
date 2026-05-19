@@ -8,13 +8,10 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.ime
@@ -22,7 +19,6 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Check
@@ -32,7 +28,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -56,7 +51,7 @@ import com.lumina.core.ui.Motion
 import com.lumina.core.ui.ThemeTokens
 import com.lumina.core.ui.components.ElevatedButton
 import com.lumina.core.ui.components.PrimaryButton
-import com.lumina.core.ui.components.TopTitleBar
+import com.lumina.core.ui.components.StandardListScaffold
 import com.lumina.core.ui.extensions.accentColourRes
 import com.lumina.core.ui.extensions.description
 import com.lumina.core.ui.extensions.displayName
@@ -104,118 +99,103 @@ fun ProfileCreateScreen(
         createState.draftProfile.name.ifBlank { (selectedPreset as ProfilePreset).displayName() }
         )
 
-    Scaffold(
-        topBar = {
-            TopTitleBar(
-                title = stringResource(R.string.create_profile_headers),
-                onBack = onBack
+    // verticalArrangement = Arrangement.spacedBy(ThemeTokens.Spacing.Small)
+    StandardListScaffold(
+        title = stringResource(R.string.create_profile_headers),
+        onBack = onBack,
+        listModifier = Modifier.imePadding()
+    ) {
+        item(key = "create_profile_info") {
+            Text(
+                text = stringResource(R.string.create_profile_info),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
-    ) { paddingValues ->
-        LazyColumn(
-            state = listState,
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .imePadding(),
-            contentPadding = PaddingValues(
-                horizontal = ThemeTokens.Spacing.Small,
-                vertical = ThemeTokens.Spacing.Large
-            ),
-            verticalArrangement = Arrangement.spacedBy(ThemeTokens.Spacing.Small)
-        ) {
-            item(key = "create_profile_info") {
-                Text(
-                    text = stringResource(R.string.create_profile_info),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-            item(key = "create_profile_info_spacer") {
-                Spacer(modifier = Modifier.height(ThemeTokens.Spacing.Large))
-            }
+        item(key = "create_profile_info_spacer") {
+            Spacer(modifier = Modifier.height(ThemeTokens.Spacing.Large))
+        }
 
-            items(
-                count = ProfilePreset.entries.size,
-                key = { ProfilePreset.entries[it].name }
-            ) { index ->
-                val preset = ProfilePreset.entries[index]
-                val isSelected = selectedPreset == preset
+        items(
+            count = ProfilePreset.entries.size,
+            key = { ProfilePreset.entries[it].name }
+        ) { index ->
+            val preset = ProfilePreset.entries[index]
+            val isSelected = selectedPreset == preset
 
-                val name = preset.displayName()
-                val description = preset.description()
+            val name = preset.displayName()
+            val description = preset.description()
 
-                PresetCard(
-                    preset = preset,
-                    isSelected = isSelected,
-                    onClick = {
-                        selectedPreset = preset
-                        viewModel.applyPreset(preset)
-                        if (!nameEdited) viewModel.updateName(name)
-                        if (!descriptionEdited) viewModel.updateDescription(description)
-                    }
-                )
-            }
-            item(key = "create_profile_preset_spacer") {
-                Spacer(modifier = Modifier.height(ThemeTokens.Spacing.Large))
-            }
+            PresetCard(
+                preset = preset,
+                isSelected = isSelected,
+                onClick = {
+                    selectedPreset = preset
+                    viewModel.applyPreset(preset)
+                    if (!nameEdited) viewModel.updateName(name)
+                    if (!descriptionEdited) viewModel.updateDescription(description)
+                }
+            )
+        }
+        item(key = "create_profile_preset_spacer") {
+            Spacer(modifier = Modifier.height(ThemeTokens.Spacing.Large))
+        }
 
-            item(key = "create_profile_details_field") {
-                ProfileDetailsContainer(
-                    title = stringResource(R.string.create_profile_add_details),
-                    name = createState.draftProfile.name,
-                    description = createState.draftProfile.description ?: "",
-                    onNameChange = { value ->
-                        nameEdited = value.isNotEmpty()
-                        viewModel.updateName(value)
-                    },
-                    onDescriptionChange = { value ->
-                        descriptionEdited = value.isNotEmpty()
-                        viewModel.updateDescription(value)
-                    }
-                )
-            }
-            item(key = "create_profile_details_spacer") {
-                Spacer(modifier = Modifier.height(ThemeTokens.Spacing.Large))
-            }
+        item(key = "create_profile_details_field") {
+            ProfileDetailsContainer(
+                title = stringResource(R.string.create_profile_add_details),
+                name = createState.draftProfile.name,
+                description = createState.draftProfile.description ?: "",
+                onNameChange = { value ->
+                    nameEdited = value.isNotEmpty()
+                    viewModel.updateName(value)
+                },
+                onDescriptionChange = { value ->
+                    descriptionEdited = value.isNotEmpty()
+                    viewModel.updateDescription(value)
+                }
+            )
+        }
+        item(key = "create_profile_details_spacer") {
+            Spacer(modifier = Modifier.height(ThemeTokens.Spacing.Large))
+        }
 
-            item(key = "create_profile_review") {
-                ElevatedButton(
-                    title = stringResource(R.string.create_button_review),
-                    subtitle = stringResource(R.string.create_button_review_subtitle),
-                    enabled = !isCustom,
-                    leadingIcon = null,
-                    trailingIcon = Icons.Outlined.ChevronRight,
-                    onClick = onCustomiseSettings
-                )
-            }
-            item(key = "create_profile_review_spacer") {
-                Spacer(modifier = Modifier.height(ThemeTokens.Spacing.Medium))
-            }
+        item(key = "create_profile_review") {
+            ElevatedButton(
+                title = stringResource(R.string.create_button_review),
+                subtitle = stringResource(R.string.create_button_review_subtitle),
+                enabled = !isCustom,
+                leadingIcon = null,
+                trailingIcon = Icons.Outlined.ChevronRight,
+                onClick = onCustomiseSettings
+            )
+        }
+        item(key = "create_profile_review_spacer") {
+            Spacer(modifier = Modifier.height(ThemeTokens.Spacing.Medium))
+        }
 
-            item(key = "cta_button") {
-                val name = selectedPreset?.displayName() ?: ""
-                val description = selectedPreset?.description() ?: ""
+        item(key = "cta_button") {
+            val name = selectedPreset?.displayName() ?: ""
+            val description = selectedPreset?.description() ?: ""
 
-                PrimaryButton(
-                    title = createButtonLabel,
-                    enabled = selectedPreset != null && createState.draftProfile.name.isNotBlank() && !createState.isSaving,
-                    onClick = {
-                        if (isCustom) {
-                            onCustomiseSettings()
-                        } else {
-                            if (!nameEdited && selectedPreset != null && createState.draftProfile.name.isBlank()) {
-                                viewModel.updateName(name)
-                            }
-                            if (!descriptionEdited && selectedPreset != null && createState.draftProfile.description.isNullOrBlank()) {
-                                viewModel.updateDescription(description)
-                            }
-                            viewModel.saveProfile()
-                            onProfileCreated()
+            PrimaryButton(
+                title = createButtonLabel,
+                enabled = selectedPreset != null && createState.draftProfile.name.isNotBlank() && !createState.isSaving,
+                onClick = {
+                    if (isCustom) {
+                        onCustomiseSettings()
+                    } else {
+                        if (!nameEdited && selectedPreset != null && createState.draftProfile.name.isBlank()) {
+                            viewModel.updateName(name)
                         }
+                        if (!descriptionEdited && selectedPreset != null && createState.draftProfile.description.isNullOrBlank()) {
+                            viewModel.updateDescription(description)
+                        }
+                        viewModel.saveProfile()
+                        onProfileCreated()
                     }
-                )
-            }
+                }
+            )
         }
     }
 }
