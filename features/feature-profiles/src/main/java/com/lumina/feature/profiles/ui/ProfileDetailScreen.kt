@@ -31,7 +31,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lumina.core.model.ProfileAuthMethod
 import com.lumina.core.ui.ThemeTokens
-import com.lumina.feature.profiles.ui.component.ConfirmationBottomSheet
+import com.lumina.feature.profiles.ui.bottomsheet.ConfirmationBottomSheet
 import com.lumina.core.ui.components.DestructiveActionButton
 import com.lumina.core.ui.components.DetailRow
 import com.lumina.core.ui.components.OutlinedActionButton

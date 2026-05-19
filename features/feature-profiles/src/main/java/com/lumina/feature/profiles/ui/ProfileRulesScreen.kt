@@ -3,6 +3,10 @@ package com.lumina.feature.profiles.ui
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.lumina.core.ui.components.StandardListScaffold
@@ -10,6 +14,7 @@ import com.lumina.domain.profiles.model.LauncherProfilePermissions
 import com.lumina.domain.profiles.model.LauncherProfileRestrictions
 import com.lumina.domain.profiles.model.LauncherProfileSettings
 import com.lumina.feature.profiles.R
+import com.lumina.feature.profiles.ui.bottomsheet.AutoAppCategoryBottomSheet
 import com.lumina.feature.profiles.ui.component.AccordionContent
 import com.lumina.feature.profiles.ui.model.AccordionRow
 
@@ -37,6 +42,7 @@ fun ProfileRulesScreen(
 
         item(key = "profile_rules_app_access") {
             ProfileRulesAppAccessScreen(
+                settings = settings,
                 restrictions = restrictions,
                 onRestrictionsChange = onRestrictionsChange
             )
@@ -46,10 +52,13 @@ fun ProfileRulesScreen(
 
 @Composable
 fun ProfileRulesAppAccessScreen(
+    settings: LauncherProfileSettings,
     restrictions: LauncherProfileRestrictions,
     onRestrictionsChange: ((LauncherProfileRestrictions) -> LauncherProfileRestrictions) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    var showAddCategorySheet by remember { mutableStateOf(false) }
+
     val rows = listOf(
         AccordionRow.Switch(
             title = stringResource(R.string.profile_rules_hide_unauthorized_apps),
@@ -78,7 +87,7 @@ fun ProfileRulesAppAccessScreen(
         AccordionRow.Detail(
             title = stringResource(R.string.profile_rules_auto_add_categories),
             subtitle = stringResource(R.string.profile_rules_auto_add_categories_subtitle),
-            onClick = { },
+            onClick = { showAddCategorySheet = true },
         )
     )
 
@@ -88,4 +97,11 @@ fun ProfileRulesAppAccessScreen(
         rows = rows,
         modifier = modifier
     )
+
+    if (showAddCategorySheet) {
+        AutoAppCategoryBottomSheet(
+            initialSelectedCategories = settings.autoAddCategoryApps.toSet(),
+            onDismiss = { showAddCategorySheet = false },
+        )
+    }
 }

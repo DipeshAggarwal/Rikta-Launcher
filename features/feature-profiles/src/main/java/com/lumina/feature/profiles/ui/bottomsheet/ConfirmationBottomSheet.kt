@@ -1,4 +1,4 @@
-package com.lumina.feature.profiles.ui.component
+package com.lumina.feature.profiles.ui.bottomsheet
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement

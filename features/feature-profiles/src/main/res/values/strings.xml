@@ -90,4 +90,5 @@
     <string name="profile_rules_auto_add_categories_subtitle">Automatically add apps from selected categories</string>
     <string name="profile_rules_block_system_app">Don\'t allow adding System App</string>
     <string name="profile_rules_block_system_app_subtitle">Prevent adding built-in system apps</string>
+    <string name="profile_rules_auto_add_categories_select">Select Categories to Add</string>
 </resources>
