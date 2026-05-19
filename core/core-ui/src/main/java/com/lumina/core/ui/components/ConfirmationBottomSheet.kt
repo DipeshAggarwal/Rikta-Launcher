@@ -12,17 +12,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -30,9 +25,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import com.lumina.core.ui.ThemeTokens
-import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ConfirmationBottomSheet(
     icon: ImageVector,
@@ -45,24 +38,10 @@ fun ConfirmationBottomSheet(
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val sheetState: SheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    val scope = rememberCoroutineScope()
-
-    fun dismiss(afterDismiss: (() -> Unit)? = null) {
-        scope.launch {
-            sheetState.hide()
-            afterDismiss?.invoke()
-        }
-    }
-
-    ModalBottomSheet(
-        onDismissRequest = { dismiss(onDismiss) },
-        sheetState = sheetState,
-        modifier = modifier,
-        scrimColor = Color.Black.copy(alpha = ThemeTokens.Alpha.Strong),
-        containerColor = MaterialTheme.colorScheme.surfaceContainer,
-        shape = MaterialTheme.shapes.large
-    ) {
+    StandardBottomSheet(
+        onDismissRequest = onDismiss,
+        modifier = modifier
+    ) { dismissAction ->
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -113,7 +92,7 @@ fun ConfirmationBottomSheet(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 FilledTonalButton(
-                    onClick = { dismiss(onDismiss) },
+                    onClick = { dismissAction(onDismiss) },
                     modifier = Modifier.weight(1f),
                     colors = ButtonDefaults.filledTonalButtonColors(
                         containerColor = MaterialTheme.colorScheme.primaryContainer,
@@ -127,7 +106,7 @@ fun ConfirmationBottomSheet(
                 }
 
                 TextButton(
-                    onClick = { dismiss(onConfirm) },
+                    onClick = { dismissAction(onConfirm) },
                     modifier = Modifier.weight(1f),
                     colors = ButtonDefaults.textButtonColors(contentColor = confirmColor)
                 ) {
