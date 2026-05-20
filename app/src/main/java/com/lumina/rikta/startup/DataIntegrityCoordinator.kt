@@ -4,6 +4,7 @@ import com.lumina.data.apps.installed.AppChangeEvent
 import com.lumina.data.apps.installed.InstalledAppsMonitor
 import com.lumina.domain.coordination.usecase.RemoveOrphanedAppReferencesUseCase
 import com.lumina.core.android.di.ApplicationScope
+import com.lumina.domain.profiles.manager.ProfileCategorySyncManager
 import com.lumina.domain.profiles.usecase.SyncActiveProfileUseCase
 import jakarta.inject.Inject
 import jakarta.inject.Singleton
@@ -22,6 +23,7 @@ class DataIntegrityCoordinator @Inject constructor(
     @ApplicationScope private val applicationScope: CoroutineScope,
     private val removeOrphanedAppReferencesUseCase: RemoveOrphanedAppReferencesUseCase,
     private val syncActiveProfileUseCase: SyncActiveProfileUseCase,
+    private val profileCategorySyncManager: ProfileCategorySyncManager,
     installedAppsMonitor: InstalledAppsMonitor
 ) {
     init {
@@ -35,6 +37,11 @@ class DataIntegrityCoordinator @Inject constructor(
                 .collect {
                     removeOrphanedAppReferencesUseCase()
                 }
+        }
+
+        // This is a separate Coroutine because installedAppsMonitor is a "hot flow", ie, it never stops.
+        applicationScope.launch {
+            profileCategorySyncManager.observeAndSyncCategories()
         }
     }
 }

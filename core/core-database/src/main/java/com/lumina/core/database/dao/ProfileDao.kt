@@ -101,10 +101,11 @@ interface ProfileDao {
 
     @Query("""
         DELETE FROM profile_app_mapping
-        WHERE addedBy = :addedBy
-        AND (packageName || '::' || userHandleNumber) NOT IN (:installedKeys)
+        WHERE profileId = :profileId
+        AND addedBy = :addedBy
+        AND (packageName || '::' || userHandleNumber) IN (:installedKeys)
     """)
-    suspend fun deleteAppMappingsByRules(installedKeys: Set<String>, addedBy: String)
+    suspend fun deleteAppMappingsByRules(profileId: String, installedKeys: Set<String>, addedBy: String)
 
     // ------------------------------------------------
     // Recommended Usage Apps

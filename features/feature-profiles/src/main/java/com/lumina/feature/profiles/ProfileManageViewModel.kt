@@ -12,6 +12,7 @@ import com.lumina.domain.coordination.DeviceUserProvider
 import com.lumina.domain.coordination.usecase.CreateDraftProfileUseCase
 import com.lumina.domain.profiles.PresetDefaults
 import com.lumina.domain.profiles.ProfileRepository
+import com.lumina.domain.profiles.manager.ProfileCategorySyncManager
 import com.lumina.domain.profiles.model.LauncherProfile
 import com.lumina.domain.profiles.model.LauncherProfileAuth
 import com.lumina.domain.profiles.model.LauncherProfileOverrides
@@ -62,6 +63,7 @@ class ProfileManageViewModel @Inject constructor(
     private val timeProvider: TimeProvider,
     private val createDraftProfileUseCase: CreateDraftProfileUseCase,
     private val classifyProfilePresetUseCase: ClassifyProfilePresetUseCase,
+    private val profileCategorySyncManager: ProfileCategorySyncManager,
     savedStateHandle: SavedStateHandle,
     private val logger: Logger
 ) : ViewModel() {
@@ -192,6 +194,7 @@ class ProfileManageViewModel @Inject constructor(
                 if (state.isNewProfile) profileRepository.saveProfile(finalDraft)
                 else profileRepository.updateProfile(finalDraft)
 
+                profileCategorySyncManager.syncProfile(finalDraft.id)
                 _events.emit(ProfileManageEvent.SaveSuccess)
             } catch (e: Exception) {
                 logger.e(TAG, "Failed to save profile: ${draftProfile.id}.", e)

@@ -1,5 +1,6 @@
 package com.lumina.domain.profiles
 
+import com.lumina.core.model.AppAddedSource
 import com.lumina.core.model.AppBasicData
 import com.lumina.core.model.ProfileAppConfig
 import com.lumina.domain.profiles.model.LauncherProfile
@@ -25,13 +26,22 @@ interface ProfileRepository {
     fun getAppsForProfile(profileId: String): Flow<List<ProfileAppConfig>>
     fun getProfileIdsForApp(packageName: String, userHandleNumber: Long): Flow<Set<String>>
     suspend fun setAppsForProfile(profileId: String, apps: Set<AppBasicData>)
-    suspend fun addAppToProfile(profileId: String, packageName: String, userHandleNumber: Long)
-    suspend fun addAppsToProfile(profileId: String, apps: List<AppBasicData>)
+    suspend fun addAppToProfile(
+        profileId: String,
+        packageName: String,
+        userHandleNumber: Long,
+        addedBy: AppAddedSource = AppAddedSource.USER
+    )
+    suspend fun addAppsToProfile(
+        profileId: String,
+        apps: List<AppBasicData>,
+        addedBy: AppAddedSource = AppAddedSource.USER
+    )
     suspend fun removeAppFromProfile(profileId: String, packageName: String, userHandleNumber: Long)
     suspend fun removeAppsFromProfile(profileId: String, apps: List<AppBasicData>)
     suspend fun removeAppFromAllProfiles(packageName: String, userHandleNumber: Long)
     suspend fun removeAllUninstalledApps(installedKeys: Set<String>)
-    suspend fun removeAppsAddedByRules(installedKeys: Set<String>)
+    suspend fun removeAppsAddedByRules(profileId: String, installedKeys: Set<String>)
 
     suspend fun getRecommendedUsageMinutes(profileId: String, packageName: String, userHandleNumber: Long): Int?
     suspend fun updateRecommendedUsageMinutes(

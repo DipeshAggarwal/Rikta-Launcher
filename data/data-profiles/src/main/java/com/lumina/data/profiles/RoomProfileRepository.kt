@@ -305,17 +305,23 @@ class RoomProfileRepository @Inject constructor(
     override suspend fun addAppToProfile(
         profileId: String,
         packageName: String,
-        userHandleNumber: Long
+        userHandleNumber: Long,
+        addedBy: AppAddedSource
     ) {
-        profileDao.insertAppMapping(ProfileAppCrossRef(profileId, packageName, userHandleNumber))
+        profileDao.insertAppMapping(
+            ProfileAppCrossRef(profileId, packageName, userHandleNumber, addedBy)
+        )
     }
 
     override suspend fun addAppsToProfile(
         profileId: String,
-        apps: List<AppBasicData>
+        apps: List<AppBasicData>,
+        addedBy: AppAddedSource
     ) {
         val mappings = apps.map { app ->
-            ProfileAppCrossRef(profileId, app.packageName, app.userHandleNumber)
+            ProfileAppCrossRef(
+                profileId, app.packageName, app.userHandleNumber, addedBy
+            )
         }
         profileDao.insertAppMappings(mappings)
     }
@@ -346,8 +352,8 @@ class RoomProfileRepository @Inject constructor(
         profileDao.deleteAppMappingForUninstalledApps(installedKeys)
     }
 
-    override suspend fun removeAppsAddedByRules(installedKeys: Set<String>) {
-        profileDao.deleteAppMappingsByRules(installedKeys, AppAddedSource.RULE.name)
+    override suspend fun removeAppsAddedByRules(profileId: String, installedKeys: Set<String>) {
+        profileDao.deleteAppMappingsByRules(profileId, installedKeys, AppAddedSource.RULE.name)
     }
 
     override suspend fun getRecommendedUsageMinutes(
