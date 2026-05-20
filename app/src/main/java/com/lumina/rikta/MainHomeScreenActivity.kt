@@ -292,11 +292,7 @@ class MainHomeScreenActivity : ComponentActivity() {
             ) -> "onboarding"
 
             else -> {
-                if (FeatureFlags.USE_NEW_HOME_SCREEN) {
-                    HOME_ROUTE
-                } else {
-                    "home"
-                }
+                HOME_ROUTE
             }
         }
     }
@@ -317,10 +313,10 @@ class MainHomeScreenActivity : ComponentActivity() {
 
         LaunchedEffect(homeScreenModel.navigateHomeEvent) {
             homeScreenModel.navigateHomeEvent.collectLatest {
-                if (navController.currentDestination?.route != "home") {
+                if (navController.currentDestination?.route != HOME_ROUTE) {
                     homeScreenModel.goToMainPage()
                     homeScreenModel.appsListScrollState.scrollToItem(0)
-                    navController.navigate("home") {
+                    navController.navigate(HOME_ROUTE) {
                         popUpTo(navController.graph.startDestinationId)
                         launchSingleTop = true
                     }
@@ -373,7 +369,7 @@ class MainHomeScreenActivity : ComponentActivity() {
                         viewModel,
                         homeScreenModel = homeScreenModel,
                         {
-                            navController.navigate("home") {
+                            navController.navigate(HOME_ROUTE) {
                                 popUpTo("settings") {
                                     inclusive = true
                                 }

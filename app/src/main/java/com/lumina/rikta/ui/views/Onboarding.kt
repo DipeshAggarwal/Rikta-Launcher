@@ -85,6 +85,7 @@ import com.lumina.rikta.utils.showLauncherSelector
 import com.lumina.core.ui.components.settings.SettingsSpacer
 import com.lumina.core.ui.components.text.AutoResizingText
 import com.lumina.feature.apphiding.AppHidingViewModel
+import com.lumina.feature.home.ui.HOME_ROUTE
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -263,7 +264,7 @@ fun Onboarding(
                         }
                     } else {
                         // Finished onboarding
-                        mainAppNavController.navigate("home") {
+                        mainAppNavController.navigate(HOME_ROUTE) {
                             popUpTo("onboarding") { inclusive = true }
                             launchSingleTop = true
                         }
