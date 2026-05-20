@@ -48,6 +48,13 @@ fun ProfileRulesScreen(
                 onSettingsChange = onSettingsChange
             )
         }
+
+        item(key = "profile_rules_notifications") {
+            ProfileRulesNotificationScreen(
+                restrictions = restrictions,
+                onRestrictionsChange = onRestrictionsChange
+            )
+        }
     }
 }
 
@@ -111,4 +118,30 @@ fun ProfileRulesAppAccessScreen(
             },
         )
     }
+}
+
+@Composable
+fun ProfileRulesNotificationScreen(
+    restrictions: LauncherProfileRestrictions,
+    onRestrictionsChange: ((LauncherProfileRestrictions) -> LauncherProfileRestrictions) -> Unit,
+    modifier: Modifier = Modifier
+) {
+
+    val rows = listOf(
+        AccordionRow.Switch(
+            title = stringResource(R.string.profile_rules_filter_notifications),
+            subtitle = stringResource(R.string.profile_rules_profile_rules_filter_notifications_subtitle),
+            checked = restrictions.filterNotifications,
+            onCheckedChange = { isChecked ->
+                onRestrictionsChange { current -> current.copy(filterNotifications = isChecked) }
+            }
+        )
+    )
+
+    AccordionContent(
+        title = stringResource(R.string.profile_rules_notification_heading),
+        subtitle = stringResource(R.string.profile_rules_notification_subtitle),
+        rows = rows,
+        modifier = modifier
+    )
 }

@@ -91,4 +91,8 @@
     <string name="profile_rules_block_system_app">Don\'t allow adding System App</string>
     <string name="profile_rules_block_system_app_subtitle">Prevent adding built-in system apps</string>
     <string name="profile_rules_auto_add_categories_select">Select Categories to Add</string>
+    <string name="profile_rules_notification_heading">Notifications</string>
+    <string name="profile_rules_notification_subtitle">Control which apps can show notification on this profile.</string>
+    <string name="profile_rules_filter_notifications">Filter Notifications</string>
+    <string name="profile_rules_profile_rules_filter_notifications_subtitle">Only show notifications from apps in the profile.</string>
 </resources>
