@@ -44,7 +44,8 @@ fun ProfileRulesScreen(
             ProfileRulesAppAccessScreen(
                 settings = settings,
                 restrictions = restrictions,
-                onRestrictionsChange = onRestrictionsChange
+                onRestrictionsChange = onRestrictionsChange,
+                onSettingsChange = onSettingsChange
             )
         }
     }
@@ -55,6 +56,7 @@ fun ProfileRulesAppAccessScreen(
     settings: LauncherProfileSettings,
     restrictions: LauncherProfileRestrictions,
     onRestrictionsChange: ((LauncherProfileRestrictions) -> LauncherProfileRestrictions) -> Unit,
+    onSettingsChange: ((LauncherProfileSettings) -> LauncherProfileSettings) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var showAddCategorySheet by remember { mutableStateOf(false) }
@@ -101,7 +103,12 @@ fun ProfileRulesAppAccessScreen(
     if (showAddCategorySheet) {
         AutoAppCategoryBottomSheet(
             initialSelectedCategories = settings.autoAddCategoryApps.toSet(),
-            onDismiss = { showAddCategorySheet = false },
+            onDismiss = { updatedCategories ->
+                showAddCategorySheet = false
+                onSettingsChange { currentSettings ->
+                    currentSettings.copy(autoAddCategoryApps = updatedCategories.toList())
+                }
+            },
         )
     }
 }

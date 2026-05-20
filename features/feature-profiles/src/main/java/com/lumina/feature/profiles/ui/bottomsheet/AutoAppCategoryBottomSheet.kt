@@ -27,13 +27,13 @@ import com.lumina.feature.profiles.R
 @Composable
 fun AutoAppCategoryBottomSheet(
     initialSelectedCategories: Set<AppCategory>,
-    onDismiss: () -> Unit,
+    onDismiss: (Set<AppCategory>) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var selectedCategories by remember { mutableStateOf(initialSelectedCategories) }
 
     StandardBottomSheet(
-        onDismissRequest = onDismiss,
+        onDismissRequest = { onDismiss(selectedCategories) },
         modifier = modifier
     ) { dismissAction ->
         Text(
