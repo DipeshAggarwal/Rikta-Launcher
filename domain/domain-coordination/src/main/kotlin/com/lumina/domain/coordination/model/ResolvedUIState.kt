@@ -13,7 +13,16 @@ data class ResolvedUIState(
     val search: SearchSettings,
     val countdown: CountdownSettings,
     val layout: LayoutSettings,
-    val theme: ResolvedThemeState
+    val theme: ResolvedThemeState,
+
+    val profilePermissions: ResolvedPermissionsState
+)
+
+data class ResolvedPermissionsState(
+    val allowLauncherSettingsChange: Boolean,
+    val allowManagingApps: Boolean,
+    val allowLauncherAppActions: Boolean,
+    val allowProfileManagement: Boolean
 )
 
 data class ResolvedThemeState(

@@ -80,14 +80,20 @@ fun HomeScreen(
                 state = pagerState,
                 modifier = Modifier
                     .fillMaxSize()
-                    .pointerInput(Unit) {
-                        detectTapGestures(
-                            onLongPress = {
-                                performHapticFeedback(haptics)
-                                onNavigateToSettings()
+                    .then(
+                        if (resolvedUiState.profilePermissions.allowLauncherSettingsChange) {
+                            Modifier.pointerInput(Unit) {
+                                detectTapGestures(
+                                    onLongPress = {
+                                        performHapticFeedback(haptics)
+                                        onNavigateToSettings()
+                                    }
+                                )
                             }
-                        )
-                    },
+                        } else {
+                            Modifier
+                        }
+                    ),
                 beyondViewportPageCount = 1
             ) { pageIndex ->
                 when (pages[pageIndex]) {

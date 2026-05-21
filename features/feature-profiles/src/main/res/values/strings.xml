@@ -94,5 +94,15 @@
     <string name="profile_rules_notification_heading">Notifications</string>
     <string name="profile_rules_notification_subtitle">Control which apps can show notification on this profile.</string>
     <string name="profile_rules_filter_notifications">Filter Notifications</string>
-    <string name="profile_rules_profile_rules_filter_notifications_subtitle">Only show notifications from apps in the profile.</string>
+    <string name="profile_rules_filter_notifications_subtitle">Only show notifications from apps in the profile.</string>
+    <string name="profile_rules_controls_heading">Profile Controls</string>
+    <string name="profile_rules_controls_subtitle">Control what users can change about the profile and launcher.</string>
+    <string name="profile_rules_launcher_settings">Launcher Settings</string>
+    <string name="profile_rules_launcher_settings_subtitle">Allow users to change launcher settings.</string>
+    <string name="profile_rules_profile_management">Profile Management</string>
+    <string name="profile_rules_profile_management_subtitle">Allow users create and edit profiles.</string>
+    <string name="profile_rules_app_customisation">App Customisation</string>
+    <string name="profile_rules_app_customisation_subtitle">Allow users to do launcher specific app customisation.</string>
+    <string name="profile_rules_app_management">App Management</string>
+    <string name="profile_rules_app_management_subtitle">Allow users to uninstall apps or do app system actions.</string>
 </resources>

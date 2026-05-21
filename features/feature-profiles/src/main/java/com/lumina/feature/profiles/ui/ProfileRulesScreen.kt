@@ -55,6 +55,13 @@ fun ProfileRulesScreen(
                 onRestrictionsChange = onRestrictionsChange
             )
         }
+
+        item(key = "profile_rules_profile_control") {
+            ProfileRulesProfileControlScreen(
+                permissions = permissions,
+                onPermissionsChange = onPermissionsChange
+            )
+        }
     }
 }
 
@@ -126,11 +133,10 @@ fun ProfileRulesNotificationScreen(
     onRestrictionsChange: ((LauncherProfileRestrictions) -> LauncherProfileRestrictions) -> Unit,
     modifier: Modifier = Modifier
 ) {
-
     val rows = listOf(
         AccordionRow.Switch(
             title = stringResource(R.string.profile_rules_filter_notifications),
-            subtitle = stringResource(R.string.profile_rules_profile_rules_filter_notifications_subtitle),
+            subtitle = stringResource(R.string.profile_rules_filter_notifications_subtitle),
             checked = restrictions.filterNotifications,
             onCheckedChange = { isChecked ->
                 onRestrictionsChange { current -> current.copy(filterNotifications = isChecked) }
@@ -141,6 +147,55 @@ fun ProfileRulesNotificationScreen(
     AccordionContent(
         title = stringResource(R.string.profile_rules_notification_heading),
         subtitle = stringResource(R.string.profile_rules_notification_subtitle),
+        rows = rows,
+        modifier = modifier
+    )
+}
+
+@Composable
+fun ProfileRulesProfileControlScreen(
+    permissions: LauncherProfilePermissions,
+    onPermissionsChange: ((LauncherProfilePermissions) -> LauncherProfilePermissions) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val rows = listOf(
+        AccordionRow.Switch(
+            title = stringResource(R.string.profile_rules_launcher_settings),
+            subtitle = stringResource(R.string.profile_rules_launcher_settings_subtitle),
+            checked = permissions.allowLauncherSettingsChange,
+            onCheckedChange = { isChecked ->
+                onPermissionsChange { current -> current.copy(allowLauncherSettingsChange = isChecked) }
+            }
+        ),
+        AccordionRow.Switch(
+            title = stringResource(R.string.profile_rules_profile_management),
+            subtitle = stringResource(R.string.profile_rules_profile_management_subtitle),
+            checked = permissions.allowProfileManagement,
+            onCheckedChange = { isChecked ->
+                onPermissionsChange { current -> current.copy(allowProfileManagement = isChecked) }
+            }
+        ),
+        AccordionRow.Switch(
+            title = stringResource(R.string.profile_rules_app_customisation),
+            subtitle = stringResource(R.string.profile_rules_app_customisation_subtitle),
+            checked = permissions.allowLauncherAppActions,
+            onCheckedChange = { isChecked ->
+                onPermissionsChange { current -> current.copy(allowLauncherAppActions = isChecked) }
+            }
+        ),
+        AccordionRow.Switch(
+            title = stringResource(R.string.profile_rules_app_management),
+            subtitle = stringResource(R.string.profile_rules_app_management_subtitle),
+            checked = permissions.allowManagingApps,
+            onCheckedChange = { isChecked ->
+                onPermissionsChange { current -> current.copy(allowManagingApps = isChecked) }
+            }
+        ),
+    )
+
+    AccordionContent(
+        title = stringResource(R.string.profile_rules_controls_heading),
+        subtitle = stringResource(R.string.profile_rules_controls_subtitle),
         rows = rows,
         modifier = modifier
     )

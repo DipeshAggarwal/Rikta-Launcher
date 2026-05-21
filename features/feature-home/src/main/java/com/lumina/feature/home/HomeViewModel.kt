@@ -21,6 +21,7 @@ import com.lumina.domain.coordination.AppLaunchCoordinator
 import com.lumina.domain.coordination.IntentLauncher
 import com.lumina.domain.coordination.LaunchResult
 import com.lumina.domain.coordination.StatusBarController
+import com.lumina.domain.coordination.model.ResolvedPermissionsState
 import com.lumina.domain.coordination.model.ResolvedThemeState
 import com.lumina.domain.coordination.model.ResolvedUIState
 import com.lumina.domain.coordination.usecase.GetActiveHomeConfigUseCase
@@ -116,7 +117,14 @@ class HomeViewModel @Inject constructor(
             ResolvedUIState(
                 HomeSettings(), AppListSettings(),
                 SearchSettings(), CountdownSettings(),
-                LayoutSettings(), ResolvedThemeState(null, null)
+                LayoutSettings(),
+                theme = ResolvedThemeState(null, null),
+                profilePermissions = ResolvedPermissionsState(
+                    allowLauncherSettingsChange = true,
+                    allowManagingApps = true,
+                    allowLauncherAppActions = true,
+                    allowProfileManagement = false
+                )
             )
         )
 
