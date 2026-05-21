@@ -11,7 +11,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.currentComposer
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -22,6 +21,7 @@ import com.lumina.core.model.componentKey
 import com.lumina.core.ui.components.home.BottomSheet
 import com.lumina.core.ui.components.home.BottomSheetAppAction
 import com.lumina.core.ui.components.home.BottomSheetViewData
+import com.lumina.domain.coordination.model.ResolvedUIState
 import com.lumina.feature.home.HomeViewModel
 import com.lumina.feature.home.R
 import com.lumina.feature.home.model.BottomSheetState
@@ -34,6 +34,7 @@ import com.lumina.feature.home.ui.component.RenameApp
 fun HomeBottomSheet(
     state: BottomSheetState,
     sheetState: SheetState,
+    resolvedUiState: ResolvedUIState,
     viewModel: HomeViewModel
 ) {
     var currentMenuState by remember { mutableStateOf(AppMenuState.MAIN) }
@@ -103,18 +104,25 @@ fun HomeBottomSheet(
                             onClick = { viewModel.onUninstallApp(appInfo) }
                         )
                     ),
-                    actions = listOf(
-                        BottomSheetAppAction(
-                            label = stringResource(R.string.organise_app),
-                            trailingIcon = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                            onClick = { currentMenuState = AppMenuState.ORGANISE }
-                        ),
-                        BottomSheetAppAction(
-                            label = stringResource(R.string.wellbeing),
-                            trailingIcon = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                            onClick = { currentMenuState = AppMenuState.WELLBEING }
+                    actions = buildList {
+                        if (resolvedUiState.profilePermissions.allowLauncherAppActions) {
+                            add(
+                                BottomSheetAppAction(
+                                    label = stringResource(R.string.organise_app),
+                                    trailingIcon = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                                    onClick = { currentMenuState = AppMenuState.ORGANISE }
+                                )
+                            )
+                        }
+
+                        add(
+                            BottomSheetAppAction(
+                                label = stringResource(R.string.wellbeing),
+                                trailingIcon = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                                onClick = { currentMenuState = AppMenuState.WELLBEING }
+                            )
                         )
-                    )
+                    }
                 )
 
                 AppMenuState.ORGANISE -> {

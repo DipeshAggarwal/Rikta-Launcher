@@ -66,6 +66,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -311,6 +312,7 @@ fun MainSettingsPage(
     activity: Activity,
     homeScreenModel: HomeScreenModel
 ) {
+    val activeProfilePermissions by homeScreenModel.activeProfilePermissions.collectAsStateWithLifecycle()
     var showWeatherAppPicker by remember { mutableStateOf(false) }
     val view = LocalView.current
 
@@ -726,13 +728,14 @@ fun MainSettingsPage(
             )
         }
 
-
-        item {
-            SettingsNavigationItem(
-                label = "Profile",
-                diagonalArrow = false,
-                onClick = { navController.navigate(ProfileNavigationRoute.PROFILE_LIST_ROUTE) }
-            )
+        if (activeProfilePermissions.allowProfileManagement) {
+            item {
+                SettingsNavigationItem(
+                    label = "Profile",
+                    diagonalArrow = false,
+                    onClick = { navController.navigate(ProfileNavigationRoute.PROFILE_LIST_ROUTE) }
+                )
+            }
         }
 
         item {

@@ -73,6 +73,7 @@ fun HomeScreen(
             HomeBottomSheet(
                 state = bottomSheetState,
                 sheetState = sheetState,
+                resolvedUiState = resolvedUiState,
                 viewModel = viewModel
             )
 
@@ -102,6 +103,7 @@ fun HomeScreen(
                         HomeMain(
                             viewModel = viewModel,
                             uiState = state,
+                            resolvedUiState = resolvedUiState,
                             homeSettings = homeSettings,
                             scrollState = homeMainScrollState
                         )

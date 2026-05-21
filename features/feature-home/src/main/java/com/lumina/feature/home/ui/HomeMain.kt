@@ -14,16 +14,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
 import com.lumina.core.model.LauncherItem
-import com.lumina.core.ui.HapticUtils
 import com.lumina.core.ui.components.home.AppListItem
 import com.lumina.core.ui.components.home.Clock
 import com.lumina.core.ui.components.home.Date
+import com.lumina.domain.coordination.model.ResolvedUIState
 import com.lumina.domain.settings.HomeSettings
 import com.lumina.feature.home.HomeViewModel
 import com.lumina.feature.home.model.HomeUiState
@@ -41,6 +42,7 @@ private object HomeMainDefaults {
 fun HomeMain(
     viewModel: HomeViewModel,
     uiState: HomeUiState,
+    resolvedUiState: ResolvedUIState,
     homeSettings: HomeSettings,
     scrollState: LazyListState
 ) {
@@ -139,8 +141,10 @@ fun HomeMain(
                         }
                     },
                     onAppLongClick = {
-                        HapticUtils.performHapticFeedback(haptics)
-                        viewModel.onItemLongPressed(item)
+                        if (resolvedUiState.profilePermissions.allowManagingApps) {
+                            haptics.performHapticFeedback(HapticFeedbackType.LongPress)
+                            viewModel.onItemLongPressed(item)
+                        }
                     },
                     alignment = homeSettings.homeAlignment.toAlignment()
                 )

@@ -36,6 +36,9 @@ import com.lumina.core.common.FlowDefaults.WhileSubscribedTimeoutMs
 import com.lumina.core.common.TextUtils.UNACCENT_REGEX
 import com.lumina.domain.apps.HiddenAppsRepository
 import com.lumina.domain.coordination.usecase.InitialiseDefaultProfileUseCase
+import com.lumina.domain.profiles.ProfileRepository
+import com.lumina.domain.profiles.model.LauncherProfile
+import com.lumina.domain.profiles.model.LauncherProfilePermissions
 import com.lumina.domain.settings.LayoutSettings
 import com.lumina.domain.settings.SettingsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -56,6 +59,8 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import jakarta.inject.Inject
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 
 /**
@@ -66,7 +71,8 @@ class HomeScreenModel @Inject constructor(
     @ApplicationContext private val context: Context,
     private val hiddenAppsRepository: HiddenAppsRepository,
     private val initialiseDefaultProfileUseCase: InitialiseDefaultProfileUseCase,
-    private val settingsRepository: SettingsRepository
+    private val profileRepository: ProfileRepository,
+    settingsRepository: SettingsRepository
 ): ViewModel() {
 
     private val _navigateHomeEvent = MutableSharedFlow<Unit>(
@@ -115,6 +121,19 @@ class HomeScreenModel @Inject constructor(
     val interactionSource = MutableInteractionSource()
 
     val installedApps = MutableStateFlow<List<InstalledApp>>(emptyList())
+
+    val activeProfilePermissions: StateFlow<LauncherProfilePermissions> = profileRepository.activeProfile
+        .filterNotNull()
+        .map { activeProfile ->
+            activeProfile.permissions
+        }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(WhileSubscribedTimeoutMs), LauncherProfilePermissions(
+            allowLauncherSettingsChange = false,
+            allowManagingApps = false,
+            allowLauncherAppActions = false,
+            allowProfileManagement = false
+        )
+    )
 
     val hiddenApps = hiddenAppsRepository.appPackages
         .stateIn(

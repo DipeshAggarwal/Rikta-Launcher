@@ -86,8 +86,10 @@ fun AppsList(
                     showScreenTime = false,
                     onAppClick = { viewModel.onAppOpened(app) },
                     onAppLongClick = {
-                        haptics.performHapticFeedback(HapticFeedbackType.LongPress)
-                        viewModel.onItemLongPressed(app)
+                        if (resolvedUiState.profilePermissions.allowManagingApps) {
+                            haptics.performHapticFeedback(HapticFeedbackType.LongPress)
+                            viewModel.onItemLongPressed(app)
+                        }
                     },
                     alignment = appsListSettings.appsListAlignment.toAlignment()
                 )
