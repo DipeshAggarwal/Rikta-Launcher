@@ -105,4 +105,6 @@
     <string name="profile_rules_app_customisation_subtitle">Allow users to do launcher specific app customisation.</string>
     <string name="profile_rules_app_management">App Management</string>
     <string name="profile_rules_app_management_subtitle">Allow users to uninstall apps or do app system actions.</string>
+    <string name="profile_rules_exit_on_lock">Exit on Device Lock</string>
+    <string name="profile_rules_exit_on_lock_subtitle">Exit this device when the device is locked or restarted.</string>
 </resources>

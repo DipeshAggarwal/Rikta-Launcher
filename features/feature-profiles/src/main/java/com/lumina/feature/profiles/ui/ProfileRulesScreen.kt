@@ -59,6 +59,8 @@ fun ProfileRulesScreen(
         item(key = "profile_rules_profile_control") {
             ProfileRulesProfileControlScreen(
                 permissions = permissions,
+                restrictions = restrictions,
+                onRestrictionsChange = onRestrictionsChange,
                 onPermissionsChange = onPermissionsChange
             )
         }
@@ -155,6 +157,8 @@ fun ProfileRulesNotificationScreen(
 @Composable
 fun ProfileRulesProfileControlScreen(
     permissions: LauncherProfilePermissions,
+    restrictions: LauncherProfileRestrictions,
+    onRestrictionsChange: ((LauncherProfileRestrictions) -> LauncherProfileRestrictions) -> Unit,
     onPermissionsChange: ((LauncherProfilePermissions) -> LauncherProfilePermissions) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -191,6 +195,14 @@ fun ProfileRulesProfileControlScreen(
                 onPermissionsChange { current -> current.copy(allowManagingApps = isChecked) }
             }
         ),
+        AccordionRow.Switch(
+            title = stringResource(R.string.profile_rules_exit_on_lock),
+            subtitle = stringResource(R.string.profile_rules_exit_on_lock_subtitle),
+            checked = restrictions.switchOnDeviceLock,
+            onCheckedChange = { isChecked ->
+                onRestrictionsChange { current -> current.copy(switchOnDeviceLock = isChecked) }
+            }
+        )
     )
 
     AccordionContent(
