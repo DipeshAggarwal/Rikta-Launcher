@@ -20,6 +20,7 @@ fun AppCountdownScreen(
         apps = installedApps,
         preSelectedApps = countdownPackages.toList(),
         title = stringResource(R.string.manage_countdown_apps),
+        activeTitle = stringResource(R.string.countdown_apps_header),
         onBackClicked = onBack,
         onAppClicked = { app, selected ->
             if (selected) {

@@ -52,7 +52,7 @@ fun InLineTextField(
 
         Row(
             modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = if (singleLine) Alignment.CenterVertically else Alignment.Top
+            verticalAlignment = if (singleLine) Alignment.CenterVertically else Alignment.Bottom
         ) {
             BasicTextField(
                 value = value,

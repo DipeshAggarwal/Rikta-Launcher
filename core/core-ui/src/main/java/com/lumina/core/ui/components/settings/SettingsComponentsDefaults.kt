@@ -41,11 +41,11 @@ fun settingsGroupRadii(
 ): SettingsGroupRadii {
     val topRadius =
         if (isTopOfGroup) SettingsComponentsDefaults.GroupEdgeCornerRadius
-        else SettingsComponentsDefaults.DefaultCornerRadius
+        else 0.dp
 
     val bottomRadius =
         if (isBottomOfGroup) SettingsComponentsDefaults.GroupEdgeCornerRadius
-        else SettingsComponentsDefaults.DefaultCornerRadius
+        else 0.dp
 
     return SettingsGroupRadii(
         topStart = topRadius,

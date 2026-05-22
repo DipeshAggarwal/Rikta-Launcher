@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="manage_favourite_apps_title">Manage Favourite Apps</string>
+    <string name="favourite_apps">Favourite Apps</string>
 </resources>

@@ -28,6 +28,7 @@ object ThemeTokens {
         val Medium = 8.dp
         val Small = 4.dp
         val Tiny = 2.dp
+        val None = 0.dp
     }
 
     object Alpha {

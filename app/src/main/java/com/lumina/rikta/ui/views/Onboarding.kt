@@ -499,10 +499,6 @@ fun FavoritesSelectionScreen(
                     homeScreenModel.reloadFavouriteApps()
                 },
                 onBackClicked = { },
-                hideTitle = false,
-                hideBack = true,
-                topPadding = false,
-                titleColor = primaryContentColor,
                 onAppClicked = { app, selected ->
                     if (selected) {
                         mainAppModel.favoriteAppsManager.removeFavoriteApp(app.packageName)

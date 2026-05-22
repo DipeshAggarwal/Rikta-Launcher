@@ -127,5 +127,10 @@
     <string name="mode_customised">(Customised)</string>
 
     <string name="drag_to_reorder">Drag to reorder</string>
+    <string name="profile_apps">Apps allowed in Profile</string>
+    <string name="allowed_apps">Allowed Apps</string>
+    <string name="other_apps">Other Apps</string>
+
+    <string name="add_app">Add App</string>
     <string name="category_selected_label">Selected Category</string>
 </resources>

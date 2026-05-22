@@ -25,6 +25,7 @@ fun AppFavouriteScreen(
         apps = installedApps,
         preSelectedApps = favouritePackages,
         title = stringResource(R.string.manage_favourite_apps_title),
+        activeTitle = stringResource(R.string.favourite_apps),
         onBackClicked = onBack,
         onAppClicked = { app, selected ->
             if (selected) {
@@ -33,7 +34,6 @@ fun AppFavouriteScreen(
                 viewModel.addFavouriteApp(app)
             }
         },
-        reorderable = true,
         onAppMoved = { fromIndex, toIndex ->
             viewModel.reorderFavouriteApps(fromIndex, toIndex)
         },

@@ -281,7 +281,7 @@ private fun SettingsSectionCard(
             )
             if (index < rows.lastIndex) {
                 HorizontalDivider(
-                    modifier = Modifier.padding(horizontal = ThemeTokens.Spacing.ExtraLarge),
+                    modifier = Modifier.padding(horizontal = ThemeTokens.Spacing.Small),
                     color = MaterialTheme.colorScheme.outlineVariant
                 )
             }

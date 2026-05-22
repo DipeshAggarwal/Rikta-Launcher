@@ -103,7 +103,8 @@ fun ProfileCreateScreen(
     StandardListScaffold(
         title = stringResource(R.string.create_profile_headers),
         onBack = onBack,
-        listModifier = Modifier.imePadding()
+        listModifier = Modifier.imePadding(),
+        verticalColumnSpacing = ThemeTokens.Spacing.Small
     ) {
         item(key = "create_profile_info") {
             Text(
@@ -174,7 +175,7 @@ fun ProfileCreateScreen(
             Spacer(modifier = Modifier.height(ThemeTokens.Spacing.Medium))
         }
 
-        item(key = "cta_button") {
+        item(key = "create_profile_button") {
             val name = selectedPreset?.displayName() ?: ""
             val description = selectedPreset?.description() ?: ""
 

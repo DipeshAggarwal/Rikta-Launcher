@@ -5,6 +5,7 @@
 
     <string name="manage_countdown_apps">Manage Countdown Apps</string>
     <string name="tune_countdown_time">Fine-tune Countdown Time</string>
+    <string name="countdown_apps_header">Countdown Apps</string>
 
     <string name="total_countdown_time">Total Countdown Time</string>
     <string name="header_countdown_settings">Countdown Settings</string>
