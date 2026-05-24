@@ -1,4 +1,4 @@
-package com.lumina.feature.system.triggers
+package com.lumina.domain.coordination
 
 import jakarta.inject.Inject
 import jakarta.inject.Singleton
@@ -12,7 +12,7 @@ class TriggerSystemStateCache @Inject constructor() {
     val currentSsid: StateFlow<String?> = _currentSsid.asStateFlow()
 
     private val _connectedDevices = MutableStateFlow<Set<String>>(emptySet())
-    val connectedDevices:StateFlow<Set<String>> = _connectedDevices.asStateFlow()
+    val connectedDevices: StateFlow<Set<String>> = _connectedDevices.asStateFlow()
 
     private val _activeGeofencesId = MutableStateFlow<Set<String>>(emptySet())
     val activeGeofenceIds: StateFlow<Set<String>> = _activeGeofencesId.asStateFlow()

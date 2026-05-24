@@ -6,6 +6,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.lumina.core.database.LuminaDatabase
 import com.lumina.core.database.entity.NotificationWhitelistEntity
 import com.lumina.core.database.entity.ProfileAppCrossRef
+import com.lumina.core.model.AppAddedSource
 import com.lumina.core.testing.builder.ProfileEntityBuilder
 import com.lumina.core.testing.builder.ProfileTriggerEntityBuilder
 import kotlinx.coroutines.flow.first
@@ -305,6 +306,32 @@ class ProfileDaoTest {
     }
 
     @Test
+    fun deleteAppMappingsByRules_removes_only_matching_addedBy() = runTest {
+        val profile = ProfileEntityBuilder.build(id = "profile_test_1")
+
+        val mappingOne = ProfileAppCrossRef(profile.id, "com.example.app.one", 0L, AppAddedSource.USER)
+        val mappingTwo = ProfileAppCrossRef(profile.id, "com.example.app.two", 0L, AppAddedSource.RULE)
+        val mappingThree = ProfileAppCrossRef(profile.id, "com.example.app.three", 0L, AppAddedSource.RULE)
+
+        profileDao.saveProfile(profile)
+        profileDao.insertAppMappings(listOf(mappingOne, mappingTwo, mappingThree))
+
+        profileDao.deleteAppMappingsByRules(
+            profileId = profile.id,
+            installedKeys = setOf(
+                "${mappingOne.packageName}::${mappingOne.userHandleNumber}",
+                "${mappingTwo.packageName}::${mappingTwo.userHandleNumber}",
+                "${mappingThree.packageName}::${mappingThree.userHandleNumber}"
+            ),
+            addedBy = AppAddedSource.RULE.name
+        )
+        val result = profileDao.getAppsForProfile(profile.id).first()
+
+        assertEquals(1, result.size)
+        assertEquals(mappingOne.packageName, result.first().packageName)
+    }
+
+    @Test
     fun getAppLimitMinutes_returns_null_when_not_set() = runTest {
         val profile = ProfileEntityBuilder.build(id = "profile_test_1")
         val mapping = ProfileAppCrossRef(profile.id, "com.example.app", 0L)
@@ -347,7 +374,7 @@ class ProfileDaoTest {
     fun isAppCountdownEnabled_returns_stored_value() = runTest {
         val profile = ProfileEntityBuilder.build(id = "profile_test_1")
         val mapping = ProfileAppCrossRef(
-            profile.id, "com.example.app", 0L, true
+            profile.id, "com.example.app", 0L, AppAddedSource.USER
         )
 
         profileDao.saveProfile(profile)
@@ -410,6 +437,31 @@ class ProfileDaoTest {
 
         val result = profileDao.getTriggersForProfile(profileTwo.id).first()
         assertEquals(0, result.first().sequenceOrder)
+    }
+
+    @Test
+    fun swapTriggerOrder_exchanges_sequence_between_two_triggers() = runTest {
+        val profile = ProfileEntityBuilder.build(id = "profile_test_1")
+
+        val triggerOne = ProfileTriggerEntityBuilder.build(triggerId = 1L, profileId = profile.id, sequenceOrder = 0)
+        val triggerTwo = ProfileTriggerEntityBuilder.build(triggerId = 2L, profileId = profile.id, sequenceOrder = 1)
+        val triggerThree = ProfileTriggerEntityBuilder.build(triggerId = 3L, profileId = profile.id, sequenceOrder = 2)
+
+        profileDao.saveProfile(profile)
+        profileDao.insertTrigger(triggerOne)
+        profileDao.insertTrigger(triggerTwo)
+        profileDao.insertTrigger(triggerThree)
+
+        profileDao.swapTriggerOrder(
+            previous = triggerOne.copy(sequenceOrder = triggerTwo.sequenceOrder),
+            next = triggerTwo.copy(sequenceOrder = triggerOne.sequenceOrder)
+        )
+        val triggers = profileDao.getTriggersForProfile(profile.id).first()
+
+        assertEquals(triggerTwo.triggerId, triggers[0].triggerId)
+        assertEquals(triggerOne.triggerId, triggers[1].triggerId)
+        assertEquals(triggerOne.sequenceOrder, triggers[0].sequenceOrder)
+        assertEquals(triggerTwo.sequenceOrder, triggers[1].sequenceOrder)
     }
 
     @Test
@@ -488,6 +540,19 @@ class ProfileDaoTest {
     }
 
     @Test
+    fun getTriggerById_returns_correct_trigger() = runTest {
+        val profile = ProfileEntityBuilder.build(id = "profile_test_1")
+        val trigger = ProfileTriggerEntityBuilder.build(triggerId = 1L, profileId = profile.id)
+
+        profileDao.saveProfile(profile)
+        profileDao.insertTriggerWithOrder(trigger)
+
+        val result = profileDao.getTriggerById(trigger.triggerId)
+        assertNotNull(result)
+        assertEquals(1L, result!!.triggerId)
+    }
+
+    @Test
     fun insertWhitelist_is_returned_by_getNotificationNotificationWhitelist() = runTest {
         val profile = ProfileEntityBuilder.build(id = "profile_test_1")
         val whitelist = NotificationWhitelistEntity(profile.id, "com.example.app", 0L)
@@ -510,5 +575,60 @@ class ProfileDaoTest {
         profileDao.deleteNotificationWhitelist(whitelist)
 
         assertTrue(profileDao.getNotificationWhitelist(profile.id).first().isEmpty())
+    }
+
+    @Test
+    fun getAllProfileSummaries_returns_zero_for_empty_profiles() = runTest {
+        val profile = ProfileEntityBuilder.build(id = "profile_test_1")
+        profileDao.saveProfile(profile)
+
+        val summaries = profileDao.getAllProfileSummaries().first()
+        assertEquals(1, summaries.size)
+
+        val summary = summaries.first()
+        assertEquals(profile.id, summary.profile.id)
+        assertEquals(0, summary.appCount)
+        assertEquals(0, summary.triggerCount)
+        assertEquals(0, summary.allowedNotificationCount)
+    }
+
+    @Test
+    fun getAllProfileSummaries_returns_current_count_for_profiles() = runTest {
+        val profileOne = ProfileEntityBuilder.build(id = "profile_test_1")
+        val profileTwo = ProfileEntityBuilder.build(id = "profile_test_2")
+
+        val mappingOne = ProfileAppCrossRef(profileOne.id, "com.example.app", 0L)
+        val mappingTwo = ProfileAppCrossRef(profileTwo.id, "com.example.app", 0L)
+
+        val triggerOne = ProfileTriggerEntityBuilder.build(triggerId = 1L, profileId = profileOne.id)
+        val triggerTwo = ProfileTriggerEntityBuilder.build(triggerId = 2L, profileId = profileOne.id)
+        val triggerThree = ProfileTriggerEntityBuilder.build(triggerId = 3L, profileId = profileTwo.id)
+
+        val whitelist = NotificationWhitelistEntity(profileOne.id, "com.example.app", 0L)
+
+        profileDao.saveProfile(profileOne)
+        profileDao.saveProfile(profileTwo)
+
+        profileDao.insertAppMapping(mappingOne)
+        profileDao.insertAppMapping(mappingTwo)
+
+        profileDao.insertTrigger(triggerOne)
+        profileDao.insertTrigger(triggerTwo)
+        profileDao.insertTrigger(triggerThree)
+        profileDao.insertNotificationWhitelist(whitelist)
+
+        val summaries = profileDao.getAllProfileSummaries().first().associateBy { it.profile.id }
+        val summaryOne = summaries[profileOne.id]!!
+        val summaryTwo = summaries[profileTwo.id]!!
+
+        assertEquals(profileOne.id, summaryOne.profile.id)
+        assertEquals(1, summaryOne.appCount)
+        assertEquals(2, summaryOne.triggerCount)
+        assertEquals(1, summaryOne.allowedNotificationCount)
+
+        assertEquals(profileTwo.id, summaryTwo.profile.id)
+        assertEquals(1, summaryTwo.appCount)
+        assertEquals(1, summaryTwo.triggerCount)
+        assertEquals(0, summaryTwo.allowedNotificationCount)
     }
 }

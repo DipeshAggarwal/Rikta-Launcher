@@ -60,8 +60,10 @@ interface ProfileRepository {
     )
 
     fun getProfileTriggers(profileId: String): Flow<List<TriggerCondition>>
+    suspend fun getTriggerById(triggerId: Long): TriggerCondition?
     suspend fun addProfileTrigger(profileId: String, conditions: TriggerCondition)
-    suspend fun updateProfileTrigger(conditions: TriggerCondition)
+    suspend fun updateProfileTrigger(condition: TriggerCondition)
+    suspend fun swapTriggerOrder(previous: TriggerCondition, next: TriggerCondition)
     suspend fun removeProfileTrigger(triggerId: Long)
     suspend fun clearAllProfileTriggers(profileId: String)
 

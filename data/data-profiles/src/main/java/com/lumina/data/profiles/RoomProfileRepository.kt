@@ -401,6 +401,10 @@ class RoomProfileRepository @Inject constructor(
         }
     }
 
+    override suspend fun getTriggerById(triggerId: Long): TriggerCondition? {
+        return profileDao.getTriggerById(triggerId)?.toDomain()
+    }
+
     override suspend fun addProfileTrigger(
         profileId: String,
         conditions: TriggerCondition
@@ -408,8 +412,18 @@ class RoomProfileRepository @Inject constructor(
         profileDao.insertTriggerWithOrder(conditions.toEntity(profileId))
     }
 
-    override suspend fun updateProfileTrigger(conditon: TriggerCondition) {
-        profileDao.insertTrigger(conditon.toEntity(conditon.profileId, conditon.sequenceOrder))
+    override suspend fun updateProfileTrigger(condition: TriggerCondition) {
+        profileDao.insertTrigger(condition.toEntity(condition.profileId, condition.sequenceOrder))
+    }
+
+    override suspend fun swapTriggerOrder(
+        previous: TriggerCondition,
+        next: TriggerCondition
+    ) {
+        profileDao.swapTriggerOrder(
+            previous.toEntity(previous.profileId, next.sequenceOrder),
+            next.toEntity(next.profileId, previous.sequenceOrder)
+        )
     }
 
     override suspend fun removeProfileTrigger(triggerId: Long) {

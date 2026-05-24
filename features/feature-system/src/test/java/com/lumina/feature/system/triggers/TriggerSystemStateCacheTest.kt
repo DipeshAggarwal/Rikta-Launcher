@@ -1,5 +1,6 @@
 package com.lumina.feature.system.triggers
 
+import com.lumina.domain.coordination.TriggerSystemStateCache
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull

@@ -6,6 +6,7 @@ import com.lumina.core.logging.Logger
 import com.lumina.core.model.LogicalOperator
 import com.lumina.core.model.ProfileTriggerType
 import com.lumina.core.model.SystemProfileIds
+import com.lumina.domain.coordination.TriggerSystemStateCache
 import com.lumina.domain.profiles.ProfileRepository
 import com.lumina.domain.profiles.model.TriggerCondition
 import com.lumina.feature.system.triggers.monitor.BluetoothTriggerMonitor

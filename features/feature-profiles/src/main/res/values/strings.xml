@@ -107,4 +107,6 @@
     <string name="profile_rules_app_management_subtitle">Allow users to uninstall apps or do app system actions.</string>
     <string name="profile_rules_exit_on_lock">Exit on Device Lock</string>
     <string name="profile_rules_exit_on_lock_subtitle">Exit this device when the device is locked or restarted.</string>
+
+    <string name="unknown_device">Unknown Device</string>
 </resources>

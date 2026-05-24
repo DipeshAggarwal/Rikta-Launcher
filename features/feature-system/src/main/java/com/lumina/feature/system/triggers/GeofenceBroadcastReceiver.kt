@@ -7,6 +7,7 @@ import com.google.android.gms.location.Geofence
 import com.google.android.gms.location.GeofencingEvent
 import com.lumina.core.android.di.ApplicationScope
 import com.lumina.core.logging.Logger
+import com.lumina.domain.coordination.TriggerSystemStateCache
 import dagger.hilt.android.AndroidEntryPoint
 import jakarta.inject.Inject
 import kotlinx.coroutines.CoroutineScope

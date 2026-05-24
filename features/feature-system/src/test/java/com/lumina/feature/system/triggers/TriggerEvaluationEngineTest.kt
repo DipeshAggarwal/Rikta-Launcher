@@ -6,6 +6,7 @@ import com.lumina.core.model.SystemProfileIds
 import com.lumina.core.testing.builder.LauncherProfileBuilder
 import com.lumina.core.testing.fake.FakeProfileRepository
 import com.lumina.core.testing.fake.FakeTimeProvider
+import com.lumina.domain.coordination.TriggerSystemStateCache
 import com.lumina.feature.system.triggers.builder.TriggerConditionBuilder
 import com.lumina.feature.system.triggers.monitor.BluetoothTriggerMonitor
 import com.lumina.feature.system.triggers.monitor.LocationTriggerMonitor

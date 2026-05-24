@@ -1,5 +1,6 @@
 package com.lumina.core.testing.fake
 
+import com.lumina.core.model.AppAddedSource
 import com.lumina.core.model.AppBasicData
 import com.lumina.domain.profiles.ProfileRepository
 import com.lumina.core.model.ProfileAppConfig
@@ -93,12 +94,14 @@ class FakeProfileRepository : ProfileRepository {
     override suspend fun addAppToProfile(
         profileId: String,
         packageName: String,
-        userHandleNumber: Long
+        userHandleNumber: Long,
+        addedBy: AppAddedSource
     ) { }
 
     override suspend fun addAppsToProfile(
         profileId: String,
-        apps: List<AppBasicData>
+        apps: List<AppBasicData>,
+        addedBy: AppAddedSource
     ) { }
 
     override suspend fun removeAppFromProfile(
@@ -118,8 +121,10 @@ class FakeProfileRepository : ProfileRepository {
     ) { }
 
     override suspend fun removeAllUninstalledApps(installedKeys: Set<String>) { }
-
-    override suspend fun removeAppsAddedByRules(installedKeys: Set<String>) { }
+    override suspend fun removeAppsAddedByRules(
+        profileId: String,
+        installedKeys: Set<String>
+    ) { }
 
     override suspend fun getRecommendedUsageMinutes(
         profileId: String,
@@ -155,6 +160,12 @@ class FakeProfileRepository : ProfileRepository {
         return triggers.getOrPut(profileId) { MutableStateFlow(emptyList()) }
     }
 
+    override suspend fun getTriggerById(triggerId: Long): TriggerCondition? {
+        return triggers.values
+            .flatMap { it.value }
+            .find { it.triggerId == triggerId }
+    }
+
     override suspend fun addProfileTrigger(
         profileId: String,
         conditions: TriggerCondition
@@ -164,6 +175,10 @@ class FakeProfileRepository : ProfileRepository {
     }
 
     override suspend fun updateProfileTrigger(conditions: TriggerCondition) { }
+    override suspend fun swapTriggerOrder(
+        previous: TriggerCondition,
+        next: TriggerCondition
+    ) { }
 
     override suspend fun removeProfileTrigger(triggerId: Long) {
         triggers.values.forEach { trigger ->

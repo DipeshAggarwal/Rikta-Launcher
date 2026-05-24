@@ -174,6 +174,12 @@ interface ProfileDao {
         insertTrigger(trigger.copy(sequenceOrder = count))
     }
 
+    @Transaction
+    suspend fun swapTriggerOrder(previous: ProfileTriggerEntity, next: ProfileTriggerEntity) {
+        insertTrigger(previous)
+        insertTrigger(next)
+    }
+
     @Query("DELETE FROM profile_triggers WHERE triggerId = :triggerId")
     suspend fun deleteTrigger(triggerId: Long)
 
@@ -183,10 +189,19 @@ interface ProfileDao {
     @Query("SELECT COUNT(*) FROM profile_triggers WHERE profileId = :profileId")
     suspend fun getTriggerCount(profileId: String): Int
 
-    @Query("SELECT COALESCE(MAX(sequenceOrder + 1), 0) " +
-            "FROM profile_triggers WHERE profileId = :profileId"
+    @Query("""
+        SELECT COALESCE(MAX(sequenceOrder + 1), 0) 
+        FROM profile_triggers WHERE profileId = :profileId
+    """
     )
     suspend fun getNextSequenceOrder(profileId: String): Int
+
+    @Query("""
+        SELECT * FROM profile_triggers
+        WHERE triggerId = :triggerId
+        LIMIT 1
+    """)
+    suspend fun getTriggerById(triggerId: Long): ProfileTriggerEntity?
 
     // ------------------------------------------------
     // Profile Notification Control

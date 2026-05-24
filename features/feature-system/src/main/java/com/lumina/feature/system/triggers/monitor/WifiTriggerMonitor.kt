@@ -13,7 +13,7 @@ import com.lumina.core.android.di.ApplicationScope
 import com.lumina.core.logging.Logger
 import com.lumina.domain.profiles.model.TriggerCondition
 import com.lumina.feature.system.triggers.TriggerMonitor
-import com.lumina.feature.system.triggers.TriggerSystemStateCache
+import com.lumina.domain.coordination.TriggerSystemStateCache
 import dagger.hilt.android.qualifiers.ApplicationContext
 import jakarta.inject.Inject
 import jakarta.inject.Singleton
