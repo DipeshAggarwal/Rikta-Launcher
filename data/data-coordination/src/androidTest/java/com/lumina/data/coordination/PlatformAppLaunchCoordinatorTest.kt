@@ -28,6 +28,7 @@ class PlatformAppLaunchCoordinatorTest {
         packageName = "com.example.app",
         componentClassName = "Main",
         userHandleNumber = 0L,
+        originalName = "App Name",
         displayName = "Example App",
         category = AppCategory.ENTERTAINMENT,
         customCategoryName = null

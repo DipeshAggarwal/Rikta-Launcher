@@ -1,8 +1,11 @@
 package com.lumina.feature.profiles
 
+import com.lumina.core.model.ProfileTriggerType
+
 object ProfileNavigationRoute {
     const val PROFILE_ID_ARG = "profileId"
     const val TRIGGER_ID_ARG = "triggerId"
+    const val TRIGGER_TYPE_ARG = "triggerType"
     const val EDIT_SECTION_ARG = "section"
 
     const val PROFILE_LIST_ROUTE = "profile_list"
@@ -13,7 +16,7 @@ object ProfileNavigationRoute {
     const val PROFILE_GRAPH_EDIT_ROUTE = "profile_edit/{$PROFILE_ID_ARG}"
 
     const val PROFILE_PATTERN_MANAGE_ROUTE = "profile_manage?profileId={$PROFILE_ID_ARG}"
-    const val PROFILE_PATTERN_TRIGGER_ROUTE = "profile_trigger/{$PROFILE_ID_ARG}?triggerId={$TRIGGER_ID_ARG}"
+    const val PROFILE_PATTERN_TRIGGER_ROUTE = "profile_trigger/{$PROFILE_ID_ARG}/{$TRIGGER_ID_ARG}?triggerType={$TRIGGER_TYPE_ARG}"
 
     const val PROFILE_SUMMARY_ROUTE = "profile_edit/{$PROFILE_ID_ARG}/summary"
     const val PROFILE_RULES_ROUTE = "profile_edit/{$PROFILE_ID_ARG}/rules"
@@ -31,8 +34,13 @@ object ProfileNavigationRoute {
         else "profile_manage?$PROFILE_ID_ARG=$profileId"
     }
 
-    fun triggerRoute(profileId: String, triggerId: Long? = null): String {
-        return if (triggerId != null) "profile_trigger/$profileId?triggerId=$triggerId"
-        else "profile_trigger/$profileId"
+    fun triggerRoute(
+        profileId: String,
+        triggerId: Long,
+        triggerType: ProfileTriggerType? = null
+    ): String {
+        val base = "profile_trigger/$profileId/$triggerId"
+        return if (triggerType != null) "$base?$TRIGGER_TYPE_ARG=${triggerType.name}"
+        else base
     }
 }

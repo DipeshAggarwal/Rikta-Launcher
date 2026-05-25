@@ -68,6 +68,7 @@ class GetActiveHomeConfigUseCaseTest {
         )
         every { settingsRepository.allSettings } returns MutableStateFlow(defaultSettings)
         every { profileRepository.activeProfile } returns MutableStateFlow(mockk<LauncherProfile> {
+            every { permissions } returns mockk(relaxed = true)
             every { overrides } returns profileOverrides
         })
 

@@ -3,6 +3,13 @@ package com.lumina.feature.profiles
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.lumina.core.android.datasource.BluetoothDataSource
+import com.lumina.core.android.datasource.BluetoothDeviceInfo
+import com.lumina.core.android.datasource.LocationDataSource
+import com.lumina.core.android.datasource.LocationInfo
+import com.lumina.core.android.datasource.WifiDataSource
+import com.lumina.core.android.datasource.WifiNetworkInfo
+import com.lumina.core.common.IoDispatcher
 import com.lumina.core.logging.Logger
 import com.lumina.core.model.LogicalOperator
 import com.lumina.core.model.ProfileTriggerType
@@ -11,6 +18,7 @@ import com.lumina.domain.profiles.ProfileRepository
 import com.lumina.domain.profiles.model.TriggerCondition
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,7 +26,6 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.DayOfWeek
@@ -57,10 +64,16 @@ data class ProfileTriggerUiState(
     val errorMessage: String? = null
 )
 
+private const val DEFAULT_RADIUS = 250f
+
 @HiltViewModel
 class ProfileTriggerViewModel @Inject constructor(
+    @param:IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val profileRepository: ProfileRepository,
     private val triggerScheduler: TriggerScheduler,
+    private val wifiDataSource: WifiDataSource,
+    private val bluetoothDataSource: BluetoothDataSource,
+    private val locationDataSource: LocationDataSource,
     savedStateHandle: SavedStateHandle,
     private val logger: Logger
 ) : ViewModel() {
@@ -68,14 +81,24 @@ class ProfileTriggerViewModel @Inject constructor(
 
     // Profile being viewed, provided by navigation.
     private val targetProfileId: String = checkNotNull(savedStateHandle[ProfileNavigationRoute.PROFILE_ID_ARG])
-    private val targetTriggerId: Long = savedStateHandle[ProfileNavigationRoute.TRIGGER_ID_ARG] ?: 0L
+    private val targetTriggerId: Long = savedStateHandle.get<String>(ProfileNavigationRoute.TRIGGER_ID_ARG)
+        ?.toLongOrNull()
+        ?: 0L
 
     private val _uiState = MutableStateFlow(
         ProfileTriggerUiState(
             isLoading =  targetTriggerId != 0L,
             isNewTrigger = targetTriggerId == 0L,
             profileId = targetProfileId,
-            triggerId = targetTriggerId
+            triggerId = targetTriggerId,
+            triggerType = if (targetTriggerId == 0L) {
+                checkNotNull(
+                    savedStateHandle.get<String>(ProfileNavigationRoute.TRIGGER_TYPE_ARG)
+                        ?.let { runCatching { ProfileTriggerType.valueOf(it) }.getOrNull() }
+                ) { "Trigger Type is required for new triggers." }
+            } else {
+                ProfileTriggerType.TIME
+            }
         )
     )
     val uiState: StateFlow<ProfileTriggerUiState> = _uiState.asStateFlow()
@@ -87,15 +110,26 @@ class ProfileTriggerViewModel @Inject constructor(
     )
     val events: SharedFlow<ProfileTriggerEvent> = _events.asSharedFlow()
 
-    init { if (targetTriggerId != 0L) loadExistingTriggers() }
+    private val _availableNetworks = MutableStateFlow<List<WifiNetworkInfo>>(emptyList())
+    val availableNetworks: StateFlow<List<WifiNetworkInfo>> = _availableNetworks.asStateFlow()
+
+    private val _pairedDevices = MutableStateFlow<List<BluetoothDeviceInfo>>(emptyList())
+    val pairedDevices: StateFlow<List<BluetoothDeviceInfo>> = _pairedDevices.asStateFlow()
+
+    private val _currentLocationInfo = MutableStateFlow<LocationInfo?>(null)
+    val currentLocationInfo: StateFlow<LocationInfo?> = _currentLocationInfo.asStateFlow()
+
+    init {
+        if (targetTriggerId != 0L) loadExistingTriggers()
+        else loadSystemDataForType(_uiState.value.triggerType)
+    }
 
     private fun loadExistingTriggers() {
         viewModelScope.launch {
-            val trigger = profileRepository.getProfileTriggers(targetProfileId)
-                .firstOrNull()
-                ?.find { it.triggerId == targetTriggerId }
+            val trigger = profileRepository.getTriggerById(targetTriggerId)
 
             if (trigger != null) {
+                val type = trigger.triggerType ?: ProfileTriggerType.TIME
                 _uiState.update {
                     it.copy(
                         isLoading = false,
@@ -113,9 +147,26 @@ class ProfileTriggerViewModel @Inject constructor(
                         bluetoothAddress = trigger.bluetoothAddress
                     )
                 }
+                loadSystemDataForType(type)
             } else {
                 logger.w(TAG, "Trigger not found: $targetTriggerId.")
                 _uiState.update { it.copy(isLoading = false, errorMessage = "Trigger not found.") }
+            }
+        }
+    }
+
+    private fun loadSystemDataForType(type: ProfileTriggerType) {
+        when (type) {
+            ProfileTriggerType.TIME -> Unit
+            ProfileTriggerType.DAY -> Unit
+            ProfileTriggerType.LOCATION -> viewModelScope.launch(ioDispatcher) {
+                _currentLocationInfo.value = locationDataSource.getLastKnownLocation()
+            }
+            ProfileTriggerType.WIFI -> viewModelScope.launch(ioDispatcher) {
+                _availableNetworks.value = wifiDataSource.getAvailableNetworks()
+            }
+            ProfileTriggerType.BLUETOOTH -> viewModelScope.launch(ioDispatcher) {
+                _pairedDevices.value = bluetoothDataSource.getPairedDevices()
             }
         }
     }
@@ -156,25 +207,15 @@ class ProfileTriggerViewModel @Inject constructor(
         }
     }
 
-    private fun Int.toDayOfWeekOrNull(): DayOfWeek? = when (this) {
-        Calendar.SUNDAY -> DayOfWeek.SUNDAY
-        Calendar.MONDAY -> DayOfWeek.MONDAY
-        Calendar.TUESDAY -> DayOfWeek.TUESDAY
-        Calendar.WEDNESDAY -> DayOfWeek.WEDNESDAY
-        Calendar.THURSDAY -> DayOfWeek.THURSDAY
-        Calendar.FRIDAY -> DayOfWeek.FRIDAY
-        Calendar.SATURDAY -> DayOfWeek.SATURDAY
-        else -> null
+    fun refreshLocation() {
+        viewModelScope.launch(ioDispatcher) {
+            _currentLocationInfo.value = locationDataSource.getLastKnownLocation()
+        }
     }
 
-    private fun DayOfWeek.toCalendarInt(): Int = when (this) {
-        DayOfWeek.SUNDAY -> Calendar.SUNDAY
-        DayOfWeek.MONDAY -> Calendar.MONDAY
-        DayOfWeek.TUESDAY -> Calendar.TUESDAY
-        DayOfWeek.WEDNESDAY -> Calendar.WEDNESDAY
-        DayOfWeek.THURSDAY -> Calendar.THURSDAY
-        DayOfWeek.FRIDAY -> Calendar.FRIDAY
-        DayOfWeek.SATURDAY -> Calendar.SATURDAY
+    fun useCurrentLocation() {
+        val info = _currentLocationInfo.value ?: return
+        updateLocation(info.latitude, info.longitude, _uiState.value.radiusMeters ?: DEFAULT_RADIUS)
     }
 
     fun updateTriggerType(type: ProfileTriggerType) {
@@ -205,6 +246,10 @@ class ProfileTriggerViewModel @Inject constructor(
         _uiState.update { it.copy(latitude = lat, longitude = lng, radiusMeters = radius, errorMessage = null) }
     }
 
+    fun updateRadius(radius: Float) {
+        _uiState.update { it.copy(radiusMeters = radius.coerceAtLeast(1f), errorMessage = null) }
+    }
+
     fun updateWifiSsid(ssid: String) {
         _uiState.update { it.copy(wifiSsid = ssid, errorMessage = null) }
     }
@@ -216,9 +261,10 @@ class ProfileTriggerViewModel @Inject constructor(
     fun saveTrigger() {
         viewModelScope.launch {
             if (_uiState.value.isSaving) return@launch
-            _uiState.update { it.copy(isSaving = true, errorMessage = null) }
 
             val state = _uiState.value
+            _uiState.update { it.copy(isSaving = true, errorMessage = null) }
+
             val validationError = validate(state)
             if (validationError != null) {
                 _uiState.update { it.copy(isSaving = false, errorMessage = validationError) }
@@ -275,5 +321,26 @@ class ProfileTriggerViewModel @Inject constructor(
 
     fun dismissError() {
         _uiState.update { it.copy(errorMessage = null) }
+    }
+
+    private fun Int.toDayOfWeekOrNull(): DayOfWeek? = when (this) {
+        Calendar.SUNDAY -> DayOfWeek.SUNDAY
+        Calendar.MONDAY -> DayOfWeek.MONDAY
+        Calendar.TUESDAY -> DayOfWeek.TUESDAY
+        Calendar.WEDNESDAY -> DayOfWeek.WEDNESDAY
+        Calendar.THURSDAY -> DayOfWeek.THURSDAY
+        Calendar.FRIDAY -> DayOfWeek.FRIDAY
+        Calendar.SATURDAY -> DayOfWeek.SATURDAY
+        else -> null
+    }
+
+    private fun DayOfWeek.toCalendarInt(): Int = when (this) {
+        DayOfWeek.SUNDAY -> Calendar.SUNDAY
+        DayOfWeek.MONDAY -> Calendar.MONDAY
+        DayOfWeek.TUESDAY -> Calendar.TUESDAY
+        DayOfWeek.WEDNESDAY -> Calendar.WEDNESDAY
+        DayOfWeek.THURSDAY -> Calendar.THURSDAY
+        DayOfWeek.FRIDAY -> Calendar.FRIDAY
+        DayOfWeek.SATURDAY -> Calendar.SATURDAY
     }
 }

@@ -109,4 +109,17 @@
     <string name="profile_rules_exit_on_lock_subtitle">Exit this device when the device is locked or restarted.</string>
 
     <string name="unknown_device">Unknown Device</string>
+    <string name="profile_trigger_time">Time</string>
+    <string name="profile_trigger_time_subtitle">Trigger during a time window on selected days.</string>
+    <string name="profile_trigger_day">Day of Week</string>
+    <string name="profile_trigger_day_subtitle">Trigger on specific days of the week.</string>
+    <string name="profile_trigger_location">Location</string>
+    <string name="profile_trigger_location_subtitle">Trigger when near a specific location.</string>
+    <string name="profile_trigger_wifi">Wi-Fi</string>
+    <string name="profile_trigger_wifi_subtitle">Trigger when connected to a Wi-Fi network.</string>
+    <string name="profile_trigger_bluetooth">Bluetooth</string>
+    <string name="profile_trigger_bluetooth_subtitle">Trigger when connected to a Bluetooth device.</string>
+    <string name="profile_trigger_logical_operator_and">AND</string>
+    <string name="profile_trigger_logical_operator_or">OR</string>
+    <string name="profile_trigger_logical_operator_not">NOT</string>
 </resources>

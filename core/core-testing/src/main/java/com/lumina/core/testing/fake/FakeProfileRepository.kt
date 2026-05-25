@@ -174,7 +174,8 @@ class FakeProfileRepository : ProfileRepository {
         profileTrigger.value += conditions
     }
 
-    override suspend fun updateProfileTrigger(conditions: TriggerCondition) { }
+    override suspend fun updateProfileTrigger(condition: TriggerCondition) { }
+
     override suspend fun swapTriggerOrder(
         previous: TriggerCondition,
         next: TriggerCondition

@@ -374,7 +374,7 @@ class ProfileDaoTest {
     fun isAppCountdownEnabled_returns_stored_value() = runTest {
         val profile = ProfileEntityBuilder.build(id = "profile_test_1")
         val mapping = ProfileAppCrossRef(
-            profile.id, "com.example.app", 0L, AppAddedSource.USER
+            profile.id, "com.example.app", 0L, AppAddedSource.USER, showCountdown = true
         )
 
         profileDao.saveProfile(profile)
