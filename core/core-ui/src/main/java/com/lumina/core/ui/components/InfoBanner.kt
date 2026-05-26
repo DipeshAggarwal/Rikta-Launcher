@@ -1,4 +1,4 @@
-package com.lumina.feature.profiles.ui.component
+package com.lumina.core.ui.components
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable

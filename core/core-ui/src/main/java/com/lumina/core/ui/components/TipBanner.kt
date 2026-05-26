@@ -1,4 +1,4 @@
-package com.lumina.feature.profiles.ui.component
+package com.lumina.core.ui.components
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
@@ -20,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.lumina.core.ui.ThemeTokens
 
@@ -27,7 +28,9 @@ import com.lumina.core.ui.ThemeTokens
 fun TipBanner(
     tipText: String,
     modifier: Modifier = Modifier,
-    iconVector: ImageVector = Icons.Outlined.TouchApp
+    iconVector: ImageVector = Icons.Outlined.TouchApp,
+    horizontalSpacing: Dp = ThemeTokens.Spacing.ExtraLarge,
+    verticalSpacing: Dp = ThemeTokens.Spacing.Large
 ) {
     OutlinedCard(
         modifier = modifier.fillMaxWidth(),
@@ -43,8 +46,8 @@ fun TipBanner(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(
-                    horizontal = ThemeTokens.Spacing.ExtraLarge,
-                    vertical = ThemeTokens.Spacing.Large
+                    horizontal = horizontalSpacing,
+                    vertical = verticalSpacing
                 ),
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
@@ -68,8 +71,8 @@ fun TipBanner(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(
-                        horizontal = ThemeTokens.Spacing.ExtraLarge,
-                        vertical = ThemeTokens.Spacing.Large
+                        horizontal = horizontalSpacing,
+                        vertical = verticalSpacing
                     )
                     .wrapContentWidth(Alignment.CenterHorizontally)
             )

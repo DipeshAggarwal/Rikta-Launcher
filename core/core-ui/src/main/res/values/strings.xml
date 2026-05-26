@@ -127,6 +127,7 @@
     <string name="mode_customised">(Customised)</string>
 
     <string name="drag_to_reorder">Drag to reorder</string>
+    <string name="drag_to_reorder_tip">Drag using the drag icon to move the rows.</string>
     <string name="profile_apps">Apps allowed in Profile</string>
     <string name="allowed_apps">Allowed Apps</string>
     <string name="other_apps">Other Apps</string>

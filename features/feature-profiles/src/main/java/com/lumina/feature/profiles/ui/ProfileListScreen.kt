@@ -38,7 +38,7 @@ import com.lumina.core.ui.components.StandardListScaffold
 import com.lumina.core.ui.extensions.systemProfileDisplayName
 import com.lumina.domain.profiles.model.ProfileSummary
 import com.lumina.feature.profiles.R
-import com.lumina.feature.profiles.ui.component.InfoBanner
+import com.lumina.core.ui.components.InfoBanner
 import com.lumina.feature.profiles.ui.component.ProfileActiveCard
 import com.lumina.feature.profiles.ui.component.ProfileListRow
 import com.lumina.feature.profiles.ui.component.SectionLabel

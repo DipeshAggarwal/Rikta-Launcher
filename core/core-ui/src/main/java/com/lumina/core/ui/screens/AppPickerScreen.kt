@@ -7,7 +7,6 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,9 +14,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -33,32 +30,25 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.zIndex
 import com.lumina.core.model.AppInfo
 import com.lumina.core.model.componentKey
 import com.lumina.core.ui.R
+import com.lumina.core.ui.ReorderableListState
 import com.lumina.core.ui.ThemeTokens
 import com.lumina.core.ui.components.StandardListScaffold
+import com.lumina.core.ui.components.TipBanner
 import com.lumina.core.ui.theme.ContentColor
 import com.lumina.core.ui.components.settings.SettingsSpacer
 import com.lumina.core.ui.components.settings.animatedShape
 import com.lumina.core.ui.components.settings.settingsGroupRadii
-import kotlin.math.roundToInt
 
 private val DragHandlePadding = 8.dp
 
@@ -80,9 +70,13 @@ fun AppPickerScreen(
     val localOrderSelection = remember { mutableStateListOf<String>() }
     val lazyListState = rememberLazyListState()
 
-    var draggedComponentKey by remember { mutableStateOf<String?>(null) }
-    var dragOffset by remember { mutableFloatStateOf(0f) }
-    var measuredItemHeight by remember { mutableIntStateOf(0) }
+    val reorderState = remember {
+        ReorderableListState { from, to ->
+            val movedItem = localOrderSelection.removeAt(from)
+            localOrderSelection.add(to, movedItem)
+            onAppMoved(from, to)
+        }
+    }
 
     // Ensures that the ViewModel and local buffer is synced.
     LaunchedEffect(preSelectedApps) {
@@ -133,6 +127,16 @@ fun AppPickerScreen(
         lazyListState = lazyListState,
         verticalColumnSpacing = ThemeTokens.Spacing.None
     ) {
+        if (reorderable) {
+            item {
+                TipBanner(
+                    tipText = stringResource(R.string.drag_to_reorder_tip),
+                    iconVector = Icons.Outlined.DragHandle,
+                    verticalSpacing = ThemeTokens.Spacing.Small
+                )
+            }
+        }
+
         items(
             items = combinedItems,
             key = { item ->
@@ -166,10 +170,9 @@ fun AppPickerScreen(
                     }
 
                     if (item.selected && reorderable) {
-                        val isDragging = draggedComponentKey == item.app.componentKey
-                        val currentIndex = localOrderSelection.indexOf(item.app.componentKey)
-                        val maxDragUp = -currentIndex * measuredItemHeight.toFloat()
-                        val maxDragDown = (localOrderSelection.size - 1 - currentIndex) * measuredItemHeight.toFloat()
+                        val key = item.app.componentKey
+                        val isDragging = reorderState.isDragging(key)
+                        val currentIndex = localOrderSelection.indexOf(key)
 
                         AppPickerRow(
                             title = item.app.displayName,
@@ -178,66 +181,16 @@ fun AppPickerScreen(
                             isTopOfGroup = isTopOfGroup,
                             isBottomOfGroup = isBottomOfGroup,
                             reorderable = true,
-                            dragHandleModifier = Modifier.pointerInput(item.app.componentKey) {
-                                detectVerticalDragGestures(
-                                    onDragStart = {
-                                        draggedComponentKey = item.app.componentKey
-                                        dragOffset = 0f
-                                    },
-                                    onDragEnd = {
-                                        draggedComponentKey = null
-                                        dragOffset = 0f
-                                    },
-                                    onDragCancel = {
-                                        draggedComponentKey = null
-                                        dragOffset = 0f
-                                    }
-                                ) { change, dragAmount ->
-                                    change.consume()
-                                    dragOffset += dragAmount
-
-                                    val itemHeight = measuredItemHeight.toFloat()
-                                    val threshold = itemHeight / 2
-
-                                    val currentPkg = draggedComponentKey ?: return@detectVerticalDragGestures
-
-                                    val fromIndex = localOrderSelection.indexOf(currentPkg)
-                                    if (fromIndex == -1) return@detectVerticalDragGestures
-
-                                    if (dragOffset > threshold && fromIndex < localOrderSelection.size - 1) {
-                                        val toIndex = fromIndex + 1
-                                        val movedItem = localOrderSelection.removeAt(fromIndex)
-                                        localOrderSelection.add(toIndex, movedItem)
-
-                                        dragOffset -= itemHeight
-                                        onAppMoved(fromIndex, toIndex)
-                                    } else if (dragOffset < -threshold && fromIndex > 0) {
-                                        val toIndex = fromIndex - 1
-                                        val movedItem = localOrderSelection.removeAt(fromIndex)
-                                        localOrderSelection.add(toIndex, movedItem)
-
-                                        dragOffset += itemHeight
-                                        onAppMoved(fromIndex, toIndex)
-                                    }
-                                }
-                            },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .onSizeChanged { size ->
-                                    if (measuredItemHeight == 0) measuredItemHeight = size.height
-                                }
-                                .zIndex(if (isDragging) 1f else 0f)
-                                // Manually animate it this item is being dragged otherwise let
-                                // Compose handle the animation.
-                                .then(if (!isDragging) Modifier.animateItem() else Modifier)
-                                .offset {
-                                    IntOffset(
-                                        x = 0,
-                                        y = if (isDragging) {
-                                            dragOffset.coerceIn(maxDragUp, maxDragDown).roundToInt()
-                                        } else 0
-                                    )
-                                }
+                            dragHandleModifier = reorderState.dragHandleModifier(
+                                key = key,
+                                currentIndex = currentIndex,
+                                listSize = localOrderSelection.size
+                            ),
+                            modifier = reorderState.itemModifier(
+                                key = key,
+                                index = currentIndex,
+                                totalCount = localOrderSelection.size
+                            )
                         )
                     } else {
                         AppPickerRow(
@@ -259,12 +212,6 @@ fun AppPickerScreen(
                 ) {
                     SettingsSpacer()
                 }
-            }
-        }
-
-        if (reorderable && localOrderSelection.isNotEmpty()) {
-            item {
-                AppPickerDragHint()
             }
         }
     }
@@ -379,32 +326,6 @@ fun AppPickerSectionHeader(
                 color = MaterialTheme.colorScheme.onSecondaryContainer
             )
         }
-    }
-}
-
-@Composable
-private fun AppPickerDragHint(modifier: Modifier = Modifier) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(
-                horizontal = ThemeTokens.Spacing.Large,
-                vertical = ThemeTokens.Spacing.Large
-            )
-    ) {
-        Icon(
-            imageVector = Icons.Outlined.DragHandle,
-            contentDescription = null,
-            tint = ContentColor.copy(alpha = ThemeTokens.Alpha.Medium),
-            modifier = Modifier.size(ThemeTokens.Icon.BannerCloseIconSize)
-        )
-        Spacer(modifier = Modifier.size(ThemeTokens.Spacing.Medium))
-        Text(
-            text = "Drag me",
-            style = MaterialTheme.typography.bodySmall,
-            color = ContentColor.copy(alpha = ThemeTokens.Alpha.Medium)
-        )
     }
 }
 
