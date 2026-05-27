@@ -18,20 +18,20 @@ fun OutlinedActionButton(
     modifier: Modifier = Modifier
 ) {
     OutlinedButton(
-    onClick = onClick,
-    enabled = enabled,
-    modifier = modifier.fillMaxWidth(),
-    border = BorderStroke(
-        1.dp,
-        if (enabled) MaterialTheme.colorScheme.outlineVariant
-            else MaterialTheme.colorScheme.primary
-    )
-) {
-    Text(
-        text = text,
-        style = MaterialTheme.typography.titleSmall,
-        color = MaterialTheme.colorScheme.primary,
-        fontWeight = FontWeight.SemiBold
-    )
-}
+        onClick = onClick,
+        enabled = enabled,
+        modifier = modifier.fillMaxWidth(),
+        border = BorderStroke(
+            1.dp,
+            if (enabled) MaterialTheme.colorScheme.outlineVariant
+                else MaterialTheme.colorScheme.primary
+        )
+    ) {
+        Text(
+            text = text,
+            style = MaterialTheme.typography.titleSmall,
+            color = MaterialTheme.colorScheme.primary,
+            fontWeight = FontWeight.SemiBold
+        )
+    }
 }

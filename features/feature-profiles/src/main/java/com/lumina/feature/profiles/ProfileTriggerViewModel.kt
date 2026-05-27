@@ -134,7 +134,7 @@ class ProfileTriggerViewModel @Inject constructor(
                     it.copy(
                         isLoading = false,
                         sequenceOrder = trigger.sequenceOrder,
-                        triggerType = trigger.triggerType ?: ProfileTriggerType.TIME,
+                        triggerType = trigger.triggerType,
                         logicalOperator = trigger.logicalOperator,
                         stopIfTrue = trigger.stopIfTrue,
                         startTimeMinutes = trigger.startTimeMinutes,

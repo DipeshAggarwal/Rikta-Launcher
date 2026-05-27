@@ -49,7 +49,7 @@ class ProfileTriggersListViewModel @Inject constructor(
     )
     val events: SharedFlow<ProfileTriggersListEvent> = _events.asSharedFlow()
 
-    private fun reorder(prev: TriggerCondition, next: TriggerCondition) {
+    fun onReorder(prev: TriggerCondition, next: TriggerCondition) {
         if (prev.sequenceOrder == next.sequenceOrder) {
             logger.e(TAG, "sequenceOrder for ${prev.triggerId} and ${next.triggerId}.")
             _errorMessage.tryEmit("Couldn't reorder. Please try again.")
@@ -103,7 +103,7 @@ class ProfileTriggersListViewModel @Inject constructor(
         }
     }
 
-    fun updateOperator(trigger: TriggerCondition, operator: LogicalOperator) {
+    fun onUpdateOperator(trigger: TriggerCondition, operator: LogicalOperator) {
         viewModelScope.launch {
             try {
                 profileRepository.updateProfileTrigger(trigger.copy(logicalOperator = operator))
@@ -113,15 +113,5 @@ class ProfileTriggersListViewModel @Inject constructor(
                 _errorMessage.tryEmit("Failed to update trigger.")
             }
         }
-    }
-
-    fun moveUp(index: Int) {
-        if (index <= 0 || index >= triggers.value.size) return
-        reorder(triggers.value[index], triggers.value[index - 1])
-    }
-
-    fun moveDown(index: Int) {
-        if (index < 0 || index >= triggers.value.lastIndex) return
-        reorder(triggers.value[index], triggers.value[index + 1])
     }
 }

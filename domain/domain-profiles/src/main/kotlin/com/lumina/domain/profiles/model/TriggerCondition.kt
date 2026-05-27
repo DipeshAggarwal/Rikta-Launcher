@@ -10,7 +10,7 @@ data class TriggerCondition(
     val sequenceOrder: Int,
 
     val logicalOperator: LogicalOperator?,
-    val triggerType: ProfileTriggerType?,
+    val triggerType: ProfileTriggerType,
     val stopIfTrue: Boolean,
 
     val startTimeMinutes: Int? = null,

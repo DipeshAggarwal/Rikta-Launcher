@@ -25,9 +25,9 @@ data class ProfileTriggerEntity(
     @PrimaryKey(autoGenerate = true) val triggerId: Long = 0,
     val profileId: String,
     val sequenceOrder: Int,
+    val triggerType: ProfileTriggerType,
 
     val logicalOperator: LogicalOperator? = null,
-    val triggerType: ProfileTriggerType? = null,
     val stopIfTrue: Boolean = false,
 
     val startTimeMinutes: Int? = null,

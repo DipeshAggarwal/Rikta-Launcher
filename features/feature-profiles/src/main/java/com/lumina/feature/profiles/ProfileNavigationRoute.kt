@@ -16,6 +16,7 @@ object ProfileNavigationRoute {
     const val PROFILE_GRAPH_EDIT_ROUTE = "profile_edit/{$PROFILE_ID_ARG}"
 
     const val PROFILE_PATTERN_MANAGE_ROUTE = "profile_manage?profileId={$PROFILE_ID_ARG}"
+    const val PROFILE_PATTERN_TRIGGER_LIST_ROUTE = "profile_trigger/{$PROFILE_ID_ARG}"
     const val PROFILE_PATTERN_TRIGGER_ROUTE = "profile_trigger/{$PROFILE_ID_ARG}/{$TRIGGER_ID_ARG}?triggerType={$TRIGGER_TYPE_ARG}"
 
     const val PROFILE_SUMMARY_ROUTE = "profile_edit/{$PROFILE_ID_ARG}/summary"
@@ -32,6 +33,10 @@ object ProfileNavigationRoute {
     fun manageRoute(profileId: String? = null): String {
         return if (profileId == null) "profile_manage"
         else "profile_manage?$PROFILE_ID_ARG=$profileId"
+    }
+
+    fun triggersListRoute(profileId: String): String {
+        return "profile_triggers/$profileId"
     }
 
     fun triggerRoute(
