@@ -16,8 +16,8 @@ object ProfileNavigationRoute {
     const val PROFILE_GRAPH_EDIT_ROUTE = "profile_edit/{$PROFILE_ID_ARG}"
 
     const val PROFILE_PATTERN_MANAGE_ROUTE = "profile_manage?profileId={$PROFILE_ID_ARG}"
-    const val PROFILE_PATTERN_TRIGGER_LIST_ROUTE = "profile_trigger/{$PROFILE_ID_ARG}"
-    const val PROFILE_PATTERN_TRIGGER_ROUTE = "profile_trigger/{$PROFILE_ID_ARG}/{$TRIGGER_ID_ARG}?triggerType={$TRIGGER_TYPE_ARG}"
+    const val PROFILE_PATTERN_TRIGGER_LIST_ROUTE = "profile_triggers/{$PROFILE_ID_ARG}"
+    const val PROFILE_PATTERN_TRIGGER_ROUTE = "profile_triggers/{$PROFILE_ID_ARG}/{$TRIGGER_ID_ARG}?triggerType={$TRIGGER_TYPE_ARG}"
 
     const val PROFILE_SUMMARY_ROUTE = "profile_edit/{$PROFILE_ID_ARG}/summary"
     const val PROFILE_RULES_ROUTE = "profile_edit/{$PROFILE_ID_ARG}/rules"
@@ -44,7 +44,7 @@ object ProfileNavigationRoute {
         triggerId: Long,
         triggerType: ProfileTriggerType? = null
     ): String {
-        val base = "profile_trigger/$profileId/$triggerId"
+        val base = "profile_triggers/$profileId/$triggerId"
         return if (triggerType != null) "$base?$TRIGGER_TYPE_ARG=${triggerType.name}"
         else base
     }

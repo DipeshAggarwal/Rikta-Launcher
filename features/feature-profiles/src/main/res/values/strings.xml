@@ -125,10 +125,12 @@
     <string name="profile_trigger_logical_operator_empty">-</string>
     <string name="profile_trigger_heading">Triggers</string>
     <string name="profile_trigger_subtitle">Configure when this profile opens automagically.</string>
+    <string name="profile_trigger_no_trigger">No triggers yet. Add one below to enable automatic profile switching.</string>
     <string name="profile_trigger_add_trigger">Add Trigger</string>
     <string name="profile_trigger_tip_1">Triggers evaluate top to bottom.</string>
     <string name="profile_trigger_tip_2">AND operator between Triggers will only proceed if both triggers match..</string>
     <string name="profile_trigger_tip_3">OR operator between Triggers will only proceed if both triggers match.</string>
     <string name="profile_trigger_tip_4">NOT operator requires a trigger to not match.</string>
     <string name="profile_trigger_tip_5">"Stop on Match" runs the profile when this trigger condition is met.".</string>
+    <string name="profile_trigger_type_picker_heading">Choose a trigger to add to the sequence.</string>
 </resources>

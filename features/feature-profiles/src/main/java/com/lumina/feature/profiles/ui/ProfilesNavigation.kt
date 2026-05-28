@@ -19,6 +19,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import com.lumina.feature.profiles.ProfileManageEvent
 import com.lumina.feature.profiles.ProfileManageUiState
+import com.lumina.feature.profiles.ProfileTriggersListViewModel
 
 fun NavGraphBuilder.profilesNavigation(
     navController: NavController
@@ -95,7 +96,12 @@ fun NavGraphBuilder.profilesNavigation(
                     ))
                 },
                 onNavigateToAllowedApps = {},
-                onNavigateToTrigger = {},
+                onNavigateToTrigger = {
+                    val profileId = checkNotNull(detailGraphEntry.arguments?.getString(
+                        ProfileNavigationRoute.PROFILE_ID_ARG
+                    ))
+                    navController.navigate(ProfileNavigationRoute.triggersListRoute(profileId))
+                },
                 onNavigateToAppearance = {},
                 onNavigateToSecurity = {},
                 onProfileDuplicated = { newProfileId ->
@@ -190,6 +196,30 @@ fun NavGraphBuilder.profilesNavigation(
                     }
                 }
             }
+        }
+
+        composable(
+            route = ProfileNavigationRoute.PROFILE_PATTERN_TRIGGER_LIST_ROUTE,
+            enterTransition = { fadeIn(tween (SCREEN_TRANSITION_MS)) },
+            exitTransition = { fadeOut(tween (SCREEN_TRANSITION_MS)) }
+        ) { navBackStackEntry ->
+            val viewModel: ProfileTriggersListViewModel = hiltViewModel()
+            val profileId = checkNotNull(navBackStackEntry.arguments?.getString(
+                ProfileNavigationRoute.PROFILE_ID_ARG
+            ))
+
+            ProfileTriggerScreen(
+                viewModel = viewModel,
+                onNavigateToEditTrigger = { triggerId ->
+                    navController.navigate(ProfileNavigationRoute.triggerRoute(profileId, triggerId))
+                },
+                onNavigateToAddTrigger = { triggerType ->
+                    navController.navigate(
+                        ProfileNavigationRoute.triggerRoute(profileId, 0L, triggerType)
+                    )
+                },
+                onBack = { navController.popBackStack() }
+            )
         }
     }
 }
