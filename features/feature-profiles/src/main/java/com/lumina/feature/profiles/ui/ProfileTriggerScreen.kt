@@ -11,13 +11,14 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.DragHandle
@@ -130,19 +131,20 @@ fun ProfileTriggerScreen(
             }
         } else {
             item(key = "profile_trigger_empty_list") {
-                Spacer(modifier = Modifier.height(ThemeTokens.Spacing.ExtraLarge))
-                Text(
-                    text = stringResource(R.string.profile_trigger_no_trigger),
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    textAlign = TextAlign.Center,
+                Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(
-                            vertical = ThemeTokens.Spacing.ExtraLarge
-                        )
-                )
-                Spacer(modifier = Modifier.height(ThemeTokens.Spacing.ExtraLarge))
+                        .defaultMinSize(minHeight = ThemeTokens.Layout.EmptyStateMinSize),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = stringResource(R.string.profile_trigger_no_trigger),
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.padding(horizontal = ThemeTokens.Spacing.ExtraLarge)
+                    )
+                }
             }
         }
 
@@ -176,7 +178,7 @@ fun ProfileTriggerScreen(
         item(key = "profile_trigger_add") {
             ElevatedButton(
                 title = stringResource(R.string.profile_trigger_add_trigger),
-                subtitle = null,
+                subtitle = stringResource(R.string.profile_trigger_add_trigger_subtitle),
                 enabled = true,
                 leadingIcon = Icons.Outlined.Add,
                 trailingIcon = null,
@@ -252,11 +254,11 @@ fun TriggerSequenceItem(
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.width(40.dp).fillMaxWidth()
+            modifier = Modifier.wrapContentWidth().fillMaxWidth()
         ) {
             Box(
                 modifier = Modifier
-                    .size(32.dp)
+                    .size(ThemeTokens.Icon.RowSize)
                     .clip(CircleShape)
                     .background(MaterialTheme.colorScheme.primaryContainer),
                 contentAlignment = Alignment.Center
@@ -336,7 +338,7 @@ private fun TriggerCard(
                 imageVector = Icons.Outlined.DragHandle,
                 contentDescription = stringResource(uiR.string.drag_to_reorder),
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = dragModifier.size(ThemeTokens.Icon.TertiaryIconSize)
+                modifier = dragModifier.size(ThemeTokens.Icon.RowSize)
             )
         }
     }
@@ -374,8 +376,8 @@ private fun OperatorChip(
 
     Row(
         modifier = Modifier
-            .clip(RoundedCornerShape(50))
-            .border(1.dp, border, RoundedCornerShape(50))
+            .clip(CircleShape)
+            .border(1.dp, border, CircleShape)
             .background(container)
             .clickable(onClick = onClick)
             .padding(
@@ -395,7 +397,7 @@ private fun OperatorChip(
             imageVector = Icons.Outlined.ExpandMore,
             contentDescription = null,
             tint = content,
-            modifier = Modifier.size(ThemeTokens.Icon.BannerCloseIconSize)
+            modifier = Modifier.size(ThemeTokens.Icon.IndicatorSize)
         )
     }
 }

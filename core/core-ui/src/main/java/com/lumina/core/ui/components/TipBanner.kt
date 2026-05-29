@@ -58,7 +58,7 @@ fun TipBanner(
                 tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(
                     alpha = ThemeTokens.Alpha.Heavy
                 ),
-                modifier = Modifier.size(ThemeTokens.Icon.BannerIconSize)
+                modifier = Modifier.size(ThemeTokens.Icon.InlineSize)
             )
             Spacer(modifier = Modifier.width(ThemeTokens.Spacing.Medium))
 

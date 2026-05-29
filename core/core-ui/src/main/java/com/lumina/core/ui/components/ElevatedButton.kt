@@ -63,7 +63,7 @@ fun ElevatedButton(
                     tint = iconColor,
                     modifier = Modifier.size(
                         if (subtitle != null) ThemeTokens.Icon.LeadingSize
-                        else ThemeTokens.Icon.BannerIconSize
+                        else ThemeTokens.Icon.InlineSize
                     )
                 )
                 Spacer(modifier = Modifier.size(ThemeTokens.Spacing.Large))
@@ -92,7 +92,7 @@ fun ElevatedButton(
                     imageVector = trailingIcon,
                     contentDescription = null,
                     tint = iconColor,
-                    modifier = Modifier.size(ThemeTokens.Icon.BannerIconSize)
+                    modifier = Modifier.size(ThemeTokens.Icon.InlineSize)
                 )
             }
         }

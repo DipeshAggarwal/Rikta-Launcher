@@ -255,7 +255,7 @@ private fun PresetCard(
                     imageVector = if (selected) Icons.Outlined.Check else preset.icon(),
                     contentDescription = null,
                     tint = accentColor,
-                    modifier = Modifier.size(ThemeTokens.Icon.BannerIconSize)
+                    modifier = Modifier.size(ThemeTokens.Icon.InlineSize)
                 )
             }
             Spacer(modifier = Modifier.width(ThemeTokens.Spacing.Large))
