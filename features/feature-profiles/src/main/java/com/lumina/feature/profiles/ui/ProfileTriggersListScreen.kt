@@ -65,7 +65,7 @@ import kotlinx.coroutines.launch
 import com.lumina.core.ui.R as uiR
 
 @Composable
-fun ProfileTriggerScreen(
+fun ProfileTriggersListScreen(
     viewModel: ProfileTriggersListViewModel = hiltViewModel(),
     onNavigateToEditTrigger: (Long) -> Unit,
     onNavigateToAddTrigger: (ProfileTriggerType) -> Unit,

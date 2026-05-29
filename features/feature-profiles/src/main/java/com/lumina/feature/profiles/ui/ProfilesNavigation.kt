@@ -208,7 +208,7 @@ fun NavGraphBuilder.profilesNavigation(
                 ProfileNavigationRoute.PROFILE_ID_ARG
             ))
 
-            ProfileTriggerScreen(
+            ProfileTriggersListScreen(
                 viewModel = viewModel,
                 onNavigateToEditTrigger = { triggerId ->
                     navController.navigate(ProfileNavigationRoute.triggerRoute(profileId, triggerId))
