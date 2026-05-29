@@ -86,13 +86,13 @@ fun TriggerTypePickerBottomSheet(
                         imageVector = Icons.Outlined.ChevronRight,
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.size(ThemeTokens.Icon.TertiaryIconSize)
+                        modifier = Modifier.size(ThemeTokens.Icon.RowSize)
                     )
                 }
 
                 if (index < ProfileTriggerType.entries.lastIndex) {
                     HorizontalDivider(
-                        modifier = Modifier.padding(horizontal = ThemeTokens.Spacing.Small),
+                        modifier = Modifier.padding(horizontal = ThemeTokens.Spacing.ExtraLarge),
                         color = MaterialTheme.colorScheme.outlineVariant
                     )
                 }

@@ -60,7 +60,7 @@ fun ProfileDetailCard(
                 profileName = title,
                 profileId = profileId,
                 iconName = iconName,
-                size = ThemeTokens.Icon.PrimaryIconSize
+                size = ThemeTokens.Icon.PrimarySize
             )
             Spacer(modifier = Modifier.width(ThemeTokens.Spacing.Large))
 

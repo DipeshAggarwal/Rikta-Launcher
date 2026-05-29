@@ -185,7 +185,7 @@ private fun CreateProfileRow(
                 imageVector = Icons.Outlined.Add,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onSecondaryContainer,
-                modifier = Modifier.size(ThemeTokens.Icon.TertiaryIconSize)
+                modifier = Modifier.size(ThemeTokens.Icon.RowSize)
             )
             Spacer(modifier = Modifier.width(ThemeTokens.Spacing.Large))
             Column {
@@ -235,7 +235,7 @@ private fun EmptyProfilesCard(
                 imageVector = Icons.Outlined.Inventory2,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = EmptyProfilesCardDefaults.InactiveElementAlpha),
-                modifier = Modifier.size(ThemeTokens.Icon.PrimaryIconSize)
+                modifier = Modifier.size(ThemeTokens.Icon.PrimarySize)
             )
             Spacer(modifier = Modifier.height(ThemeTokens.Spacing.ExtraLarge))
 

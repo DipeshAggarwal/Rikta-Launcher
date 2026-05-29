@@ -169,7 +169,7 @@ private fun SummaryInfoCard(
                     profileName = resolvedName,
                     profileId = profile.id,
                     iconName = profile.overrides.iconName,
-                    size = ThemeTokens.Icon.PrimaryIconSize
+                    size = ThemeTokens.Icon.PrimarySize
                 )
                 Spacer(modifier = Modifier.width(ThemeTokens.Spacing.Large))
                 Text(
@@ -192,7 +192,7 @@ private fun SummaryInfoCard(
                     imageVector = classification.preset.icon(),
                     contentDescription = null,
                     tint = classification.preset.accentColourRes(),
-                    modifier = Modifier.size(ThemeTokens.Icon.PrimaryIconSize)
+                    modifier = Modifier.size(ThemeTokens.Icon.PrimarySize)
                 )
                 Spacer(modifier = Modifier.width(ThemeTokens.Spacing.Large))
 
@@ -293,7 +293,7 @@ private fun SummaryInfoTimestampRow(
                 imageVector = icon,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.size(ThemeTokens.Icon.BannerCloseIconSize)
+                modifier = Modifier.size(ThemeTokens.Icon.IndicatorSize)
             )
             Spacer(modifier = Modifier.width(ThemeTokens.Spacing.Medium))
 

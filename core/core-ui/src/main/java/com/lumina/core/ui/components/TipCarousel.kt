@@ -50,26 +50,26 @@ fun TipCarousel(
 
     val pagerState = rememberPagerState(pageCount = { tips.size })
 
-    OutlinedCard(
-        modifier = modifier.fillMaxWidth(),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
-        colors = CardDefaults.outlinedCardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = ThemeTokens.Alpha.Medium)
-        ),
-        shape = MaterialTheme.shapes.medium
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(
-                    horizontal = ThemeTokens.Spacing.ExtraLarge,
-                    vertical = ThemeTokens.Spacing.Large
-                ),
-            horizontalAlignment = Alignment.CenterHorizontally
+        OutlinedCard(
+            modifier = modifier
+                .fillMaxWidth(),
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+            colors = CardDefaults.outlinedCardColors(
+                containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = ThemeTokens.Alpha.Medium)
+            ),
+            shape = MaterialTheme.shapes.medium
         ) {
             HorizontalPager(
                 state = pagerState,
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth()
+                    .padding(
+                        horizontal = ThemeTokens.Spacing.ExtraLarge,
+                        vertical = ThemeTokens.Spacing.Large
+                    ),
                 pageSpacing = ThemeTokens.Spacing.Large
             ) { page ->
                 val tip = tips[page]
@@ -84,7 +84,7 @@ fun TipCarousel(
                         tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(
                             alpha = ThemeTokens.Alpha.Heavy
                         ),
-                        modifier = Modifier.size(ThemeTokens.Icon.BannerCloseIconSize)
+                        modifier = Modifier.size(ThemeTokens.Icon.IndicatorSize)
                     )
                     Spacer(modifier = Modifier.width(ThemeTokens.Spacing.Medium))
 
@@ -100,28 +100,28 @@ fun TipCarousel(
                     )
                 }
             }
+        }
 
-            Spacer(modifier = Modifier.height((ThemeTokens.Spacing.Large)))
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(ThemeTokens.Spacing.Small),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                repeat(tips.size) { index ->
-                    val selected = pagerState.currentPage == index
-                    val color by animateColorAsState(
-                        targetValue = if (selected) MaterialTheme.colorScheme.primary
-                            else MaterialTheme.colorScheme.onSurfaceVariant.copy(
-                                alpha = ThemeTokens.Alpha.Light
-                            ),
-                        label = "tip_carousel_dot_color"
-                    )
+        Spacer(modifier = Modifier.height((ThemeTokens.Spacing.Large)))
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(ThemeTokens.Spacing.Small),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            repeat(tips.size) { index ->
+                val selected = pagerState.currentPage == index
+                val color by animateColorAsState(
+                    targetValue = if (selected) MaterialTheme.colorScheme.primary
+                        else MaterialTheme.colorScheme.onSurfaceVariant.copy(
+                            alpha = ThemeTokens.Alpha.Light
+                        ),
+                    label = "tip_carousel_dot_color"
+                )
 
-                    Box(
-                        modifier = Modifier
-                            .size(if (selected) 8.dp else 6.dp)
-                            .background(color, CircleShape)
-                    )
-                }
+                Box(
+                    modifier = Modifier
+                        .size(if (selected) 8.dp else 6.dp)
+                        .background(color, CircleShape)
+                )
             }
         }
     }

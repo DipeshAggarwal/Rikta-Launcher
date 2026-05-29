@@ -15,11 +15,11 @@ object ThemeTokens {
 
     object Icon {
         val ContainerSize = 64.dp
-        val PrimaryIconSize = 52.dp
-        val SecondaryIconSize = 40.dp
-        val TertiaryIconSize = 36.dp
-        val BannerIconSize = 24.dp
-        val BannerCloseIconSize = 16.dp
+        val PrimarySize = 52.dp
+        val LeadingSize = 40.dp
+        val RowSize = 36.dp
+        val InlineSize = 24.dp
+        val IndicatorSize = 16.dp
     }
 
     object Spacing {
@@ -37,5 +37,9 @@ object ThemeTokens {
         val Medium = 0.32f
         val Strong = 0.64f
         val Heavy = 0.80f
+    }
+
+    object Layout {
+        val EmptyStateMinSize = 200.dp
     }
 }

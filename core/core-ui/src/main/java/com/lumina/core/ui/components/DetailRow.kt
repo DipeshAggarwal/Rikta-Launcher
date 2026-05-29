@@ -78,7 +78,7 @@ fun DetailRow(
             imageVector = Icons.Outlined.ChevronRight,
             contentDescription = null,
             tint = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.size(ThemeTokens.Icon.TertiaryIconSize)
+            modifier = Modifier.size(ThemeTokens.Icon.RowSize)
         )
     }
 }

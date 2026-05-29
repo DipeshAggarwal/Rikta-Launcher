@@ -4,6 +4,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -60,8 +61,12 @@ fun ElevatedButton(
                     imageVector = leadingIcon,
                     contentDescription = null,
                     tint = iconColor,
-                    modifier = Modifier.size(ThemeTokens.Icon.BannerIconSize)
+                    modifier = Modifier.size(
+                        if (subtitle != null) ThemeTokens.Icon.LeadingSize
+                        else ThemeTokens.Icon.BannerIconSize
+                    )
                 )
+                Spacer(modifier = Modifier.size(ThemeTokens.Spacing.Large))
             }
 
             Column(modifier = Modifier.weight(1f)) {

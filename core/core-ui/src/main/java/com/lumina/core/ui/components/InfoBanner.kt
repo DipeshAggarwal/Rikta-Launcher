@@ -81,7 +81,7 @@ fun InfoBanner(
                     imageVector = Icons.Outlined.Close,
                     contentDescription = dismissDescription,
                     tint = MaterialTheme.colorScheme.onSecondaryContainer,
-                    modifier = Modifier.size(ThemeTokens.Icon.BannerCloseIconSize)
+                    modifier = Modifier.size(ThemeTokens.Icon.IndicatorSize)
                 )
             }
         }

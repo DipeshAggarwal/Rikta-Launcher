@@ -65,7 +65,7 @@ fun ConfirmationBottomSheet(
                     imageVector = icon,
                     contentDescription = null,
                     tint = confirmColor,
-                    modifier = Modifier.size(ThemeTokens.Icon.TertiaryIconSize)
+                    modifier = Modifier.size(ThemeTokens.Icon.RowSize)
                 )
             }
 

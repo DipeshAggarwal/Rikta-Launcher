@@ -36,7 +36,7 @@ fun TopTitleBar(
                 Icon(
                     imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
                     contentDescription = stringResource(R.string.go_back),
-                    modifier = Modifier.size(ThemeTokens.Icon.SecondaryIconSize)
+                    modifier = Modifier.size(ThemeTokens.Icon.LeadingSize)
                 )
             }
         },

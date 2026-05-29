@@ -47,7 +47,7 @@ fun ProfileListRow(
             profileName = title,
             profileId = profileId,
             iconName = iconName,
-            size = ThemeTokens.Icon.SecondaryIconSize
+            size = ThemeTokens.Icon.LeadingSize
         )
         Spacer(modifier = Modifier.width(ThemeTokens.Spacing.Large))
 
